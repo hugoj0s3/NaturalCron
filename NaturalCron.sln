@@ -6,6 +6,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaturalCron.UnitTests", "Na
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaturalCron.Examples", "NaturalCron.Examples\NaturalCron.Examples.csproj", "{0CD7C9B7-077B-4948-BA7F-05753D4B594C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaturalCron.Quartz.Example", "NaturalCron.Quartz.Example\NaturalCron.Quartz.Example.csproj", "{0067EEDA-6FB0-4EDD-90F4-B8D394A83FB5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NaturalCron.Quartz", "NaturalCron.Quartz\NaturalCron.Quartz.csproj", "{A155E1F5-6D16-4A28-AF2C-17DCCB52628E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +28,13 @@ Global
 		{0CD7C9B7-077B-4948-BA7F-05753D4B594C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0CD7C9B7-077B-4948-BA7F-05753D4B594C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0CD7C9B7-077B-4948-BA7F-05753D4B594C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0067EEDA-6FB0-4EDD-90F4-B8D394A83FB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0067EEDA-6FB0-4EDD-90F4-B8D394A83FB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0067EEDA-6FB0-4EDD-90F4-B8D394A83FB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0067EEDA-6FB0-4EDD-90F4-B8D394A83FB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A155E1F5-6D16-4A28-AF2C-17DCCB52628E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A155E1F5-6D16-4A28-AF2C-17DCCB52628E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A155E1F5-6D16-4A28-AF2C-17DCCB52628E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A155E1F5-6D16-4A28-AF2C-17DCCB52628E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
