@@ -4,5 +4,5 @@ namespace NaturalCron.Quartz;
 
 public interface INaturalCronTrigger : ITrigger
 {
-    string? NaturalCronExpression { get; set; }
+    string? NaturalCronExpression { get;  }
 }

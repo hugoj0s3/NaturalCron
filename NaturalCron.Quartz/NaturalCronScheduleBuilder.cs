@@ -14,8 +14,8 @@ public class NaturalCronScheduleBuilder : ScheduleBuilder<INaturalCronTrigger>
     
     public override IMutableTrigger Build()
     {
-        NaturalCronTrigger trigger = new NaturalCronTrigger(naturalCronExpression);
-        trigger.MisfireInstruction = MisfireInstruction.CronTrigger.DoNothing;
-        return trigger;
+        NaturalCronTriggerImpl triggerImpl = new NaturalCronTriggerImpl(naturalCronExpression);
+        triggerImpl.MisfireInstruction = MisfireInstruction.CronTrigger.DoNothing;
+        return triggerImpl;
     }
 }
