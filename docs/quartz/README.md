@@ -16,7 +16,7 @@
 Add the NuGet package (replace with your actual package name and version):
 
 ```sh
-dotnet add package NaturalCron.Quartz --version x.y.z-alpha
+dotnet add package NaturalCron.Quartz --version 0.0.1-alpha
 ```
 
 ## Usage Example

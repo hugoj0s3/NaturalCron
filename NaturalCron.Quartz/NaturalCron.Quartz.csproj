@@ -22,12 +22,16 @@ Alpha release. API and features may change. See https://github.com/hugoj0s3/Natu
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-        <ReadMe>../docs/quartz/README.md</ReadMe>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="NaturalCron" Version="0.2.0" />
       <PackageReference Include="Quartz" Version="3.14.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\docs\quartz\README.md" Pack="true" PackagePath="" />
     </ItemGroup>
 
 </Project>
