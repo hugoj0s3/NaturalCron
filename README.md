@@ -1,91 +1,85 @@
 # NaturalCron
-**NaturalCron** is a lightweight .NET library for writing **human-readable recurrence rules** — an easier alternative to cryptic CRON syntax.
+[![NuGet](https://img.shields.io/nuget/v/NaturalCron.svg)](https://www.nuget.org/packages/NaturalCron)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![.NET](https://github.com/hugoj0s3/NaturalCron/actions/workflows/dotnet.yml/badge.svg)
-[![Awesome .NET](https://awesome.re/badge.svg)](https://github.com/quozd/awesome-dotnet)
+NaturalCron is a **human-readable scheduling engine for .NET**. It lets you write schedules in a clear and intuitive way instead of memorizing cryptic cron strings.
+
+**Why?** Because memorizing `0 18 * * 1-5` is harder than understanding `every day between monday and friday at 6:00pm`.
+
+**Readable schedules reduce mistakes, write expressions that you can understand at a glance.**
+
+> **Note:** NaturalCron is **not a cron converter**. It’s a new expressive syntax for better readability.
+
+## 💡 Why use NaturalCron?
+- **Readable syntax**: `every 30 minutes in [jan, jun] between 09:00 and 18:00`
+- **Fluent Builder API**: Strongly typed for .NET developers.
+- **No online generators needed**.
+- **Features**:
+  - Ranges
+  - Weekday list
+  - Closest weekday, first/last day handling
+  - Time zone support with IANA TZ names
+
+## 🚀 Quick Start
+
+### **Using an Expression**
+```csharp
+using System;
+using NaturalCron;
+
+// Define an advanced expression
+string expression = "every 30 minutes in [jan, jun] between 09:00 and 18:00";
+
+// Parse and calculate next occurrence (local time)
+NaturalCronExpr schedule = NaturalCronExpr.Parse(expression);
+DateTime next = schedule.GetNextOccurrence(DateTime.Now);
+
+Console.WriteLine($"Next occurrence: {next}");
+```
+
+### **Using Fluent Builder**
+```csharp
+using System;
+using NaturalCron;
+using NaturalCron.Builder;
+
+NaturalCronExpr schedule = NaturalCronBuilder
+.Every(30).Minutes()
+.In(NaturalCronMonth.Jan)
+.Between("09:00", "18:00")
+.Build();
+
+DateTime next = schedule.GetNextOccurrenceInUtc(DateTime.UtcNow);
+
+Console.WriteLine($"Next occurrence in UTC: {next}");
+```
+
+⚡ **Try it online:** [Run on .NET Fiddle](https://dotnetfiddle.net/NfEBM8)
 
 
-## 🔁 Examples of expressions you can write:
-- `@every day @at 9:00am` or `every day at 9:00am`
-- `@every week @on [Tuesday, Thursday] @at 18:00` or `every week on [Tuesday, Thursday] at 18:00`
-- `@every month @on ClosestWeekdayTo 6th` or `every month on ClosestWeekdayTo 6th`
-- `@every 25 seconds @between 1:20pm and 01:22pm` or `every 25 seconds between 1:20pm and 01:22pm`
+## 🆚 Cron vs NaturalCron
+| Task                                      | Cron Expression        | NaturalCron Expression                                          |
+|------------------------------------------|------------------------|-----------------------------------------------------------------|
+| Every 5 minutes                         | `*/5 * * * *`         | `every 5 minutes`                                              |
+| Every weekday at 6 PM                   | `0 18 * * 1-5`        | `every day between mon and fri at 18:00`                       |
+| Every 30 min in Jan and Jun (9:00-18:00)| *(Complex in cron)*    | `every 30 minutes in [jan, jun] between 09:00 and 18:00`       |
 
 
-## ✨ Features
-- Readable, expressive and easy to memorize — e.g use `every 5 minutes on friday` instead of `*/5 * * * 5`
-- Powerful `between`, `upto`, `from`, and more filtering
-- Closest weekday, first/last day handling
-- Time zone support with IANA TZ names
-- Friendly aliases (`daily`, `hourly`, etc.)
-
-
-## Why NaturalCron?
-Cron is powerful but hard to read. NaturalCron is designed to:
-- Be human-readable
-- Stay close to natural language
-- Still flexible enough for advanced use cases
+## 📝 Syntax Overview
+Examples:
+```
+every 5 minutes
+every day at 18:00
+every 30 minutes in [jan, jun] between 09:00 and 18:00
+every day at 10:00 on [monday, wednesday, friday]
+```
 
 
 ## 📦 Installation
 ```bash
 dotnet add package NaturalCron
 ```
-
-
-## 🚀 Usage
-```csharp
-using System;
-using NaturalCron;
-
-// Define a recurrence rule using natural language
-var recur = NaturalCronExpr.Parse("every 25 min on friday between 1:00pm and 03:00pm");
-
-// Get the next 11 occurrences starting from Jan 1, 2020
-var nextOccurrences = recur.TryGetNextOccurrences(
-    DateTime.Parse("2020-01-01 00:00:00"), 6
-);
-
-foreach (var nextOccurrence in nextOccurrences)
-{
-    Console.WriteLine(nextOccurrence.ToString("dddd, dd MMMM yyyy HH:mm:ss"));
-}
-
-/*
-Output:
-Friday, 03 January 2020 13:00:00
-Friday, 03 January 2020 13:25:00
-Friday, 03 January 2020 13:50:00
-Friday, 03 January 2020 14:15:00
-Friday, 03 January 2020 14:40:00
-Friday, 10 January 2020 13:00:00
-....
-*/
-```
-
-
-## 📚 Other Examples
-```csharp
-// Every 5 minutes on Fridays
-var recur1 = NaturalCron.Parse("every 5 min on friday");
-
-// Every 25 seconds between 1:20pm and 1:22pm
-var recur2 = NaturalCron.Parse("every 25 seconds between 1:20pm and 1:22pm");
-
-// Every month on the closest weekday to the 6th
-var recur3 = NaturalCron.Parse("every month on ClosestWeekdayTo 6th");
-
-// Every day at 9:00 AM
-var recur4 = NaturalCron.Parse("every day at 9:00am");
-
-// Every week on Tuesday and Thursday at 18:00
-var recur5 = NaturalCron.Parse("every week on [Tuesday, Thursday] at 18:00");
-```
-
-
-▶ Try it online: [Run on .NET Fiddle](https://dotnetfiddle.net/GLph9G)
-
 
 ## 📖 Documentation
 - [Expression Syntax](docs/expression-syntax.md) — Learn how to write human-readable recurrence rules.
@@ -98,5 +92,8 @@ Contributions, bug reports, and feature requests are welcome!
 
 Please open an [issue](../../issues) or submit a [pull request](../../pulls).
 
-## Changelog
-See [CHANGELOG.md](./CHANGELOG.md) for release history and details.
+## ❤️ Support the Project
+If you enjoy using NaturalCron and would like to support its future development, consider buying me a coffee. Your support helps keep the project alive and growing!
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-☕-orange)](https://buymeacoffee.com/hugoj0s3)
+
