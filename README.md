@@ -85,7 +85,15 @@ dotnet add package NaturalCron
 - [Expression Syntax](docs/expression-syntax.md) — Learn how to write human-readable recurrence rules.
 - [Fluent Builder Guide](docs/builder.md) — Build expressions easily with type safety and IntelliSense.
 - [API Reference](docs/api-reference.md) — Full API details and usage examples.
-- [Quartz.NET Integration](docs/quartz/README.md) — Use NaturalCron with Quartz.NET triggers. ⚠️ _Alpha: API and features may change._
+
+## 🔌 Quartz.NET Integration (Alpha)
+
+[![NuGet (Quartz)](https://img.shields.io/nuget/vpre/NaturalCron.Quartz.svg?label=NaturalCron.Quartz)](https://www.nuget.org/packages/NaturalCron.Quartz)
+
+NaturalCron can integrate directly with [Quartz.NET](https://www.quartz-scheduler.net/), letting you use human-readable schedules in Quartz triggers.
+
+> ⚠️ **Experimental Alpha:** This package is in early development and may change significantly before version 1.0 and no stability is guaranteed.
+
 
 ## 🤝 Contributing
 Contributions, bug reports, and feature requests are welcome!

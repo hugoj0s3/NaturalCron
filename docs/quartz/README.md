@@ -1,12 +1,11 @@
 # NaturalCron Quartz Integration
 
-> ⚠️ **Alpha Release:** This package is under active development. The API and features may change before 1.0. Use in production at your own risk.
-
+> ⚠️ Experimental Alpha Release: This package is in an early stage of development and is subject to significant changes before version 1.0. Features and APIs may evolve, and stability is not guaranteed.
 **NaturalCron.Quartz** adds natural language scheduling support to Quartz.NET, allowing you to define job schedules using human-friendly expressions.
 
 ## Features
 
-- Schedule jobs with phrases like `every 5 seconds`, `every Monday at 9am`.
+- Schedule jobs with phrases like `every 5 seconds on friday`, `every week on monday at 9:00am`.
 - Seamless integration with Quartz.NET triggers and jobs.
 - Familiar API: use `TriggerBuilder.WithNaturalCronSchedule()` just like Quartz's built-in schedules.
 - Alpha release: actively developed, API and features may change.
@@ -31,7 +30,7 @@ var trigger = TriggerBuilder.Create()
     .StartNow()
     .Build();
 
-var triigger2 = TriggerBuilder.Create()
+var triger2 = TriggerBuilder.Create()
     .WithIdentity("naturalTrigger", "group1")
     .WithNaturalCronSchedule(NaturalCronBuilder.Daily().AtTime(9, 30).Build())
     .Build();
