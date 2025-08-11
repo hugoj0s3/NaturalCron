@@ -85,6 +85,8 @@ dotnet add package NaturalCron
 - [Expression Syntax](docs/expression-syntax.md) — Learn how to write human-readable recurrence rules.
 - [Fluent Builder Guide](docs/builder.md) — Build expressions easily with type safety and IntelliSense.
 - [API Reference](docs/api-reference.md) — Full API details and usage examples.
+- - [Quartz.NET Integration](docs/quartz/README.md) — Use NaturalCron with Quartz.NET triggers. ⚠️ _Alpha: API and features may change._
+
 
 ## 🔌 Quartz.NET Integration (Alpha)
 
