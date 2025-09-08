@@ -533,266 +533,178 @@ internal static class TokenParserUtil
         IList<NaturalCronToken> tokens,
         NaturalCronTimeUnitAndUnknown defaultTimeUnit = NaturalCronTimeUnitAndUnknown.Unknown)
     {
-        if (tokens.Any(t => t.Type == NaturalCronTokenType.Colon) &&
-            !tokens.Any(t => t.Type == NaturalCronTokenType.DashOrMinus) &&
-            !tokens.Any(t => ContainsAnySpecialTimeToken(t)) &&
-            !tokens.Any(t => t.IsDayOrdinal()))
+        if (!tokens.Any(t => ContainsAnySpecialTimeToken(t)) || true)
         {
-            if (HasWhitespaceBetweenTokens(tokens, NaturalCronTokenType.Colon))
+            var groupedTokens = GroupRelatedTokens(tokens);
+            var result = new List<TimeUnitAndValueDto>();
+            var ordinalPartnerIndex = -1;
+            for (int i = 0; i < groupedTokens.Count; i++)
             {
-                return new List<TimeUnitAndValueDto>()
+                var tokenGroup = groupedTokens[i];
+                
+                if (tokenGroup.Any(x => x.Type == NaturalCronTokenType.Colon))
                 {
-                    new()
-                    {
-                        TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                        Value = string.Empty,
-                        IsValid = false,
-                        Error = "Invalid time format: use HH:MM:SS or HH:MM (no spaces between numbers and colons)."
-                    }
-                };
-            }
-
-            var splitTokens = SplitTokens(tokens, NaturalCronTokenType.WhiteSpace);
-            if (splitTokens.Count == 1)
-            {
-                return ParseColonBasedTimeUnitValues(tokens);
-            }
-
-            if (splitTokens.Count == 2)
-            {
-                var colonBasedTokens = splitTokens[0].Any(x => x.Type == NaturalCronTokenType.Colon) ? splitTokens[0] : splitTokens[1];
-                var singleBasedTokens = splitTokens[0].Any(x => x.Type == NaturalCronTokenType.Colon) ? splitTokens[1] : splitTokens[0];
-                return ParseColonBasedTimeUnitValues(colonBasedTokens)
-                    .Concat(ParseSingleTimeUnitValue(singleBasedTokens, NaturalCronTimeUnitAndUnknown.Day).AsList())
-                    .ToList();
-            }
-
-            return new List<TimeUnitAndValueDto>()
-            {
-                new()
-                {
-                    TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                    Value = string.Empty,
-                    IsValid = false,
-                    Error = "Invalid format time format. for time uses HH:MM:SS or HH:MM for date uses YYYY-MM-DD or MM-DD"
+                    var colonBasedTimeUnitValues = ParseColonBasedTimeUnitValues(tokenGroup);
+                    result.AddRange(colonBasedTimeUnitValues);
+                    continue;
                 }
-            };
+
+                if (tokenGroup.Any(x => x.Type == NaturalCronTokenType.DashOrMinus) && !tokenGroup.Any(t => ContainsAnySpecialTimeToken(t)) )
+                {
+                    var dashBasedTimeUnitValues = ParseDashBasedTimeUnitValues(tokenGroup);
+                    result.AddRange(dashBasedTimeUnitValues);
+                    continue;
+                }
+
+                if (ordinalPartnerIndex >= 0 && i - ordinalPartnerIndex == 1 && defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
+                {
+                    result.Add(ParseSingleTimeUnitValue(tokenGroup, NaturalCronTimeUnitAndUnknown.Month)); // the group after the ordinal partner default to month for "21st 10" -> 10 is the month.
+                    continue;
+                }
+                
+                if (ordinalPartnerIndex >= 0 && i - ordinalPartnerIndex == 2 && defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
+                {
+                    result.Add(ParseSingleTimeUnitValue(tokenGroup, NaturalCronTimeUnitAndUnknown.Year)); // the group after the ordinal partner default to month for "21st 10 2025" -> 2025 is the year.
+                    continue;
+                }
+                
+                IList<NaturalCronToken>? nextTokenGroup = i < groupedTokens.Count - 1 ? groupedTokens[i + 1] : null;
+                if (nextTokenGroup != null && 
+                    nextTokenGroup.Any(x => x.Type == NaturalCronTokenType.Colon) && 
+                    defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
+                {
+                    result.Add(ParseSingleTimeUnitValue(tokenGroup, NaturalCronTimeUnitAndUnknown.Day));
+                    continue;
+                }
+
+                if (tokenGroup.Any(x => x.IsDayOrdinal()))
+                {
+                    ordinalPartnerIndex = i;
+                }
+                    
+                result.Add(ParseSingleTimeUnitValue(tokenGroup, defaultTimeUnit));
+            }
+            
+            return result;
         }
-
-        if (tokens.Any(t => t.Type == NaturalCronTokenType.DashOrMinus)
-            && !tokens.Any(t => t.Type == NaturalCronTokenType.Colon)
-            && !tokens.Any(t => ContainsAnySpecialTimeToken(t))
-            && !tokens.Any(t => t.IsDayOrdinal()))
-        {
-            if (HasWhitespaceBetweenTokens(tokens, NaturalCronTokenType.DashOrMinus))
-            {
-                return new List<TimeUnitAndValueDto>()
-                {
-                    new()
-                    {
-                        TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                        Value = string.Empty,
-                        IsValid = false,
-                        Error =
-                            "Invalid date format: use YYYY-MM-DD (e.g., 2025-07-04), MM-DD (e.g., 07-04), MMM-DD (e.g., Jul-04), etc. (no spaces between numbers and dashes)."
-                    }
-                };
-            }
-
-            var splitTokens = SplitTokens(tokens, NaturalCronTokenType.WhiteSpace);
-            if (splitTokens.Count == 1)
-            {
-                return ParseDashBasedTimeUnitValues(tokens);
-            }
-
-            if (splitTokens.Count == 2)
-            {
-                var dashBasedTokens = splitTokens[0].Any(x => x.Type == NaturalCronTokenType.DashOrMinus)
-                    ? splitTokens[0]
-                    : splitTokens[1];
-                var singleBasedTokens = splitTokens[0].Any(x => x.Type == NaturalCronTokenType.DashOrMinus)
-                    ? splitTokens[1]
-                    : splitTokens[0];
-                return ParseDashBasedTimeUnitValues(dashBasedTokens)
-                    .Concat(ParseSingleTimeUnitValue(singleBasedTokens, NaturalCronTimeUnitAndUnknown.Hour).AsList())
-                    .ToList();
-            }
-
-            return new List<TimeUnitAndValueDto>()
-            {
-                new()
-                {
-                    TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                    Value = string.Empty,
-                    IsValid = false,
-                    Error = "Invalid format time format. for time uses HH:MM:SS or HH:MM for date uses YYYY-MM-DD or MM-DD"
-                }
-            };
-        }
-
-        if (tokens.Any(t => t.Type == NaturalCronTokenType.DashOrMinus) &&
-            tokens.Any(t => t.Type == NaturalCronTokenType.Colon) &&
-            !tokens.Any(t => ContainsAnySpecialTimeToken(t)) &&
-            !tokens.Any(t => t.IsDayOrdinal()))
-        {
-            if (HasWhitespaceBetweenTokens(tokens, NaturalCronTokenType.DashOrMinus))
-            {
-                return new List<TimeUnitAndValueDto>()
-                {
-                    new()
-                    {
-                        TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                        Value = string.Empty,
-                        IsValid = false,
-                        Error =
-                            "Invalid date format: use YYYY-MM-DD (e.g., 2025-07-04), MM-DD (e.g., 07-04), MMM-DD (e.g., Jul-04), etc. (no spaces between numbers and dashes)."
-                    }
-                };
-            }
-
-            if (HasWhitespaceBetweenTokens(tokens, NaturalCronTokenType.Colon))
-            {
-                return new List<TimeUnitAndValueDto>()
-                {
-                    new()
-                    {
-                        TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                        Value = string.Empty,
-                        IsValid = false,
-                        Error = "Invalid time format: use HH:MM:SS or HH:MM (no spaces between numbers and colons)."
-                    }
-                };
-            }
-
-
-            var splitTokens = SplitTokens(tokens, NaturalCronTokenType.WhiteSpace);
-            if (splitTokens.Count != 2)
-            {
-                return new List<TimeUnitAndValueDto>()
-                {
-                    new()
-                    {
-                        TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                        Value = string.Empty,
-                        IsValid = false,
-                        Error = "Invalid format time format. for time uses HH:MM:SS or HH:MM for date uses YYYY-MM-DD or MM-DD"
-                    }
-                };
-            }
-
-            var dashBasedTokens = splitTokens[0].Any(x => x.Type == NaturalCronTokenType.DashOrMinus) ? splitTokens[0] : splitTokens[1];
-            var colonBasedTokens = splitTokens[0].Any(x => x.Type == NaturalCronTokenType.Colon) ? splitTokens[0] : splitTokens[1];
-
-            return ParseDashBasedTimeUnitValues(dashBasedTokens)
-                .Concat(ParseColonBasedTimeUnitValues(colonBasedTokens)).ToList();
-        }
-
-        if (tokens.Any(t => t.IsDayOrdinal()) &&
-            !tokens.Any(t => t.Type == NaturalCronTokenType.Colon) &&
-            !tokens.Any(t => t.Type == NaturalCronTokenType.DashOrMinus) &&
-            !tokens.Any(t => ContainsAnySpecialTimeToken(t)))
-        {
-            var splitTokens = SplitTokens(tokens, NaturalCronTokenType.WhiteSpace);
-            var list = new List<TimeUnitAndValueDto>();
-            if (splitTokens.Count > 1)
-            {
-                if (splitTokens.Count == 2)
-                {
-                    list.Add(ParseSingleTimeUnitValue(splitTokens[0]));
-                    list.Add(ParseSingleTimeUnitValue(splitTokens[1], NaturalCronTimeUnitAndUnknown.Month));
-                }
-                else if (splitTokens.Count == 3)
-                {
-                    list.Add(ParseSingleTimeUnitValue(splitTokens[0]));
-                    list.Add(ParseSingleTimeUnitValue(splitTokens[1], NaturalCronTimeUnitAndUnknown.Month));
-                    list.Add(ParseSingleTimeUnitValue(splitTokens[2], NaturalCronTimeUnitAndUnknown.Year));
-                }
-                else
-                {
-                    list.Add(new TimeUnitAndValueDto
-                    {
-                        TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                        Value = string.Empty,
-                        IsValid = false,
-                        Error = "Invalid ordinal date format."
-                    });
-                }
-
-                return list;
-            }
-        }
-
-        if (tokens.Any(t => t.IsDayOrdinal()) &&
-            tokens.Any(t => t.Type == NaturalCronTokenType.Colon) &&
-            !tokens.Any(t => t.Type == NaturalCronTokenType.DashOrMinus) &&
-            !tokens.Any(t => ContainsAnySpecialTimeToken(t)))
-        {
-            if (HasWhitespaceBetweenTokens(tokens, NaturalCronTokenType.Colon))
-            {
-                return new List<TimeUnitAndValueDto>()
-                {
-                    new()
-                    {
-                        TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                        Value = string.Empty,
-                        IsValid = false,
-                        Error = "Invalid time format: use HH:MM:SS or HH:MM (no spaces between numbers and colons)."
-                    }
-                };
-            }
-
-            var splitTokens = SplitTokens(tokens, NaturalCronTokenType.WhiteSpace);
-            var dateTokens = new List<IList<NaturalCronToken>>();
-            var timeTokens = new List<NaturalCronToken>();
-
-            foreach (var splitTokenItem in splitTokens)
-            {
-                if (splitTokenItem.Any(t => t.Type == NaturalCronTokenType.Colon)
-                    || splitTokenItem.Any(t => t.Type == NaturalCronTokenType.AmPm))
-                {
-                    timeTokens.AddRange(splitTokenItem);
-                }
-                else
-                {
-                    dateTokens.Add(splitTokenItem);
-                }
-            }
-
-            var list = new List<TimeUnitAndValueDto>();
-            if (dateTokens.Count == 2)
-            {
-                list.Add(ParseSingleTimeUnitValue(dateTokens[0]));
-                list.Add(ParseSingleTimeUnitValue(dateTokens[1], NaturalCronTimeUnitAndUnknown.Month));
-            }
-            else if (dateTokens.Count == 3)
-            {
-                list.Add(ParseSingleTimeUnitValue(dateTokens[0]));
-                list.Add(ParseSingleTimeUnitValue(dateTokens[1], NaturalCronTimeUnitAndUnknown.Month));
-                list.Add(ParseSingleTimeUnitValue(dateTokens[2], NaturalCronTimeUnitAndUnknown.Year));
-            }
-            else
-            {
-                // Fallback for invalid input
-                list.Add(new TimeUnitAndValueDto
-                {
-                    TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown,
-                    Value = string.Empty,
-                    IsValid = false,
-                    Error = "Invalid ordinal date+time format."
-                });
-            }
-            list.AddRange(ParseColonBasedTimeUnitValues(timeTokens));
-            return list;
-        }
-
+        
         return ParseSingleTimeUnitValue(tokens, defaultTimeUnit).AsList();
     }
 
-    private static bool ContainsAnySpecialTimeToken(NaturalCronToken t)
+    /// <summary>
+    /// Groups related tokens together while splitting by whitespace.
+    /// Keeps tokens together when:
+    /// - A TimeUnit token is followed by a value (e.g., "Day 1")
+    /// - A number is followed by AM/PM (e.g., "10 am", "3 pm")
+    /// </summary>
+    private static IList<IList<NaturalCronToken>> GroupRelatedTokens(IList<NaturalCronToken> tokens)
     {
+        var result = new List<IList<NaturalCronToken>>();
+        var currentGroup = new List<NaturalCronToken>();
+        
+        for (int i = 0; i < tokens.Count; i++)
+        {
+            var token = tokens[i];
+            
+            if (token.Type == NaturalCronTokenType.WhiteSpace || 
+                token.Type == NaturalCronTokenType.Comma)
+            {
+                NaturalCronToken? prevToken = null;
+                for (var j = i - 1; j >= 0; j--)
+                {
+                    if (tokens[j].Type == NaturalCronTokenType.WhiteSpace)
+                    {
+                        continue;
+                    }
+                    
+                    if (tokens[j].Type == NaturalCronTokenType.Comma)
+                    {
+                        continue;
+                    }
+                    
+                    prevToken = tokens[j];
+                    break;
+                }
+               
+                
+                NaturalCronToken? nextToken = null;
+                for (var j = i + 1; j < tokens.Count; j++)
+                {
+                    if (tokens[j].Type == NaturalCronTokenType.WhiteSpace)
+                    {
+                        continue;
+                    }
+
+                    if (tokens[j].Type == NaturalCronTokenType.Comma)
+                    {
+                        continue;
+                    }
+                    
+                    nextToken = tokens[j];
+                    break;
+                }
+
+                // Check if we should keep tokens together across this separator
+                var shouldKeepTogether = false;
+                
+                if (prevToken?.Type == NaturalCronTokenType.TimeUnit && !prevToken.IsDayOrdinal() &&
+                    (nextToken?.Type == NaturalCronTokenType.WholeNumber || nextToken?.IsDayOrdinal() == true))
+                {
+                    shouldKeepTogether = true;
+                }
+                else if (prevToken?.Type == NaturalCronTokenType.WholeNumber && nextToken?.Type == NaturalCronTokenType.AmPm)
+                {
+                    shouldKeepTogether = true;
+                } 
+                else if (prevToken?.Value.ToUpper().ContainsWholeWord("ClosestWeekdayTo".ToUpper()) == true)
+                {
+                    shouldKeepTogether = true;
+                    currentGroup.Add(token);
+                } else if (ContainsAnySpecialTimeToken(nextToken) && prevToken?.Type == NaturalCronTokenType.TimeUnit)
+                {
+                    shouldKeepTogether = true;
+                } else if (ContainsAnySpecialTimeToken(prevToken) && nextToken?.Type == NaturalCronTokenType.TimeUnit)
+                {
+                    shouldKeepTogether = true;
+                }  else if (ContainsAnySpecialTimeToken(prevToken) && nextToken?.Type == NaturalCronTokenType.Plus || nextToken?.Type == NaturalCronTokenType.DashOrMinus)
+                {
+                    shouldKeepTogether = true;
+                } else if (nextToken?.Type == NaturalCronTokenType.WholeNumber && prevToken?.Type == NaturalCronTokenType.Plus || prevToken?.Type == NaturalCronTokenType.DashOrMinus)
+                {
+                    shouldKeepTogether = true;
+                }
+                
+                if (!shouldKeepTogether && currentGroup.Count > 0)
+                {
+                    result.Add(currentGroup.ToList());
+                    currentGroup.Clear();
+                }
+            }
+            else if (token.Type != NaturalCronTokenType.WhiteSpace && 
+                     token.Type != NaturalCronTokenType.Comma)
+            {
+                currentGroup.Add(token);
+            }
+        }
+        
+        // Add the last group if it has content
+        if (currentGroup.Count > 0)
+        {
+            result.Add(currentGroup);
+        }
+
+        return result.Where(x => x.Count > 0).ToList();
+    }
+
+    private static bool ContainsAnySpecialTimeToken(NaturalCronToken? t)
+    {
+        if (t == null)
+        {
+            return false;
+        }
+        
         return t.Type == NaturalCronTokenType.Last ||
                t.Type == NaturalCronTokenType.First ||
-               t.Type == NaturalCronTokenType.WeekdayWord ||
                t.Type == NaturalCronTokenType.NthWeekDays ||
                t.Type == NaturalCronTokenType.RelativeWeekdays ||
                t.Type == NaturalCronTokenType.LastDayOfTheMonth ||
@@ -834,14 +746,17 @@ internal static class TokenParserUtil
         var timeUnitToken = tokens.FirstOrDefault(x => x.Type == NaturalCronTokenType.TimeUnit);
 
         var tokensWithoutTimeUnit =
-            tokens.Where(x => x.Type != NaturalCronTokenType.TimeUnit && x.Type != NaturalCronTokenType.EndOfExpression).ToList();
+            tokens.Where(x => x.Type != NaturalCronTokenType.TimeUnit && 
+                              x.Type != NaturalCronTokenType.EndOfExpression &&
+                              x.Type != NaturalCronTokenType.AmPm).ToList();
 
         var invalidTokens = false;
         var dupesMathOperation = false;
 
         var value = JoinTokens(tokens,
             NaturalCronTokenType.EndOfExpression,
-            NaturalCronTokenType.TimeUnit);
+            NaturalCronTokenType.TimeUnit,
+            NaturalCronTokenType.AmPm);
 
         if (TokenParserUtil.IsWeekdaySpecificWord(value))
         {
@@ -892,23 +807,30 @@ internal static class TokenParserUtil
             {
                 TimeUnit = NaturalCronTimeUnitAndUnknown.Day, Value = value.Trim(), IsValid = true, Error = string.Empty
             };
+            
         }
-
-        if (timeUnitToken == null)
+        NaturalCronTimeUnitAndUnknown timeUnit = defaultTimeUnit;
+        if (timeUnitToken != null)
+        {
+            timeUnit = GetTimeUnit(timeUnitToken.Value);
+        }
+       
+        var pmOrAmToken = tokens.FirstOrDefault(x => x.Type == NaturalCronTokenType.AmPm);
+        if (pmOrAmToken != null)
+        {
+            timeUnit = NaturalCronTimeUnitAndUnknown.Hour;
+            value = ParseHourValue(value.Trim(), pmOrAmToken);
+        }
+        
+        if (timeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
         {
             return new()
             {
-                TimeUnit = defaultTimeUnit,
+                TimeUnit = timeUnit,
                 Value = value.Trim(),
-                IsValid = defaultTimeUnit != NaturalCronTimeUnitAndUnknown.Unknown,
-                Error = defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown ? "invalid time unit" : string.Empty
+                IsValid = true,
+                Error = "invalid time unit",
             };
-        }
-
-        var timeUnit = GetTimeUnit(timeUnitToken.Value);
-        if (timeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
-        {
-            timeUnit = defaultTimeUnit;
         }
 
         invalidTokens = tokensWithoutTimeUnit.Any(x =>
@@ -929,16 +851,19 @@ internal static class TokenParserUtil
         {
             return new()
             {
-                TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown, Value = value.Trim(), IsValid = false, Error = "invalid expression"
+                TimeUnit = NaturalCronTimeUnitAndUnknown.Unknown, 
+                Value = value.Trim(), 
+                IsValid = false, 
+                Error = "invalid expression",
             };
         }
-
+        
         return new()
         {
             TimeUnit = timeUnit,
             Value = value.Trim(),
-            IsValid = timeUnit != NaturalCronTimeUnitAndUnknown.Unknown,
-            Error = timeUnit == NaturalCronTimeUnitAndUnknown.Unknown ? "invalid time unit" : string.Empty
+            IsValid = true,
+            Error = string.Empty,
         };
     }
 
@@ -1232,17 +1157,7 @@ internal static class TokenParserUtil
                 };
             }
 
-            var hourInt = int.Parse(hourValue);
-            if (pmOrAm.Value.ToUpper() == "PM" && hourInt != 12)
-            {
-                hourInt += 12; // Convert PM hours to 24-hour format
-            }
-            else if (pmOrAm.Value.ToUpper() == "AM" && hourInt == 12)
-            {
-                hourInt = 0; // Convert 12 AM to 0 hours
-            }
-
-            hourValue = hourInt.ToString();
+            hourValue = ParseHourValue(hourValue, pmOrAm);
         }
 
         var minuteTokens = splitTokens[1]
@@ -1278,6 +1193,21 @@ internal static class TokenParserUtil
         }
 
         return result;
+    }
+
+    private static string ParseHourValue(string hourValue, NaturalCronToken pmOrAm)
+    {
+        var hourInt = int.Parse(hourValue);
+        if (pmOrAm.Value.ToUpper() == "PM" && hourInt != 12)
+        {
+            hourInt += 12; // Convert PM hours to 24-hour format
+        }
+        else if (pmOrAm.Value.ToUpper() == "AM" && hourInt == 12)
+        {
+            hourInt = 0; // Convert 12 AM to 0 hours
+        }
+        
+        return hourInt.ToString();
     }
 
     internal static string? GetAnchoredValue(IList<NaturalCronToken> tokens)

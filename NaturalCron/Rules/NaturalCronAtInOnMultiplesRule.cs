@@ -120,24 +120,180 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
     protected override (int, NaturalCronTimeUnit) DoGetTimeToAdvanceToNextOccurence(DateTime dateTime)
     {
         Reorder(dateTime.Year, dateTime.Month);
-        var targetIndex = -1;
-        foreach (var timeUnit in TimeUnitsExceptTimeZoneDesc)
+        
+        (int, NaturalCronTimeUnit) targetIndexResult = GetNextOccurrenceByTargetIndex(dateTime);
+        (int, NaturalCronTimeUnit) maxTargetResult = GetNextOccurenceByMaxTargetResult(dateTime);
+        (int, NaturalCronTimeUnit) minTargetResult = GetMinTimeToAdvanceForMultiple(dateTime);
+        
+        var allResults = new[] { targetIndexResult, maxTargetResult, minTargetResult };
+        var maxResult = allResults
+            .OrderByDescending(r => DateTimeUtil.GetDurationInSeconds(r.Item2, r.Item1, dateTime.Year, dateTime.Month))
+            .First();
+        
+        
+        return maxResult;
+    }
+
+    private (int, NaturalCronTimeUnit) GetNextOccurenceByMaxTargetResult(DateTime dateTime)
+    { 
+       var timeUnits = TimeUnitsExceptTimeZoneDesc.Where(x => x != NaturalCronTimeUnit.Week && x != NaturalCronTimeUnit.Second);
+       foreach (var timeUnit in timeUnits)
+       {
+           var rules = GetRules(timeUnit);
+           if (!rules.Any())
+           {
+               continue;
+           }
+
+           var maxValue = ExpressionUtil.TryGetValueForMatch(timeUnit, dateTime, rules[rules.Length - 1].InnerExpression);
+           if (!maxValue.HasValue)
+           {
+               continue;
+           }
+
+           var partValue = DateTimeUtil.GetPartValue(timeUnit, dateTime);
+           if (partValue > maxValue.Value)
+           {
+               var targetDatetime = DateTimeUtil.AdvanceTimeSafety(timeUnit, dateTime, 1);
+               var timeToDecrease = TimeUnitsExceptTimeZoneDesc.Where(x => x != NaturalCronTimeUnit.Week).Where(x => x < timeUnit);
+               foreach (var timeUnitToDecrease in timeToDecrease)
+               {
+                   var datePartValue = DateTimeUtil.GetPartValue(timeUnitToDecrease, targetDatetime);
+                   targetDatetime = DateTimeUtil.Substract(timeUnitToDecrease, targetDatetime, datePartValue);
+               }
+               
+               var diff = targetDatetime - dateTime;
+               if (diff.TotalSeconds > 0)
+               {
+                   return ((int)diff.TotalSeconds, NaturalCronTimeUnit.Second);
+               }
+           }
+       }
+       
+       return (1, NaturalCronTimeUnit.Second);
+    }
+
+    private (int, NaturalCronTimeUnit) GetNextOccurenceByDirectlyTargetResult(DateTime dateTime)
+    {
+        DateTime? nextTarget = GetNextTargetDirectly(dateTime);
+        (int, NaturalCronTimeUnit) directlyTargetResult = (1, NaturalCronTimeUnit.Second);
+        if (nextTarget.HasValue)
         {
-            for (var i = 0; i < GetLength(); i++)
+            var diff = nextTarget.Value - dateTime;
+            var totalSeconds = (int)diff.TotalSeconds;
+            if (totalSeconds <= 0)
+            {
+                totalSeconds = 1;
+            } 
+            directlyTargetResult = (totalSeconds, NaturalCronTimeUnit.Second);
+        }
+
+        return directlyTargetResult;
+    }
+
+    private DateTime? GetNextTargetDirectly(DateTime dateTime)
+    {
+        var length = GetLength();
+        DateTime? earliestTarget = null;
+        
+        for (int i = 0; i < length; i++)
+        {
+            var target = TryGetDirectTargetFromPosition(i, dateTime);
+            if (target.HasValue && target > dateTime)
+            {
+                if (!earliestTarget.HasValue || target < earliestTarget)
+                {
+                    earliestTarget = target;
+                }
+            }
+        }
+        
+        return earliestTarget;
+    }
+    
+    private DateTime? TryGetDirectTargetFromPosition(int position, DateTime baseTime)
+    {
+        var year = baseTime.Year;
+        var month = baseTime.Month;
+        var day = 1;
+        var hour = 0;
+        var minute = 0;
+        var second = 0;
+        
+        if (YearRules.Any() && position < YearRules.Length)
+        {
+            var yearValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Year, baseTime, YearRules[position].InnerExpression);
+            if (yearValue.HasValue) year = yearValue.Value;
+        }
+        
+        if (MonthRules.Any() && position < MonthRules.Length)
+        {
+            var monthValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Month, baseTime, MonthRules[position].InnerExpression);
+            if (monthValue.HasValue) month = monthValue.Value;
+        }
+        
+        if (DayRules.Any() && position < DayRules.Length)
+        {
+            var dayValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Day, baseTime, DayRules[position].InnerExpression);
+            if (dayValue.HasValue) day = dayValue.Value;
+        }
+        
+        if (HourRules.Any() && position < HourRules.Length)
+        {
+            var hourValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Hour, baseTime, HourRules[position].InnerExpression);
+            if (hourValue.HasValue) hour = hourValue.Value;
+        }
+        
+        if (MinuteRules.Any() && position < MinuteRules.Length)
+        {
+            var minuteValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Minute, baseTime, MinuteRules[position].InnerExpression);
+            if (minuteValue.HasValue) minute = minuteValue.Value;
+        }
+        
+        if (SecondRules.Any() && position < SecondRules.Length)
+        {
+            var secondValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Second, baseTime, SecondRules[position].InnerExpression);
+            if (secondValue.HasValue) second = secondValue.Value;
+        }
+        
+        try
+        {
+            return new DateTime(year, month, day, hour, minute, second);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+    
+    private (int, NaturalCronTimeUnit) GetNextOccurrenceByTargetIndex(DateTime dateTime)
+    {
+        var length = GetLength();
+        Reorder(dateTime.Year, dateTime.Month);
+        
+        var targetIndex = -1;
+        for (var i = 0; i < length; i++)
+        {
+            foreach (var timeUnit in TimeUnitsExceptTimeZoneDesc.Where(x => x != NaturalCronTimeUnit.Week))
             {
                 var rules = GetRules(timeUnit);
                 if (rules.Any())
                 {
                     var valueForMatch = ExpressionUtil.TryGetValueForMatch(timeUnit, dateTime, rules[i].InnerExpression);
                     var partValue = DateTimeUtil.GetPartValue(timeUnit, dateTime);
-                    if (valueForMatch.HasValue && partValue > valueForMatch.Value)
+                    if (valueForMatch.HasValue && partValue < valueForMatch.Value)
                     {
                         targetIndex = i;
+                        break;
+                    } 
+                    
+                    if (valueForMatch.HasValue && partValue > valueForMatch.Value)
+                    {
                         break;
                     }
                 }
             }
-
+            
             if (targetIndex != -1)
             {
                 break;
@@ -146,13 +302,46 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
 
         if (targetIndex != -1)
         {
-            var targetTimeUnit = TimeUnitsExceptTimeZoneAsc.FirstOrDefault(x => !Match(targetIndex, x, dateTime));
+            var targetTimeUnit = TimeUnitsExceptTimeZoneAsc
+                .Where(x => x != NaturalCronTimeUnit.Week)
+                .First(x => !Match(targetIndex, x, dateTime));
+            
+            if (this.WeekRules.Any() && targetTimeUnit >= NaturalCronTimeUnit.Week)
+            {
+                return (1, NaturalCronTimeUnit.Day);
+            }
+            
             var targetRule = GetRules(targetTimeUnit)[targetIndex];
             return targetRule.GetTimeToAdvanceToNextOccurence(dateTime);
         }
 
-        return (1, this.TimeUnit);
+        return (1, NaturalCronTimeUnit.Second);
     }
+    
+    private (int, NaturalCronTimeUnit) GetMinTimeToAdvanceForMultiple(DateTime dateTime)
+    {
+        if (this.TimeUnit == NaturalCronTimeUnit.Second)
+        {
+            var minSecond = SecondRules.Select(x => ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Second, dateTime, x.InnerExpression)).OrderBy(x => x).First();
+            var maxSecond = SecondRules.Select(x => ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Second, dateTime, x.InnerExpression)).OrderByDescending(x => x).First();
+            
+            var actualSecond = DateTimeUtil.GetPartValue(NaturalCronTimeUnit.Second, dateTime);
+
+            if (minSecond.HasValue && actualSecond < minSecond.Value)
+            {
+                return (minSecond.Value - actualSecond, NaturalCronTimeUnit.Second);
+            }
+
+            if (minSecond.HasValue && actualSecond > maxSecond)
+            {
+                return (60 - actualSecond, NaturalCronTimeUnit.Second);
+            }
+        }
+
+        return this.GetMinSafeTimeToAdvance(dateTime);
+    }
+    
+
 
     private bool Match(int index, NaturalCronTimeUnit timeUnit, DateTime dateTime)
     {
@@ -216,7 +405,7 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
 
         throw new ArgumentOutOfRangeException(nameof(timeUnit), timeUnit, null);
     }
-
+    
     internal void Reorder(int year, int month)
     {
         if (lastYearOrder == year && 

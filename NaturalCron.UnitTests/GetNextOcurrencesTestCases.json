@@ -1246,7 +1246,47 @@
   },
 
   {
-    "description": "33.1 AI generated: Every 2 hours starting at noon",
+    "description": "33.1 Using simple Number+PM/AM",
+    "expression": "@At 9pm",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-01 21:00:00", "2020-01-02 21:00:00", "2020-01-03 21:00:00"]
+  },
+
+  {
+    "description": "33.2 Using simple Number+PM/AM",
+    "expression": "@At 3am",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-01 3:00:00", "2020-01-02 03:00:00", "2020-01-03 03:00:00"]
+  },
+
+  {
+    "description": "33.3 Using simple Number+PM/AM",
+    "expression": "@At 9 pm",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-01 21:00:00", "2020-01-02 21:00:00", "2020-01-03 21:00:00"]
+  },
+
+  {
+    "description": "33.4 Using simple Number+PM/AM",
+    "expression": "@At 3 am",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-01 3:00:00", "2020-01-02 03:00:00", "2020-01-03 03:00:00"]
+  },
+  
+  {
+    "description": "34.1 Day + Time",
+    "expression": "@At [1st 3am, 3rd 10pm, 6th 11pm]",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-01 3:00:00", "2020-01-03 22:00:00", "2020-01-06 23:00:00" ]
+  },
+  {
+    "description": "34.2 Day + Time",
+    "expression": "@At [3rd, 1st, 6th]",
+    "baseTimeUtcStr": "2019-12-31 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-01 00:00:00", "2020-01-03 00:00:00", "2020-01-06 00:00:00" ]
+  },
+  {
+    "description": "99.1 AI generated: Every 2 hours starting at noon",
     "expression": "@every 2 hours",
     "baseTimeUtcStr": "2023-05-10 12:00:00",
     "expectedDateTimeStrs": [
@@ -1256,7 +1296,7 @@
     ]
   },
   {
-    "description": "33.2 AI generated: Every Monday at 9am",
+    "description": "99.2 AI generated: Every Monday at 9am",
     "expression": "@every week @on monday @at 09:00",
     "baseTimeUtcStr": "2024-01-01 08:00:00",
     "expectedDateTimeStrs": [
@@ -1266,7 +1306,7 @@
     ]
   },
   {
-    "description": "33.3 AI generated: Monthly on the 15th at 18:30",
+    "description": "99.3 AI generated: Monthly on the 15th at 18:30",
     "expression": "@every month @on 15th @at 18:30",
     "baseTimeUtcStr": "2025-02-10 00:00:00",
     "expectedDateTimeStrs": [
@@ -1276,7 +1316,7 @@
     ]
   },
   {
-    "description": "33.4 AI generated: Yearly on July 4th at midnight",
+    "description": "99.4 AI generated: Yearly on July 4th at midnight",
     "expression": "@every year @on jul-04 @at 00:00",
     "baseTimeUtcStr": "2022-06-30 00:00:00",
     "expectedDateTimeStrs": [
@@ -1286,7 +1326,7 @@
     ]
   },
   {
-    "description": "33.5 AI generated: Every 10 minutes between 8am and 9am",
+    "description": "99.5 AI generated: Every 10 minutes between 8am and 9am",
     "expression": "@every 10 minutes @between 08:00 and 09:00",
     "baseTimeUtcStr": "2023-09-01 07:55:00",
     "expectedDateTimeStrs": [
@@ -1301,7 +1341,7 @@
     ]
   },
   {
-    "description": "33.6 AI generated: Every Friday the 13th at 13:13",
+    "description": "99.6 AI generated: Every Friday the 13th at 13:13",
     "expression": "@every month @on 13th @on friday @at 13:13",
     "baseTimeUtcStr": "2025-06-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1312,7 +1352,7 @@
     ]
   },
   {
-    "description": "33.7 AI generated: Every last day of the month at 23:59",
+    "description": "99.7 AI generated: Every last day of the month at 23:59",
     "expression": "@every month @on LastDayOfMonth @at 23:59",
     "baseTimeUtcStr": "2025-01-15 00:00:00",
     "expectedDateTimeStrs": [
@@ -1323,7 +1363,7 @@
     ]
   },
   {
-    "description": "33.6 AI generated: Every weekday at 8:00am",
+    "description": "99.8 AI generated: Every weekday at 8:00am",
     "expression": "@every day @between monday and friday @at 08:00",
     "baseTimeUtcStr": "2025-07-01 07:00:00",
     "expectedDateTimeStrs": [
@@ -1335,7 +1375,7 @@
     ]
   },
   {
-    "description": "33.7 AI generated: Every 3rd Tuesday of the month at 10:00",
+    "description": "99.9 AI generated: Every 3rd Tuesday of the month at 10:00",
     "expression": "@every month @on ThirdTuesday @at 10:00",
     "baseTimeUtcStr": "2025-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1345,7 +1385,7 @@
     ]
   },
   {
-    "description": "33.8 AI generated: Every February 29th at noon (leap years)",
+    "description": "99.10 AI generated: Every February 29th at noon (leap years)",
     "expression": "@every year @on feb-29 @at 12:00",
     "baseTimeUtcStr": "2020-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1355,7 +1395,7 @@
     ]
   },
   {
-    "description": "33.9 AI generated: Every 4th Thursday at 17:00",
+    "description": "99.11 AI generated: Every 4th Thursday at 17:00",
     "expression": "@every month @on FourthThursday @at 5:00pm",
     "baseTimeUtcStr": "2025-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1365,7 +1405,7 @@
     ]
   },
   {
-    "description": "33.10 AI generated: Every weekend at 10:30",
+    "description": "99.12 AI generated: Every weekend at 10:30",
     "expression": "@every week @on [sunday, saturday] @at 10:30",
     "baseTimeUtcStr": "2025-07-04 00:00:00",
     "expectedDateTimeStrs": [
@@ -1376,7 +1416,7 @@
     ]
   },
   {
-    "description": "33.11 AI generated: Every 15th of the month at 6:00pm",
+    "description": "99.13 AI generated: Every 15th of the month at 6:00pm",
     "expression": "@every month @on 15th @at 18:00",
     "baseTimeUtcStr": "2025-03-10 00:00:00",
     "expectedDateTimeStrs": [
@@ -1386,7 +1426,7 @@
     ]
   },
   {
-    "description": "33.12 AI generated: Every 2 weeks on Sunday and Saturday at 10:30",
+    "description": "99.14 AI generated: Every 2 weeks on Sunday and Saturday at 10:30",
     "expression": "@every 2 week @on [sunday, saturday] @at 10:30",
     "baseTimeUtcStr": "2025-07-04 00:00:00",
     "expectedDateTimeStrs": [
@@ -1399,7 +1439,7 @@
     ]
   },
   {
-    "description": "33.13 AI generated: Every first day of the year at midnight",
+    "description": "99.15 AI generated: Every first day of the year at midnight",
     "expression": "@every year @on jan-01 @at 00:00",
     "baseTimeUtcStr": "2023-10-10 00:00:00",
     "expectedDateTimeStrs": [
@@ -1409,7 +1449,7 @@
     ]
   },
   {
-    "description": "33.13 AI generated: Every day at noon except weekends",
+    "description": "99.16 AI generated: Every day at noon except weekends",
     "expression": "@every day @between monday and friday @at 12:00",
     "baseTimeUtcStr": "2025-07-03 11:00:00",
     "expectedDateTimeStrs": [
@@ -1419,7 +1459,7 @@
     ]
   },
   {
-    "description": "33.14 AI generated: Every 3 weeks on Monday and Friday at 08:00",
+    "description": "99.17 AI generated: Every 3 weeks on Monday and Friday at 08:00",
     "expression": "@every 3 week @on [monday, friday] @at 08:00",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1432,7 +1472,7 @@
     ]
   },
   {
-    "description": "33.15 AI generated: Every 2 weeks on Wednesday and Monday at 09:15 (unordered)",
+    "description": "99.18 AI generated: Every 2 weeks on Wednesday and Monday at 09:15 (unordered)",
     "expression": "@every 2 week @on [wednesday, monday] @at 09:15",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1445,7 +1485,7 @@
     ]
   },
   {
-    "description": "33.15 AI generated: Every 4 weeks on Sunday at 12:00",
+    "description": "99.19 AI generated: Every 4 weeks on Sunday at 12:00",
     "expression": "@every 4 week @on sunday @at 12:00",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1456,7 +1496,7 @@
     ]
   },
   {
-    "description": "33.16 AI generated: Every week on Tuesday, Thursday, and Saturday at 18:00",
+    "description": "99.20 AI generated: Every week on Tuesday, Thursday, and Saturday at 18:00",
     "expression": "@every week @on [tuesday, thursday, saturday] @at 18:00",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1469,7 +1509,7 @@
     ]
   },
   {
-    "description": "33.17 AI generated: Every 2 weeks on Saturday and Monday at 07:30",
+    "description": "99.21 AI generated: Every 2 weeks on Saturday and Monday at 07:30",
     "expression": "@every 2 week @on [saturday, monday] @at 07:30",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1482,7 +1522,7 @@
     ]
   },
   {
-    "description": "33.18 AI generated: Every 2 weeks on Thursday and Sunday at 14:00, base date is a Friday",
+    "description": "99.22 AI generated: Every 2 weeks on Thursday and Sunday at 14:00, base date is a Friday",
     "expression": "@every 2 week @on [thursday, sunday] @at 14:00",
     "baseTimeUtcStr": "2025-07-04 00:00:00",
     "expectedDateTimeStrs": [
@@ -1494,7 +1534,7 @@
     ]
   },
   {
-    "description": "33.19 AI generated: Every 3 weeks on all weekdays at 10:00",
+    "description": "99.23 AI generated: Every 3 weeks on all weekdays at 10:00",
     "expression": "@every 3 week @on [monday, tuesday, wednesday, thursday, friday] @at 10:00",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1511,7 +1551,7 @@
     ]
   },
   {
-    "description": "33.20 AI generated: Every 5 weeks on Saturday at 15:30 (spanning months)",
+    "description": "99.24 AI generated: Every 5 weeks on Saturday at 15:30 (spanning months)",
     "expression": "@every 5 week @on saturday @at 15:30",
     "baseTimeUtcStr": "2025-06-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1522,7 +1562,7 @@
     ]
   },
   {
-    "description": "33.21 AI generated: Every 2 weeks on Tuesday at 06:45, base date is a Wednesday (off-cycle start)",
+    "description": "99.25 AI generated: Every 2 weeks on Tuesday at 06:45, base date is a Wednesday (off-cycle start)",
     "expression": "@every 2 week @on tuesday @at 06:45",
     "baseTimeUtcStr": "2025-07-02 00:00:00",
     "expectedDateTimeStrs": [
@@ -1533,7 +1573,7 @@
     ]
   },
   {
-    "description": "33.22 AI generated: Every week on Sunday at 23:59, base date is a Monday (should skip to next Sunday)",
+    "description": "99.26 AI generated: Every week on Sunday at 23:59, base date is a Monday (should skip to next Sunday)",
     "expression": "@every week @on sunday @at 23:59",
     "baseTimeUtcStr": "2025-07-07 00:00:00",
     "expectedDateTimeStrs": [
@@ -1544,7 +1584,7 @@
     ]
   },
   {
-    "description": "33.25 AI generated: Every 4 weeks on Monday and Saturday at 11:00 (spanning months) 2",
+    "description": "99.27 AI generated: Every 4 weeks on Monday and Saturday at 11:00 (spanning months) 2",
     "expression": "@every 4 week @on [monday, saturday] @at 11:00",
     "baseTimeUtcStr": "2025-06-29 00:00:00",
     "expectedDateTimeStrs": [
@@ -1559,7 +1599,7 @@
     ]
   },
   {
-    "description": "33.26 AI generated: Every 2 weeks on Thursday and Sunday at 14:00, base date is a Friday",
+    "description": "99.28 AI generated: Every 2 weeks on Thursday and Sunday at 14:00, base date is a Friday",
     "expression": "@every 2 week @on [thursday, sunday] @at 14:00",
     "baseTimeUtcStr": "2025-07-04 00:00:00",
     "expectedDateTimeStrs": [
@@ -1571,7 +1611,7 @@
     ]
   },
   {
-    "description": "33.27 AI generated: Closest weekday to the 15th (falls on a weekday)",
+    "description": "99.29 AI generated: Closest weekday to the 15th (falls on a weekday)",
     "expression": "@every month @on ClosestWeekDayTo 15th @at 09:00",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1581,7 +1621,7 @@
     ]
   },
   {
-    "description": "33.28 AI generated: Closest weekday to the 6th (falls on a Sunday, should pick Monday 7th)",
+    "description": "99.30 AI generated: Closest weekday to the 6th (falls on a Sunday, should pick Monday 7th)",
     "expression": "@every month @on ClosestWeekDayTo 6th @at 10:00",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1591,7 +1631,7 @@
     ]
   },
   {
-    "description": "33.29 AI generated: Closest weekday to the 1st (falls on a Saturday, should pick Monday 3rd)",
+    "description": "99.31 AI generated: Closest weekday to the 1st (falls on a Saturday, should pick Monday 3rd)",
     "expression": "@every month @on ClosestWeekDayTo 1st @at 08:30",
     "baseTimeUtcStr": "2025-11-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1601,7 +1641,7 @@
     ]
   },
   {
-    "description": "33.30 AI generated: Closest weekday to the 31st (not all months have 31, should pick closest weekday in last week)",
+    "description": "99.32 AI generated: Closest weekday to the 31st (not all months have 31, should pick closest weekday in last week)",
     "expression": "@every month @on ClosestWeekdayTo 31st @at 16:00",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1614,7 +1654,7 @@
     ]
   },
   {
-    "description": "33.31 IA generated: LastWeekday of the month at 09:00",
+    "description": "99.33 IA generated: LastWeekday of the month at 09:00",
     "expression": "@every month @on LastWeekday @at 09:00",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1624,7 +1664,7 @@
     ]
   },
   {
-    "description": "33.32 IA generated: FirstWeekday of the month at 08:00",
+    "description": "99.34 IA generated: FirstWeekday of the month at 08:00",
     "expression": "@every month @on FirstWeekday @at 08:00",
     "baseTimeUtcStr": "2025-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1634,7 +1674,7 @@
     ]
   },
   {
-    "description": "33.33 IA generated: LastWeekday of February (leap year) at 12:00",
+    "description": "99.35 IA generated: LastWeekday of February (leap year) at 12:00",
     "expression": "@every year @in february @on LastWeekday @at 12:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1644,7 +1684,7 @@
     ]
   },
   {
-    "description": "33.34 IA generated: FirstWeekday of February (leap year) at 07:30",
+    "description": "99.36 IA generated: FirstWeekday of February (leap year) at 07:30",
     "expression": "@every year @in february @on FirstWeekday @at 07:30",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1655,7 +1695,7 @@
   },
 
   {
-    "description": "33.41 IA generated: FirstWednesday + 1 of July at 09:00",
+    "description": "99.37 IA generated: FirstWednesday + 1 of July at 09:00",
     "expression": "@every year @in july @on FirstWednesday + 1 @at 09:00",
     "baseTimeUtcStr": "2025-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1665,7 +1705,7 @@
     ]
   },
   {
-    "description": "33.42 IA generated: LastMonday - 1 of August at 08:30",
+    "description": "99.38 IA generated: LastMonday - 1 of August at 08:30",
     "expression": "@every year @in august @on LastMonday - 1 @at 08:30",
     "baseTimeUtcStr": "2025-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1675,7 +1715,7 @@
     ]
   },
   {
-    "description": "33.43 IA generated: FirstFriday + 1 of September at 10:00",
+    "description": "99.39 IA generated: FirstFriday + 1 of September at 10:00",
     "expression": "@every year @in september @on FirstFriday + 1 @at 10:00",
     "baseTimeUtcStr": "2025-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1685,7 +1725,7 @@
     ]
   },
   {
-    "description": "33.44 IA generated: LastFriday - 1 of October at 17:00",
+    "description": "99.40 IA generated: LastFriday - 1 of October at 17:00",
     "expression": "@every year @in october @on LastFriday - 1 @at 17:00",
     "baseTimeUtcStr": "2025-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1695,7 +1735,7 @@
     ]
   },
   {
-    "description": "33.45 AI generated: Clamp FirstThursday - 1 of February (never before Feb 1)",
+    "description": "99.41 AI generated: Clamp FirstThursday - 1 of February (never before Feb 1)",
     "expression": "@every year @in february @on FirstThursday - 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1705,7 +1745,7 @@
     ]
   },
   {
-    "description": "33.46 AI generated: Clamp FirstMonday - 1 of February (never before Feb 1)",
+    "description": "99.42 AI generated: Clamp FirstMonday - 1 of February (never before Feb 1)",
     "expression": "@every year @in february @on FirstMonday - 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1715,7 +1755,7 @@
     ]
   },
   {
-    "description": "33.47 AI generated: Clamp LastFriday + 1 of February (never after Feb end)",
+    "description": "99.43 AI generated: Clamp LastFriday + 1 of February (never after Feb end)",
     "expression": "@every year @in february @on LastFriday + 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1725,7 +1765,7 @@
     ]
   },
   {
-    "description": "33.48 AI generated: Clamp LastMonday + 1 of February (never after Feb end)",
+    "description": "99.44 AI generated: Clamp LastMonday + 1 of February (never after Feb end)",
     "expression": "@every year @in february @on LastMonday + 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1735,7 +1775,7 @@
     ]
   },
   {
-    "description": "33.49 AI generated: Clamp LastWeekday + 1 of February (never after Feb end)",
+    "description": "99.45 AI generated: Clamp LastWeekday + 1 of February (never after Feb end)",
     "expression": "@every year @in february @on LastWeekday + 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1745,7 +1785,7 @@
     ]
   },
   {
-    "description": "33.50 AI generated: Clamp FirstFriday - 1 of February (never before Feb 1)",
+    "description": "99.46 AI generated: Clamp FirstFriday - 1 of February (never before Feb 1)",
     "expression": "@every year @in february @on FirstFriday - 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1755,7 +1795,7 @@
     ]
   },
   {
-    "description": "33.51 AI generated: Clamp FirstTuesday - 1 of February (never before Feb 1)",
+    "description": "99.47 AI generated: Clamp FirstTuesday - 1 of February (never before Feb 1)",
     "expression": "@every year @in february @on FirstTuesday - 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1765,7 +1805,7 @@
     ]
   },
   {
-    "description": "33.52 AI generated: Clamp LastThursday + 1 of February (never after Feb end)",
+    "description": "99.48 AI generated: Clamp LastThursday + 1 of February (never after Feb end)",
     "expression": "@every year @in february @on LastThursday + 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1775,7 +1815,7 @@
     ]
   },
   {
-    "description": "33.53 AI generated: Clamp FirstWednesday - 1 of February (never before Feb 1)",
+    "description": "99.49 AI generated: Clamp FirstWednesday - 1 of February (never before Feb 1)",
     "expression": "@every year @in february @on FirstWednesday - 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1785,7 +1825,7 @@
     ]
   },
   {
-    "description": "33.54 AI generated: Clamp LastTuesday + 1 of February (never after Feb end)",
+    "description": "99.50 AI generated: Clamp LastTuesday + 1 of February (never after Feb end)",
     "expression": "@every year @in february @on LastTuesday + 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1795,7 +1835,7 @@
     ]
   },
   {
-    "description": "33.55 AI generated: ClosestWeekDayTo 29th February (leap and non-leap)",
+    "description": "99.51 AI generated: ClosestWeekDayTo 29th February (leap and non-leap)",
     "expression": "@every year @in february @on ClosestWeekDayTo 29 @at 09:00",
     "baseTimeUtcStr": "2023-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1805,7 +1845,7 @@
     ]
   },
   {
-    "description": "33.56 AI generated: FirstWeekday + 2 of February",
+    "description": "99.52 AI generated: FirstWeekday + 2 of February",
     "expression": "@every year @in february @on FirstWeekday + 2 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1815,7 +1855,7 @@
     ]
   },
   {
-    "description": "33.57 AI generated: LastWeekday - 2 of February",
+    "description": "99.53 AI generated: LastWeekday - 2 of February",
     "expression": "@every year @in february @on LastWeekday - 2 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1825,7 +1865,7 @@
     ]
   },
   {
-    "description": "33.58 AI generated: 2ndMonday + 1 of February",
+    "description": "99.54 AI generated: 2ndMonday + 1 of February",
     "expression": "@every year @in february @on 2ndMonday + 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1835,7 +1875,7 @@
     ]
   },
   {
-    "description": "33.59 AI generated: 2ndMonday - 1 of February",
+    "description": "99.55 AI generated: 2ndMonday - 1 of February",
     "expression": "@every year @in february @on 2ndMonday - 1 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1845,7 +1885,7 @@
     ]
   },
   {
-    "description": "33.60 AI generated: Clamp FirstMonday - 2 of February (never before Feb 1)",
+    "description": "99.56 AI generated: Clamp FirstMonday - 2 of February (never before Feb 1)",
     "expression": "@every year @in february @on FirstMonday - 2 @at 09:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1855,7 +1895,7 @@
     ]
   },
   {
-    "description": "33.61 AI generated:",
+    "description": "99.57 AI generated:",
     "expression": "@every 25 min @on [monday, tuesday, friday] @between 9:00 and 10:00",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1871,7 +1911,7 @@
     ]
   },
   {
-    "description": "33.62 IA generated: Every month on every Monday and Wednesday (Jan 2024)",
+    "description": "99.58 IA generated: Every month on every Monday and Wednesday (Jan 2024)",
     "expression": "@every 1 month @on [monday, wednesday]",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1893,7 +1933,7 @@
     ]
   },
   {
-    "description": "33.63 IA generated: Every month on every Monday and Wednesday (Feb 2024)",
+    "description": "99.59 IA generated: Every month on every Monday and Wednesday (Feb 2024)",
     "expression": "@every 1 month @on [monday, wednesday]",
     "baseTimeUtcStr": "2024-02-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1914,7 +1954,7 @@
     ]
   },
   {
-    "description": "33.64 IA generated: Every month on every Monday and Wednesday (Mar 2024)",
+    "description": "99.60 IA generated: Every month on every Monday and Wednesday (Mar 2024)",
     "expression": "@every 1 month @on [monday, wednesday]",
     "baseTimeUtcStr": "2024-03-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1935,7 +1975,7 @@
     ]
   },
   {
-    "description": "33.65 IA generated: Every 12 months anchoredOn JANUARY @on [1stFriday, 3rdWednesday]",
+    "description": "99.61 IA generated: Every 12 months anchoredOn JANUARY @on [1stFriday, 3rdWednesday]",
     "expression": "@every 12 months anchoredOn JANUARY @on [1stFriday, 3rdWednesday]",
     "baseTimeUtcStr": "2024-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1948,7 +1988,7 @@
     ]
   },
   {
-    "description": "33.66 IA generated: Every 24 months anchoredOn JULY @on [1stFriday, 3rdWednesday]",
+    "description": "99.62 IA generated: Every 24 months anchoredOn JULY @on [1stFriday, 3rdWednesday]",
     "expression": "@every 24 months anchoredOn JULY @on [1stFriday, 3rdWednesday]",
     "baseTimeUtcStr": "2024-07-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1959,7 +1999,7 @@
     ]
   },
   {
-    "description": "33.67 IA generated: Every 12 months anchoredOn OCTOBER @on [1stFriday, 3rdWednesday]",
+    "description": "99.63 IA generated: Every 12 months anchoredOn OCTOBER @on [1stFriday, 3rdWednesday]",
     "expression": "@every 12 months anchoredOn OCTOBER @on [1stFriday, 3rdWednesday]",
     "baseTimeUtcStr": "2024-10-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1972,7 +2012,7 @@
     ]
   },
   {
-    "description": "33.68 IA generated: Every 2 months anchoredOn FEBRUARY @on [1stFriday, 3rdWednesday]",
+    "description": "99.64 IA generated: Every 2 months anchoredOn FEBRUARY @on [1stFriday, 3rdWednesday]",
     "expression": "@every 2 months anchoredOn FEBRUARY @on [1stFriday, 3rdWednesday]",
     "baseTimeUtcStr": "2024-02-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1985,7 +2025,7 @@
     ]
   },
   {
-    "description": "33.69 IA generated: Every 3 months anchoredOn MARCH @on [1stFriday, 3rdWednesday]",
+    "description": "99.65 IA generated: Every 3 months anchoredOn MARCH @on [1stFriday, 3rdWednesday]",
     "expression": "@every 3 months anchoredOn MARCH @on [1stFriday, 3rdWednesday]",
     "baseTimeUtcStr": "2024-03-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1997,7 +2037,7 @@
     ]
   },
   {
-    "description": "33.70 IA generated: Every 4 months anchoredOn APRIL @on [1stFriday, 3rdWednesday]",
+    "description": "99.66 IA generated: Every 4 months anchoredOn APRIL @on [1stFriday, 3rdWednesday]",
     "expression": "@every 4 months anchoredOn APRIL @on [1stFriday, 3rdWednesday]",
     "baseTimeUtcStr": "2024-04-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2010,7 +2050,7 @@
     ]
   },
   {
-    "description": "33.71 IA generated: Every 6 months anchoredOn JUNE @on [1stFriday, 3rdWednesday]",
+    "description": "99.67 IA generated: Every 6 months anchoredOn JUNE @on [1stFriday, 3rdWednesday]",
     "expression": "@every 6 months AnchoredOn JUNE @on [1stFriday, 3rdWednesday]",
     "baseTimeUtcStr": "2024-06-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2023,7 +2063,7 @@
     ]
   },
   {
-    "description": "33.72 IA generated: every year on 29th Feb and on Friday",
+    "description": "99.68 IA generated: every year on 29th Feb and on Friday",
     "expression": "@every year @on Feb 29th 14:00 @on Friday",
     "baseTimeUtcStr": "2020-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2040,7 +2080,7 @@
     ]
   },
   {
-    "description": "33.73 IA generated: DST start: every year on last Sunday of March at 02:00 America/New_York",
+    "description": "99.69 IA generated: DST start: every year on last Sunday of March at 02:00 America/New_York",
     "expression": "@every year @on LastSunday @on March @at 02:00 @timezone America/New_York",
     "baseTimeUtcStr": "2023-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2050,7 +2090,7 @@
     ]
   },
   {
-    "description": "33.74 IA generated: End-of-month: every month on 31st",
+    "description": "99.70 IA generated: End-of-month: every month on 31st",
     "expression": "@every month @on 31st",
     "baseTimeUtcStr": "2023-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2064,7 +2104,7 @@
     ]
   },
   {
-    "description": "33.75 IA generated: Leap year: every 4 years on 29th Feb",
+    "description": "99.71 IA generated: Leap year: every 4 years on 29th Feb",
     "expression": "@every 4 years @on 29th Feb",
     "baseTimeUtcStr": "2020-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2075,7 +2115,7 @@
     ]
   },
   {
-    "description": "33.75 IA generated: Overlap: every month on 1st Monday and Monday (should not duplicate)",
+    "description": "99.72 IA generated: Overlap: every month on 1st Monday and Monday (should not duplicate)",
     "expression": "@every month @on 1stMonday @on Monday",
     "baseTimeUtcStr": "2023-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2086,7 +2126,7 @@
     ]
   },
   {
-    "description": "33.76 IA generated: Every year on last Friday of October",
+    "description": "99.73 IA generated: Every year on last Friday of October",
     "expression": "@every year @on lastFriday @on October",
     "baseTimeUtcStr": "2023-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2103,7 +2143,7 @@
     ]
   },
   {
-    "description": "33.77 IA generated: Monthly recurrence with clamping (30th, starting February)",
+    "description": "99.74 IA generated: Monthly recurrence with clamping (30th, starting February)",
     "expression": "@every month @on 30th",
     "baseTimeUtcStr": "2023-02-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2120,7 +2160,7 @@
     ]
   },
   {
-    "description": "33.78 IA generated: Weekly recurrence crossing months (Sunday)",
+    "description": "99.75 IA generated: Weekly recurrence crossing months (Sunday)",
     "expression": "@every week @on Sunday",
     "baseTimeUtcStr": "2023-01-29 00:00:00",
     "expectedDateTimeStrs": [
@@ -2131,7 +2171,7 @@
     ]
   },
   {
-    "description": "33.79 IA generated: Daily recurrence with timezone conversion (Asia/Tokyo, 23:00 local)",
+    "description": "99.76 IA generated: Daily recurrence with timezone conversion (Asia/Tokyo, 23:00 local)",
     "expression": "@every day @at 23:00 @timezone Asia/Tokyo",
     "baseTimeUtcStr": "2023-01-01 14:30:00",
     "expectedDateTimeStrs": [
@@ -2142,7 +2182,7 @@
     ]
   },
   {
-    "description": "33.80 IA generated: Recurrence with between (10th to 15th each month)",
+    "description": "99.77 IA generated: Recurrence with between (10th to 15th each month)",
     "expression": "@every month @between 10th and 15th",
     "baseTimeUtcStr": "2023-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2154,7 +2194,7 @@
     ]
   },
   {
-    "description": "33.81 IA generated: Every day with on weekday rule and recurrence with between (1:00pm and 03:00pm each day)",
+    "description": "99.78 IA generated: Every day with on weekday rule and recurrence with between (1:00pm and 03:00pm each day)",
     "expression": "@every day @on [friday, tuesday] @between 1:00pm and 03:00pm",
     "baseTimeUtcStr": "2023-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -2166,7 +2206,7 @@
     ]
   },
   {
-    "description": "33.82 IA generated: Recurrence with between",
+    "description": "99.79 IA generated: Recurrence with between",
     "expression": "@every week @on [friday, tuesday] @between 1:00pm and 03:00pm",
     "baseTimeUtcStr": "2023-01-01 14:00:00",
     "expectedDateTimeStrs": [
@@ -2178,7 +2218,7 @@
     ]
   },
   {
-    "description": "33.83 IA generated: ",
+    "description": "99.80 IA generated: ",
     "expression": "@every week @between 1:00pm and 03:00pm",
     "baseTimeUtcStr": "2023-01-01 11:00:00",
     "expectedDateTimeStrs": [
@@ -2190,7 +2230,7 @@
     ]
   },
   {
-    "description": "33.84 IA generated: ",
+    "description": "99.81 IA generated: ",
     "expression": "@every week @between 1:00pm and 03:00pm",
     "baseTimeUtcStr": "2023-01-01 14:00:00",
     "expectedDateTimeStrs": [

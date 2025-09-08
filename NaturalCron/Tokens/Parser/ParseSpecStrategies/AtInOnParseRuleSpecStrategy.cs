@@ -21,8 +21,8 @@ internal class AtInOnParseRuleSpecStrategy : ParseRuleSpecStrategy
     private static (IList<NaturalCronRule> rules, IList<string> errors) ParseSingleAtInOn(IList<NaturalCronToken> tokens)
     {
         var errors = new List<string>();
-        var firstToken = tokens.First();
         
+        // Ignore the first token it is the rule spec.
         var timeUnits = TokenParserUtil.ParseTimeUnitValues(tokens.Skip(1).ToList());
         var atInOnRules = new List<NaturalCronRule>();
         foreach (var timeUnit in timeUnits)
@@ -49,13 +49,13 @@ internal class AtInOnParseRuleSpecStrategy : ParseRuleSpecStrategy
 
     private static (IList<NaturalCronRule> rules, IList<string> errors) ParseMultiplesAtInOn(IList<NaturalCronToken> tokens)
     {
-        var firstToken = tokens.First();
         var atInOnMultipleValues = new Dictionary<NaturalCronTimeUnitAndUnknown, List<string>>();
 
         var tokensOutsideBrackets = new List<NaturalCronToken>();
         var tokensInsideBrackets = new List<NaturalCronToken>();
         var isAccumulating = false;
 
+        // Ignore the first token it is the rule spec.
         foreach (var token in tokens.Skip(1))
         {
             if (token.Type == NaturalCronTokenType.OpenBrackets)
