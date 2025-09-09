@@ -119,203 +119,144 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
 
     protected override (int, NaturalCronTimeUnit) DoGetTimeToAdvanceToNextOccurence(DateTime dateTime)
     {
+        // Ensure positions are chronologically ordered for current year/month context
         Reorder(dateTime.Year, dateTime.Month);
         
-        (int, NaturalCronTimeUnit) targetIndexResult = GetNextOccurrenceByTargetIndex(dateTime);
-        (int, NaturalCronTimeUnit) maxTargetResult = GetNextOccurenceByMaxTargetResult(dateTime);
-        (int, NaturalCronTimeUnit) minTargetResult = GetMinTimeToAdvanceForMultiple(dateTime);
+        // Strategy 1: Find next position where current time < target time (most efficient)
+        var targetIndexResult = GetNextOccurrenceByTargetIndex(dateTime);
         
+        // Strategy 2: Handle cases where current time exceeds maximum allowed values
+        var maxTargetResult = GetNextOccurenceByMaxTargetResult(dateTime);
+        
+        // Strategy 3: Handle edge cases and provide minimum safe advancement
+        var minTargetResult = GetMinTimeToAdvanceForMultiple(dateTime);
+        
+        // Select the strategy that advances the furthest (most conservative)
         var allResults = new[] { targetIndexResult, maxTargetResult, minTargetResult };
         var maxResult = allResults
             .OrderByDescending(r => DateTimeUtil.GetDurationInSeconds(r.Item2, r.Item1, dateTime.Year, dateTime.Month))
             .First();
         
-        
         return maxResult;
     }
 
+    /// <summary>
+    /// Handles cases where current time exceeds the maximum allowed value for the largest time unit.
+    /// Advances to the next clean boundary If last position is "1st December" advance to nest month. 
+    /// </summary>
     private (int, NaturalCronTimeUnit) GetNextOccurenceByMaxTargetResult(DateTime dateTime)
     { 
-       var timeUnits = TimeUnitsExceptTimeZoneDesc.Where(x => x != NaturalCronTimeUnit.Week && x != NaturalCronTimeUnit.Second);
-       foreach (var timeUnit in timeUnits)
+       // Find the largest time unit that has rules (Year > Month > Day > Hour > Minute)
+       var maxTimeUnit = TimeUnitsExceptTimeZoneDesc
+           .Where(x => x != NaturalCronTimeUnit.Week && x != NaturalCronTimeUnit.Second)
+           .Where(x => GetRules(x).Any())
+           .FirstOrDefault();
+       
+       if (maxTimeUnit == default)
        {
-           var rules = GetRules(timeUnit);
-           if (!rules.Any())
-           {
-               continue;
-           }
+           return (1, NaturalCronTimeUnit.Second);
+       }
+       
+       var rules = GetRules(maxTimeUnit);
+       if (!rules.Any())
+       {
+           return (1, NaturalCronTimeUnit.Second);
+       }
 
-           var maxValue = ExpressionUtil.TryGetValueForMatch(timeUnit, dateTime, rules[rules.Length - 1].InnerExpression);
-           if (!maxValue.HasValue)
-           {
-               continue;
-           }
+       // Get the maximum allowed value for this time unit (last position after reordering)
+       var maxValue = ExpressionUtil.TryGetValueForMatch(maxTimeUnit, dateTime, rules[rules.Length - 1].InnerExpression);
+       if (!maxValue.HasValue)
+       {
+           return (1, NaturalCronTimeUnit.Second);
+       }
 
-           var partValue = DateTimeUtil.GetPartValue(timeUnit, dateTime);
-           if (partValue > maxValue.Value)
+       var currentValue = DateTimeUtil.GetPartValue(maxTimeUnit, dateTime);
+       
+       // Current time exceeds maximum allowed - advance to next boundary
+       if (currentValue > maxValue.Value)
+       {
+           if (maxTimeUnit == NaturalCronTimeUnit.Year)
            {
-               var targetDatetime = DateTimeUtil.AdvanceTimeSafety(timeUnit, dateTime, 1);
-               var timeToDecrease = TimeUnitsExceptTimeZoneDesc.Where(x => x != NaturalCronTimeUnit.Week).Where(x => x < timeUnit);
-               foreach (var timeUnitToDecrease in timeToDecrease)
-               {
-                   var datePartValue = DateTimeUtil.GetPartValue(timeUnitToDecrease, targetDatetime);
-                   targetDatetime = DateTimeUtil.Substract(timeUnitToDecrease, targetDatetime, datePartValue);
-               }
-               
-               var diff = targetDatetime - dateTime;
-               if (diff.TotalSeconds > 0)
-               {
-                   return ((int)diff.TotalSeconds, NaturalCronTimeUnit.Second);
-               }
+               // Just force the skip. 
+               return (9999, NaturalCronTimeUnit.Year);
            }
+           
+           var calcToAdvance = CalcToAdvancePerTimeUnit(maxTimeUnit, dateTime);
+           return calcToAdvance;
        }
        
        return (1, NaturalCronTimeUnit.Second);
     }
-
-    private (int, NaturalCronTimeUnit) GetNextOccurenceByDirectlyTargetResult(DateTime dateTime)
-    {
-        DateTime? nextTarget = GetNextTargetDirectly(dateTime);
-        (int, NaturalCronTimeUnit) directlyTargetResult = (1, NaturalCronTimeUnit.Second);
-        if (nextTarget.HasValue)
-        {
-            var diff = nextTarget.Value - dateTime;
-            var totalSeconds = (int)diff.TotalSeconds;
-            if (totalSeconds <= 0)
-            {
-                totalSeconds = 1;
-            } 
-            directlyTargetResult = (totalSeconds, NaturalCronTimeUnit.Second);
-        }
-
-        return directlyTargetResult;
-    }
-
-    private DateTime? GetNextTargetDirectly(DateTime dateTime)
-    {
-        var length = GetLength();
-        DateTime? earliestTarget = null;
-        
-        for (int i = 0; i < length; i++)
-        {
-            var target = TryGetDirectTargetFromPosition(i, dateTime);
-            if (target.HasValue && target > dateTime)
-            {
-                if (!earliestTarget.HasValue || target < earliestTarget)
-                {
-                    earliestTarget = target;
-                }
-            }
-        }
-        
-        return earliestTarget;
-    }
     
-    private DateTime? TryGetDirectTargetFromPosition(int position, DateTime baseTime)
-    {
-        var year = baseTime.Year;
-        var month = baseTime.Month;
-        var day = 1;
-        var hour = 0;
-        var minute = 0;
-        var second = 0;
-        
-        if (YearRules.Any() && position < YearRules.Length)
-        {
-            var yearValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Year, baseTime, YearRules[position].InnerExpression);
-            if (yearValue.HasValue) year = yearValue.Value;
-        }
-        
-        if (MonthRules.Any() && position < MonthRules.Length)
-        {
-            var monthValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Month, baseTime, MonthRules[position].InnerExpression);
-            if (monthValue.HasValue) month = monthValue.Value;
-        }
-        
-        if (DayRules.Any() && position < DayRules.Length)
-        {
-            var dayValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Day, baseTime, DayRules[position].InnerExpression);
-            if (dayValue.HasValue) day = dayValue.Value;
-        }
-        
-        if (HourRules.Any() && position < HourRules.Length)
-        {
-            var hourValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Hour, baseTime, HourRules[position].InnerExpression);
-            if (hourValue.HasValue) hour = hourValue.Value;
-        }
-        
-        if (MinuteRules.Any() && position < MinuteRules.Length)
-        {
-            var minuteValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Minute, baseTime, MinuteRules[position].InnerExpression);
-            if (minuteValue.HasValue) minute = minuteValue.Value;
-        }
-        
-        if (SecondRules.Any() && position < SecondRules.Length)
-        {
-            var secondValue = ExpressionUtil.TryGetValueForMatch(NaturalCronTimeUnit.Second, baseTime, SecondRules[position].InnerExpression);
-            if (secondValue.HasValue) second = secondValue.Value;
-        }
-        
-        try
-        {
-            return new DateTime(year, month, day, hour, minute, second);
-        }
-        catch
-        {
-            return null;
-        }
-    }
-    
+    /// <summary>
+    /// Finds the next occurrence by locating the first position where current time < target time
+    /// This is the most efficient strategy as it leverages chronological ordering from Reorder
+    /// </summary>
     private (int, NaturalCronTimeUnit) GetNextOccurrenceByTargetIndex(DateTime dateTime)
     {
         var length = GetLength();
         Reorder(dateTime.Year, dateTime.Month);
         
+        // Search for first position where we haven't reached the target time yet
         var targetIndex = -1;
+        var targetTimeUnit = NaturalCronTimeUnit.Second;
+        
         for (var i = 0; i < length; i++)
         {
+            // Check time units from largest to smallest (Year -> Second)
             foreach (var timeUnit in TimeUnitsExceptTimeZoneDesc.Where(x => x != NaturalCronTimeUnit.Week))
             {
                 var rules = GetRules(timeUnit);
                 if (rules.Any())
                 {
-                    var valueForMatch = ExpressionUtil.TryGetValueForMatch(timeUnit, dateTime, rules[i].InnerExpression);
-                    var partValue = DateTimeUtil.GetPartValue(timeUnit, dateTime);
-                    if (valueForMatch.HasValue && partValue < valueForMatch.Value)
+                    var targetValue = ExpressionUtil.TryGetValueForMatch(timeUnit, dateTime, rules[i].InnerExpression);
+                    var currentValue = DateTimeUtil.GetPartValue(timeUnit, dateTime);
+                    
+                    // Found a position where we haven't reached the target yet
+                    if (targetValue.HasValue && currentValue < targetValue.Value)
                     {
                         targetIndex = i;
-                        break;
+                        targetTimeUnit = timeUnit;
+                        break; // Exit time unit loop
                     } 
                     
-                    if (valueForMatch.HasValue && partValue > valueForMatch.Value)
+                    // Current time exceeds target for this position, skip to next position
+                    if (targetValue.HasValue && currentValue > targetValue.Value)
                     {
-                        break;
+                        break; // Exit time unit loop, try next position
                     }
                 }
             }
             
+            // Found a valid target, exit position loop
             if (targetIndex != -1)
             {
                 break;
             }
         }
-
+        
         if (targetIndex != -1)
         {
-            var targetTimeUnit = TimeUnitsExceptTimeZoneAsc
-                .Where(x => x != NaturalCronTimeUnit.Week)
-                .First(x => !Match(targetIndex, x, dateTime));
-            
             if (this.WeekRules.Any() && targetTimeUnit >= NaturalCronTimeUnit.Week)
             {
                 return (1, NaturalCronTimeUnit.Day);
             }
-            
-            var targetRule = GetRules(targetTimeUnit)[targetIndex];
-            return targetRule.GetTimeToAdvanceToNextOccurence(dateTime);
-        }
 
-        return (1, NaturalCronTimeUnit.Second);
+            return CalcToAdvancePerTimeUnit(targetTimeUnit, dateTime);
+        }
+        
+        // If no target found, find the first min unmatched time unit to advance to first position.
+        var minUnMatchedTimeUnit = TimeUnitsExceptTimeZoneAsc
+            .Where(x => x != NaturalCronTimeUnit.Week)
+            .FirstOrDefault(x => !Match(0, x, dateTime));
+            
+        if (minUnMatchedTimeUnit == default)
+        {
+            return (1, NaturalCronTimeUnit.Second);
+        }
+            
+        var minRule = GetRules(minUnMatchedTimeUnit)[0];
+        return minRule.GetTimeToAdvanceToNextOccurence(dateTime);
     }
     
     private (int, NaturalCronTimeUnit) GetMinTimeToAdvanceForMultiple(DateTime dateTime)
@@ -406,16 +347,22 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
         throw new ArgumentOutOfRangeException(nameof(timeUnit), timeUnit, null);
     }
     
+    /// <summary>
+    /// Reorders all positions chronologically for the given year/month context.
+    /// Uses caching to avoid redundant sorting when year/month hasn't changed.
+    /// Critical for GetNextOccurrenceByTargetIndex efficiency - ensures positions are in time order.
+    /// </summary>
     internal void Reorder(int year, int month)
     {
-        if (lastYearOrder == year && 
-            lastMonthOrder == month)
+        // Skip reordering if already sorted for this year/month context
+        if (lastYearOrder == year && lastMonthOrder == month)
         {
             return;
         }
         
         var length = GetLength();
 
+        // Choose sorting algorithm based on data size
         if (length > 20)
         {
             QuickSort(year, month, 0, length - 1);
@@ -425,6 +372,7 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
             BubbleSort(year, month, length);
         }
 
+        // Cache the context to avoid redundant sorting
         lastYearOrder = year;
         lastMonthOrder = month;
     }
@@ -576,5 +524,41 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
             array[indexA] = array[indexB];
             array[indexB] = temp;
         }
+    }
+
+    /// <summary>
+    /// Calculates exact seconds to advance to the next clean boundary for a given time unit.
+    /// Example: For Year, advances to January 1st 00:00:00 of next year.
+    /// This eliminates edge cases by calculating precise target DateTime and returning exact seconds.
+    /// </summary>
+    private (int, NaturalCronTimeUnit) CalcToAdvancePerTimeUnit(NaturalCronTimeUnit timeUnit, DateTime dateTime)
+    {
+        
+        // Step 1: Advance by 1 unit (e.g., next year, next month, next day)
+        var targetDatetime = DateTimeUtil.AdvanceTimeSafety(timeUnit, dateTime, 1);
+        
+        // Step 2: Reset all smaller time units to 0 to create clean boundaries
+        // Example: 2024-06-15 14:30:45 + 1 Year = 2025-06-15 14:30:45
+        //          Reset smaller units = 2025-01-01 00:00:00
+        var timeUnitsToReset = TimeUnitsExceptTimeZoneDesc
+            .Where(x => x != NaturalCronTimeUnit.Week)
+            .Where(x => x < timeUnit);
+            
+        foreach (var timeUnitToReset in timeUnitsToReset)
+        {
+            var currentPartValue = DateTimeUtil.GetPartValue(timeUnitToReset, targetDatetime);
+            var minTimeUnitValue = ExpressionUtil.GetMinValueByTimeUnit(timeUnitToReset);
+            targetDatetime = DateTimeUtil.Substract(timeUnitToReset, targetDatetime, currentPartValue - minTimeUnitValue);
+        }
+               
+        // Step 3: Calculate exact seconds difference (always positive since target is in future)
+        var diff = targetDatetime - dateTime;
+        if (diff.TotalSeconds > 0)
+        {
+            // Safe cast: TotalSeconds is guaranteed to be whole number (no milliseconds in DateTime)
+            return ((int)diff.TotalSeconds, NaturalCronTimeUnit.Second);
+        }
+        
+        return (1, NaturalCronTimeUnit.Second);
     }
 }
