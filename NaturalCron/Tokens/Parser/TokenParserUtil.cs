@@ -602,7 +602,8 @@ internal static class TokenParserUtil
             var token = tokens[i];
             
             if (token.Type == NaturalCronTokenType.WhiteSpace || 
-                token.Type == NaturalCronTokenType.Comma)
+                token.Type == NaturalCronTokenType.Comma ||
+                token.Type == NaturalCronTokenType.EndOfExpression)
             {
                 NaturalCronToken? prevToken = null;
                 for (var j = i - 1; j >= 0; j--)
@@ -613,6 +614,11 @@ internal static class TokenParserUtil
                     }
                     
                     if (tokens[j].Type == NaturalCronTokenType.Comma)
+                    {
+                        continue;
+                    }
+
+                    if (tokens[j].Type == NaturalCronTokenType.EndOfExpression)
                     {
                         continue;
                     }
@@ -631,6 +637,11 @@ internal static class TokenParserUtil
                     }
 
                     if (tokens[j].Type == NaturalCronTokenType.Comma)
+                    {
+                        continue;
+                    }
+                    
+                    if (tokens[j].Type == NaturalCronTokenType.EndOfExpression)
                     {
                         continue;
                     }
@@ -676,7 +687,8 @@ internal static class TokenParserUtil
                 }
             }
             else if (token.Type != NaturalCronTokenType.WhiteSpace && 
-                     token.Type != NaturalCronTokenType.Comma)
+                     token.Type != NaturalCronTokenType.Comma &&
+                     token.Type != NaturalCronTokenType.EndOfExpression)
             {
                 currentGroup.Add(token);
             }
@@ -804,6 +816,7 @@ internal static class TokenParserUtil
             };
             
         }
+        
         NaturalCronTimeUnitAndUnknown timeUnit = defaultTimeUnit;
         if (timeUnitToken != null)
         {
