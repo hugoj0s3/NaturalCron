@@ -272,6 +272,10 @@ Weekday Name (e.g., Monday, Tuesday, etc.):
 - `Tuesday` or `Tue`
   etc.
 
+Time with am/pm:
+- `10pm` or `10:00pm` or `22:00`
+
+
 Dashed Separated Date (e.g., 2023-01-23):
 - `Jan-23` — January 23rd
 - `12-31` — December 31st
@@ -293,7 +297,15 @@ it allows the combination of date and time
 - `JAN-23 14:00:10` — January 23rd, 2023 at 14:00:10
 
 Colon + ordinal day (e.g. 1st JAN 14:00)
-- `1st JAN 14:00` or `1st JAN 14:00:10` or `1st JAN 2:00pm` or `1st JAN 2:00:10pm`
+- `1st JAN 14:00` or `1st JAN 14:00:10` or `1st JAN 2:00pm` or `1st JAN 2:00:10pm` or `1st JAN 2pm`
+
+Weekday + time with am/pm:
+- `Mon 14:00` or `Mon 2pm`
+
+Special Date + Time:
+- `1stMonday 2pm` or `1stMonday 14:00` or `1stMonday 2:00pm`
+- `2ndTuesday 2pm` or `2ndTuesday 14:00` or `2ndTuesday 2:00pm`
+- `FirstWeekDay 2pm` or `FirstWeekDay 14:00` or `FirstWeekDay 2:00pm`
 
 **Note:** 
 Commas are ignored in single date expressions but not allowed in bracketed multiple date expressions.

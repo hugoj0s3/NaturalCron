@@ -52,12 +52,12 @@ public abstract class NaturalCronMatchableRule : NaturalCronRule
             return (1, NaturalCronTimeUnit.Second);
         }
         
-        var timeUnitToAdvance = this.TimeUnit - 1;
-        if (timeUnitToAdvance == NaturalCronTimeUnit.Week)
+        if (this.TimeUnit == NaturalCronTimeUnit.Week || this.TimeUnit == NaturalCronTimeUnit.Month)
         {
-            timeUnitToAdvance = NaturalCronTimeUnit.Day;
+            return (1, NaturalCronTimeUnit.Day);
         }
         
+        var timeUnitToAdvance = this.TimeUnit - 1;
         var timeUnitValueToAdvance = ExpressionUtil.GetMaxValueByTimeUnit(timeUnitToAdvance, dateTime) - DateTimeUtil.GetPartValue(timeUnitToAdvance, dateTime) - 1;
         if (timeUnitValueToAdvance <= 0)
         {
