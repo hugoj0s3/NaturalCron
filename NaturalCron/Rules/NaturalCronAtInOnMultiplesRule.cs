@@ -277,7 +277,7 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
                 return (minSecond.Value - actualSecond, NaturalCronTimeUnit.Second);
             }
 
-            if (minSecond.HasValue && actualSecond > maxSecond)
+            if (maxSecond.HasValue && actualSecond > maxSecond)
             {
                 return (60 - actualSecond, NaturalCronTimeUnit.Second);
             }

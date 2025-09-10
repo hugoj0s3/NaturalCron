@@ -823,7 +823,7 @@ internal static class TokenParserUtil
             {
                 TimeUnit = timeUnit,
                 Value = value.Trim(),
-                IsValid = true,
+                IsValid = false,
                 Error = "invalid time unit",
             };
         }
