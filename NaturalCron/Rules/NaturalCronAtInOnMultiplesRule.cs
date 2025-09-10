@@ -559,8 +559,8 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
         var diff = targetDatetime - dateTime;
         if (diff.TotalSeconds > 0)
         {
-            // Safe cast: TotalSeconds is guaranteed to be whole number (no milliseconds in DateTime)
-            return ((int)diff.TotalSeconds, NaturalCronTimeUnit.Second);
+            // Use Math.Ceiling to ensure fractional seconds are properly advanced
+            return ((int)Math.Ceiling(diff.TotalSeconds), NaturalCronTimeUnit.Second);
         }
         
         return (1, NaturalCronTimeUnit.Second);
