@@ -533,62 +533,57 @@ internal static class TokenParserUtil
         IList<NaturalCronToken> tokens,
         NaturalCronTimeUnitAndUnknown defaultTimeUnit = NaturalCronTimeUnitAndUnknown.Unknown)
     {
-        if (!tokens.Any(t => ContainsAnySpecialTimeToken(t)) || true)
+       var groupedTokens = GroupRelatedTokens(tokens);
+        var result = new List<TimeUnitAndValueDto>();
+        var ordinalPartnerIndex = -1;
+        for (int i = 0; i < groupedTokens.Count; i++)
         {
-            var groupedTokens = GroupRelatedTokens(tokens);
-            var result = new List<TimeUnitAndValueDto>();
-            var ordinalPartnerIndex = -1;
-            for (int i = 0; i < groupedTokens.Count; i++)
+            var tokenGroup = groupedTokens[i];
+            
+            if (tokenGroup.Any(x => x.Type == NaturalCronTokenType.Colon))
             {
-                var tokenGroup = groupedTokens[i];
-                
-                if (tokenGroup.Any(x => x.Type == NaturalCronTokenType.Colon))
-                {
-                    var colonBasedTimeUnitValues = ParseColonBasedTimeUnitValues(tokenGroup);
-                    result.AddRange(colonBasedTimeUnitValues);
-                    continue;
-                }
+                var colonBasedTimeUnitValues = ParseColonBasedTimeUnitValues(tokenGroup);
+                result.AddRange(colonBasedTimeUnitValues);
+                continue;
+            }
 
-                if (tokenGroup.Any(x => x.Type == NaturalCronTokenType.DashOrMinus) && !tokenGroup.Any(t => ContainsAnySpecialTimeToken(t)) )
-                {
-                    var dashBasedTimeUnitValues = ParseDashBasedTimeUnitValues(tokenGroup);
-                    result.AddRange(dashBasedTimeUnitValues);
-                    continue;
-                }
+            if (tokenGroup.Any(x => x.Type == NaturalCronTokenType.DashOrMinus) && !tokenGroup.Any(t => ContainsAnySpecialTimeToken(t)))
+            {
+                var dashBasedTimeUnitValues = ParseDashBasedTimeUnitValues(tokenGroup);
+                result.AddRange(dashBasedTimeUnitValues);
+                continue;
+            }
 
-                if (ordinalPartnerIndex >= 0 && i - ordinalPartnerIndex == 1 && defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
-                {
-                    result.Add(ParseSingleTimeUnitValue(tokenGroup, NaturalCronTimeUnitAndUnknown.Month)); // the group after the ordinal partner default to month for "21st 10" -> 10 is the month.
-                    continue;
-                }
-                
-                if (ordinalPartnerIndex >= 0 && i - ordinalPartnerIndex == 2 && defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
-                {
-                    result.Add(ParseSingleTimeUnitValue(tokenGroup, NaturalCronTimeUnitAndUnknown.Year)); // the group after the ordinal partner default to month for "21st 10 2025" -> 2025 is the year.
-                    continue;
-                }
-                
-                IList<NaturalCronToken>? nextTokenGroup = i < groupedTokens.Count - 1 ? groupedTokens[i + 1] : null;
-                if (nextTokenGroup != null && 
-                    nextTokenGroup.Any(x => x.Type == NaturalCronTokenType.Colon) && 
-                    defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
-                {
-                    result.Add(ParseSingleTimeUnitValue(tokenGroup, NaturalCronTimeUnitAndUnknown.Day));
-                    continue;
-                }
-
-                if (tokenGroup.Any(x => x.IsDayOrdinal()))
-                {
-                    ordinalPartnerIndex = i;
-                }
-                    
-                result.Add(ParseSingleTimeUnitValue(tokenGroup, defaultTimeUnit));
+            if (ordinalPartnerIndex >= 0 && i - ordinalPartnerIndex == 1 && defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
+            {
+                result.Add(ParseSingleTimeUnitValue(tokenGroup, NaturalCronTimeUnitAndUnknown.Month)); // the group after the ordinal partner default to month for "21st 10" -> 10 is the month.
+                continue;
             }
             
-            return result;
+            if (ordinalPartnerIndex >= 0 && i - ordinalPartnerIndex == 2 && defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
+            {
+                result.Add(ParseSingleTimeUnitValue(tokenGroup, NaturalCronTimeUnitAndUnknown.Year)); // the group after the ordinal partner default to month for "21st 10 2025" -> 2025 is the year.
+                continue;
+            }
+            
+            IList<NaturalCronToken>? nextTokenGroup = i < groupedTokens.Count - 1 ? groupedTokens[i + 1] : null;
+            if (nextTokenGroup != null && 
+                nextTokenGroup.Any(x => x.Type == NaturalCronTokenType.Colon) && 
+                defaultTimeUnit == NaturalCronTimeUnitAndUnknown.Unknown)
+            {
+                result.Add(ParseSingleTimeUnitValue(tokenGroup, NaturalCronTimeUnitAndUnknown.Day));
+                continue;
+            }
+
+            if (tokenGroup.Any(x => x.IsDayOrdinal()))
+            {
+                ordinalPartnerIndex = i;
+            }
+                
+            result.Add(ParseSingleTimeUnitValue(tokenGroup, defaultTimeUnit));
         }
         
-        return ParseSingleTimeUnitValue(tokens, defaultTimeUnit).AsList();
+        return result;
     }
 
     /// <summary>

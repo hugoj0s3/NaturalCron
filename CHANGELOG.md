@@ -5,6 +5,7 @@
 - Optimize the parser code
 - Allow week + time and any other combination e.g At [Monday 10:00, Tuesday 11:00, Wednesday 12pm]
 - Allow simpler time format e.g 2pm instead of 14:00pm
+- Bug fix for multiples times/dates rules e.g At [1st 3:00am, 3rd 10:00pm, 6th 11:00pm] the parser was not work properly.
 
 ## [0.2.0] - 2025-07-27
 - Include builder feature.
