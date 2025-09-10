@@ -1310,6 +1310,12 @@
     "expectedDateTimeStrs": ["2020-01-01 03:00:00", "2020-01-31 10:00:00", "2020-02-01 03:00:00", "2020-02-29 10:00:00"]
   },
   {
+    "description": "37.3 special day of month + Time",
+    "expression": "@At [FirstDay + 2 3am, LastDay-2 10am]",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-03 03:00:00", "2020-01-29 10:00:00", "2020-02-03 03:00:00", "2020-02-27 10:00:00"]
+  },
+  {
     "description": "99.1 AI generated: Every 2 hours starting at noon",
     "expression": "@every 2 hours",
     "baseTimeUtcStr": "2023-05-10 12:00:00",
