@@ -675,7 +675,7 @@ internal static class TokenParserUtil
                 }  else if (ContainsAnySpecialTimeToken(prevToken) && (nextToken?.Type == NaturalCronTokenType.Plus || nextToken?.Type == NaturalCronTokenType.DashOrMinus))
                 {
                     shouldKeepTogether = true;
-                } else if (nextToken?.Type == NaturalCronTokenType.WholeNumber && prevToken?.Type == NaturalCronTokenType.Plus || prevToken?.Type == NaturalCronTokenType.DashOrMinus)
+                } else if (nextToken?.Type == NaturalCronTokenType.WholeNumber && (prevToken?.Type == NaturalCronTokenType.Plus || prevToken?.Type == NaturalCronTokenType.DashOrMinus))
                 {
                     shouldKeepTogether = true;
                 }
