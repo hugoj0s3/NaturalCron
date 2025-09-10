@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1] - 2025-09-10
+- Optimize performance of GetNextOccurrence for Multiples times/dates rules e.g At [10:00, 11:00, 12:00]
+- Optimize the parser code
+- Allow week + time and any other combination e.g At [Monday 10:00, Tuesday 11:00, Wednesday 12pm]
+- Allow simpler time format e.g 2pm instead of 14:00pm
+
 ## [0.2.0] - 2025-07-27
 - Include builder feature.
 - Improve the documentation

@@ -245,7 +245,11 @@ public class NaturalCronAtInOnMultiplesRule : NaturalCronMatchableRule
             return CalcToAdvancePerTimeUnit(targetTimeUnit, dateTime);
         }
         
-        // If no target found, find the first min unmatched time unit to advance to first position.
+        // Fallback: No future position found - current time has passed all scheduled positions
+        // We need to cycle back to the first position (index 0) in the next occurrence cycle
+        // Find the smallest time unit that doesn't match at position 0 and advance it
+        // Example: If positions are [10:30, 14:45] and current time is 16:00 
+        //          we advance the hours to reach 10:30 tomorrow
         var minUnMatchedTimeUnit = TimeUnitsExceptTimeZoneAsc
             .Where(x => x != NaturalCronTimeUnit.Week)
             .FirstOrDefault(x => !Match(0, x, dateTime));

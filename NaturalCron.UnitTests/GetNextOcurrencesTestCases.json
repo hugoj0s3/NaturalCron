@@ -1286,6 +1286,30 @@
     "expectedDateTimeStrs": ["2020-01-01 00:00:00", "2020-01-03 00:00:00", "2020-01-06 00:00:00" ]
   },
   {
+    "description": "35.1 Week + Time",
+    "expression": "@At [monday 3am, tuesday 10am, wednesday 11pm]",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-01 23:00:00", "2020-01-06 03:00:00", "2020-01-07 10:00:00"]
+  },
+  {
+    "description": "36.1 special day of week + Time",
+    "expression": "@At [1stMonday 3am, 2ndTuesday 10am, ThirdWednesday 11pm]",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-06 03:00:00", "2020-01-14 10:00:00", "2020-01-15 23:00:00"]
+  },
+  {
+    "description": "37.1 special day of month + Time",
+    "expression": "@At [FirstWeekday 3am, LastWeekday 10am]",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-01 03:00:00", "2020-01-31 10:00:00", "2020-02-03 03:00:00", "2020-02-28 10:00:00"]
+  },
+  {
+    "description": "37.2 special day of month + Time",
+    "expression": "@At [FirstDay 3am, LastDay 10am]",
+    "baseTimeUtcStr": "2020-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2020-01-01 03:00:00", "2020-01-31 10:00:00", "2020-02-01 03:00:00", "2020-02-29 10:00:00"]
+  },
+  {
     "description": "99.1 AI generated: Every 2 hours starting at noon",
     "expression": "@every 2 hours",
     "baseTimeUtcStr": "2023-05-10 12:00:00",

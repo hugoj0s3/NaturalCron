@@ -93,9 +93,7 @@ dotnet add package NaturalCron
 
 [![NuGet (Quartz)](https://img.shields.io/nuget/vpre/NaturalCron.Quartz.svg?label=NaturalCron.Quartz)](https://www.nuget.org/packages/NaturalCron.Quartz)
 
-NaturalCron can integrate directly with [Quartz.NET](https://www.quartz-scheduler.net/), letting you use human-readable schedules in Quartz triggers.
-
-> ⚠️ **Experimental Alpha:** This package is in early development and may change significantly before version 1.0 and no stability is guaranteed.
+[Quartz.NET](https://www.quartz-scheduler.net/) integration (Alpha), letting you use human-readable schedules in Quartz triggers.
 
 
 ## 🤝 Contributing
