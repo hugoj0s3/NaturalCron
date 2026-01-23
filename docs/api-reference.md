@@ -12,6 +12,7 @@ var compiledExpr = NaturalCronExpr.Parse("daily at 14:30");
 - [Properties](#properties)
 - [Local Time Occurrence Methods](#local-time-occurrence-methods)
 - [UTC Occurrence Methods](#utc-occurrence-methods)
+- [IANA Timezone Occurrence Methods](#iana-timezone-occurrence-methods)
 - [Timezone Behavior](#timezone-behavior)
 - [Usage Examples](#usage-examples)
 - [Rule Filter Methods](#rule-filter-methods)
@@ -177,6 +178,76 @@ Gets the next occurrences in UTC. Throws an exception if fewer occurrences than 
 **Throws:** `InvalidOperationException` when fewer than the requested number of occurrences are found
 
 
+## IANA Timezone Occurrence Methods
+These methods work with a specified IANA timezone ID and return results in that timezone. The timezone ID is case-insensitive (e.g., "America/New_York" or "america/new_york").
+
+### TryGetNextOccurrenceInTz()
+```csharp
+public DateTime? TryGetNextOccurrenceInTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz = null)
+```
+Tries to get the next occurrence in a specified IANA timezone. Returns null if no occurrence is found within the specified lookahead period.
+
+**Parameters:**
+- `baseTimeInTz`: The base time interpreted in the specified IANA timezone from which to find the next occurrence
+- `ianaTzId`: IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")
+- `maxLookaheadInTz`: Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue
+
+**Returns:** The next occurrence in the specified timezone, or null if no occurrence is found
+
+**Throws:** `ArgumentException` when the IANA timezone ID is invalid or not recognized
+
+### GetNextOccurrenceInTz()
+```csharp
+public DateTime GetNextOccurrenceInTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz = null)
+```
+Gets the next occurrence in a specified IANA timezone. Throws an exception if no occurrence is found within the specified lookahead period.
+
+**Parameters:**
+- `baseTimeInTz`: The base time interpreted in the specified IANA timezone from which to find the next occurrence
+- `ianaTzId`: IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")
+- `maxLookaheadInTz`: Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue
+
+**Returns:** The next occurrence in the specified timezone
+
+**Throws:** 
+- `ArgumentException` when the IANA timezone ID is invalid or not recognized
+- `InvalidOperationException` when no next occurrence is found
+
+### TryGetNextOccurrencesInTz()
+```csharp
+public IList<DateTime> TryGetNextOccurrencesInTz(DateTime baseTimeInTz, int count, string ianaTzId, DateTime? maxLookaheadInTz = null)
+```
+Tries to get the next occurrences in a specified IANA timezone. Returns as many occurrences as found, up to the specified count. Stops when no more occurrences are found or the count is reached.
+
+**Parameters:**
+- `baseTimeInTz`: The base time interpreted in the specified IANA timezone from which to find the next occurrences
+- `count`: The number of occurrences to retrieve
+- `ianaTzId`: IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")
+- `maxLookaheadInTz`: Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue
+
+**Returns:** A list of occurrences in the specified timezone (may contain fewer than the requested count)
+
+**Throws:** `ArgumentException` when the IANA timezone ID is invalid or not recognized
+
+### GetNextOccurrencesInTz()
+```csharp
+public IList<DateTime> GetNextOccurrencesInTz(DateTime baseTimeInTz, int count, string ianaTzId, DateTime? maxLookaheadInTz = null)
+```
+Gets the next occurrences in a specified IANA timezone. Throws an exception if fewer occurrences than requested are found. Use `TryGetNextOccurrencesInTz` if you are not sure there are enough occurrences available.
+
+**Parameters:**
+- `baseTimeInTz`: The base time interpreted in the specified IANA timezone from which to find the next occurrences
+- `count`: The number of occurrences to retrieve
+- `ianaTzId`: IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")
+- `maxLookaheadInTz`: Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue
+
+**Returns:** A list of occurrences in the specified timezone
+
+**Throws:** 
+- `ArgumentException` when the IANA timezone ID is invalid or not recognized
+- `InvalidOperationException` when fewer than the requested number of occurrences are found
+
+
 ## Timezone Behavior
 Understanding how timezones work in NaturalCron is crucial for correct usage:
 
@@ -186,15 +257,20 @@ Understanding how timezones work in NaturalCron is crucial for correct usage:
 2. **Return value timezone**: Always matches the method used:
    - UTC methods (`GetNextOccurrenceInUtc`) → return UTC time
    - Local methods (`GetNextOccurrence`) → return system/local time
+   - IANA timezone methods (`GetNextOccurrenceInTz`) → return in the specified IANA timezone
 
 ### Example
 
 For expression `"daily at 09:00 tz Asia/Tokyo"`:
 - Calculates when 9:00 AM Tokyo time occurs
-- If using `GetNextOccurrence()`, calculates using Tokyo time zone and returns in the current thread timezone.
-- If using `GetNextOccurrenceInUtc()`, calculates using Tokyo time zone and returns in UTC.
-- If no timezone in the expression, returns in the current thread timezone or in UTC if UTC methods are used.
-- The input parameter time is on current thread time zone when using non-UTC methods and UTC when using UTC methods
+- If using `GetNextOccurrence()`, calculates using Tokyo timezone and returns in the current thread timezone
+- If using `GetNextOccurrenceInUtc()`, calculates using Tokyo timezone and returns in UTC
+- If using `GetNextOccurrenceInTz(baseTime, "America/New_York")`, calculates using Tokyo timezone and returns in New York timezone
+- If no timezone in the expression, the calculation uses the input time's timezone context
+- The input parameter time is interpreted in:
+  - Current thread timezone for local methods
+  - UTC for UTC methods
+  - The specified IANA timezone for IANA timezone methods
 
 The `tz` keyword affects the **calculation** timezone, not the **return** timezone.
 
@@ -246,6 +322,38 @@ var nextLocal = expr.GetNextOccurrence(DateTime.Now);
 
 // This calculates 9 AM New York time and returns it in UTC
 var nextUtc = expr.GetNextOccurrenceInUtc(DateTime.UtcNow);
+```
+
+### Working with Specific IANA Timezones
+```csharp
+var expr = NaturalCronExpr.Parse("daily at 14:30");
+
+// Get next occurrence in Tokyo time (input and output in Tokyo timezone)
+var tokyoTime = new DateTime(2024, 1, 1, 10, 0, 0);
+var nextInTokyo = expr.GetNextOccurrenceInTz(tokyoTime, "Asia/Tokyo");
+
+// Get next 5 occurrences in London time
+var londonTime = new DateTime(2024, 1, 1, 10, 0, 0);
+var occurrencesInLondon = expr.GetNextOccurrencesInTz(londonTime, 5, "Europe/London");
+
+// Case-insensitive timezone ID
+var nextInNY = expr.GetNextOccurrenceInTz(DateTime.Now, "america/new_york");
+
+// Safe usage with Try methods
+var result = expr.TryGetNextOccurrenceInTz(DateTime.Now, "America/Los_Angeles");
+if (result.HasValue)
+{
+    Console.WriteLine($"Next occurrence: {result.Value}");
+}
+```
+
+### Expression Timezone + Different Return Timezone
+```csharp
+// Expression calculates in Tokyo time, but returns in New York time
+var expr = NaturalCronExpr.Parse("daily at 09:00 tz Asia/Tokyo");
+var nyTime = new DateTime(2024, 1, 1, 20, 0, 0); // 8 PM in New York
+var nextInNY = expr.GetNextOccurrenceInTz(nyTime, "America/New_York");
+// Returns when 9 AM Tokyo occurs, but expressed in New York timezone
 ```
 
 ## Rule Filter Methods

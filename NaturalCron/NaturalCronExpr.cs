@@ -240,6 +240,111 @@ public class NaturalCronExpr
 
         return result;
     }
+    
+    /// <summary>
+    /// Tries to get the next occurrence in a specified IANA timezone. Returns null if no occurrence is found within the specified lookahead period.
+    /// </summary>
+    /// <param name="baseTimeInTz">The base time interpreted in the specified IANA timezone from which to find the next occurrence</param>
+    /// <param name="ianaTzId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
+    /// <param name="maxLookaheadInTz">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>The next occurrence in the specified timezone, or null if no occurrence is found</returns>
+    public DateTime? TryGetNextOccurrenceInTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz = null)
+    {
+        // Case-insensitive validation
+        if (!TZConvert.KnownIanaTimeZoneNames
+                .Contains(ianaTzId, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException($"Invalid IANA time zone ID: {ianaTzId}");
+        }
+
+        var tz = TZConvert.GetTimeZoneInfo(ianaTzId);
+
+        if (this.TimeZoneRule() == null)
+        {
+            // Still okay to compute locally since rules are timezone-agnostic,
+            // but we’re interpreting the provided clock time (baseTimeInTz)
+            // directly in that zone’s wall-clock.
+            return InternalTryGetLocalNextOccurrence(baseTimeInTz, maxLookaheadInTz ?? DateTime.MaxValue);
+        }
+
+        // Interpret the input in the specified timezone, not Local
+        var utcBaseTime = TimeZoneInfo.ConvertTimeToUtc(baseTimeInTz, tz);
+        DateTime? utcMaxLookahead = maxLookaheadInTz.HasValue
+            ? TimeZoneInfo.ConvertTimeToUtc(maxLookaheadInTz.Value, tz)
+            : null; // let the UTC method apply its own default
+
+        var resultUtc = TryGetNextOccurrenceInUtc(utcBaseTime, utcMaxLookahead);
+
+        // Return in the same specified timezone
+        return resultUtc == null ? null : TimeZoneInfo.ConvertTimeFromUtc(resultUtc.Value, tz);
+    }
+
+    /// <summary>
+    /// Gets the next occurrence in a specified IANA timezone. Throws an exception if no occurrence is found within the specified lookahead period.
+    /// </summary>
+    /// <param name="baseTimeInZone">The base time interpreted in the specified IANA timezone from which to find the next occurrence</param>
+    /// <param name="ianaTimeZoneId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
+    /// <param name="maxLookaheadInZone">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>The next occurrence in the specified timezone</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no next occurrence is found</exception>
+    public DateTime GetNextOccurrenceInTz(DateTime baseTimeInZone, string ianaTimeZoneId, DateTime? maxLookaheadInZone = null)
+    {
+        var next = TryGetNextOccurrenceInTz(baseTimeInZone, ianaTimeZoneId, maxLookaheadInZone);
+        if (next == null)
+        {
+            throw new InvalidOperationException("No next occurrence found");
+        }
+
+        return next.Value;
+    }
+
+    /// <summary>
+    /// Tries to get the next occurrences in a specified IANA timezone. Returns as many occurrences as found, up to the specified count.
+    /// Stops when no more occurrences are found or the count is reached.
+    /// </summary>
+    /// <param name="baseTimeInTz">The base time interpreted in the specified IANA timezone from which to find the next occurrences</param>
+    /// <param name="count">The number of occurrences to retrieve</param>
+    /// <param name="ianaTzId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
+    /// <param name="maxLookaheadInTz">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>A list of occurrences in the specified timezone (may contain fewer than the requested count)</returns>
+    public IList<DateTime> TryGetNextOccurrencesInTz(DateTime baseTimeInTz, int count, string ianaTzId, DateTime? maxLookaheadInTz = null)
+    {
+        var result = new List<DateTime>();
+        for (var i = 0; i < count; i++)
+        {
+            var nextOccurrence = TryGetNextOccurrenceInTz(baseTimeInTz, ianaTzId, maxLookaheadInTz);
+            if (nextOccurrence == null)
+            {
+                break;
+            }
+
+            result.Add(nextOccurrence.Value);
+            baseTimeInTz = nextOccurrence.Value;
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Gets the next occurrences in a specified IANA timezone. Throws an exception if fewer occurrences than requested are found.
+    /// Use TryGetNextOccurrencesInTz if you are not sure there are enough occurrences available.
+    /// </summary>
+    /// <param name="baseTimeInTz">The base time interpreted in the specified IANA timezone from which to find the next occurrences</param>
+    /// <param name="count">The number of occurrences to retrieve</param>
+    /// <param name="ianaTzId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
+    /// <param name="maxLookaheadInTz">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>A list of occurrences in the specified timezone</returns>
+    /// <exception cref="InvalidOperationException">Thrown when fewer than the requested number of occurrences are found</exception>
+    public IList<DateTime> GetNextOccurrencesInTz(DateTime baseTimeInTz, int count, string ianaTzId, DateTime? maxLookaheadInTz = null)
+    {
+        var result = TryGetNextOccurrencesInTz(baseTimeInTz, count, ianaTzId, maxLookaheadInTz);
+        if (result.Count < count)
+        {
+            throw new InvalidOperationException("Not enough occurrences found");
+        }
+
+        return result;
+    }
 
     /// <summary>
     /// Parses a string expression into a NaturalCronExpr. Throws an exception if the expression is invalid.

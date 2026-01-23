@@ -86,22 +86,12 @@ dotnet add package NaturalCron
 - [Fluent Builder Guide](docs/builder.md) — Build expressions easily with type safety and IntelliSense.
 - [API Reference](docs/api-reference.md) — Full API details and usage examples.
 
-- [Quartz.NET Integration](docs/quartz/README.md) — Use NaturalCron with Quartz.NET triggers. ⚠️ _Alpha: API and features may change._
 
-
-## 🔌 Quartz.NET Integration (Alpha)
-
-[![NuGet (Quartz)](https://img.shields.io/nuget/vpre/NaturalCron.Quartz.svg?label=NaturalCron.Quartz)](https://www.nuget.org/packages/NaturalCron.Quartz)
-
-[Quartz.NET](https://www.quartz-scheduler.net/) integration (Alpha), letting you use human-readable schedules in Quartz triggers.
+## 🔌 JobMaster Integration (Alpha)
+Looking for a complete job scheduling solution with NaturalCron support? Check out [**JobMaster**](https://github.com/hugoj0s3/jobmaster-net/) — a powerful .NET job scheduling library that natively integrates with NaturalCron for human-readable scheduling.
 
 
 ## 🤝 Contributing
 Contributions, bug reports, and feature requests are welcome!
 
 Please open an [issue](../../issues) or submit a [pull request](../../pulls).
-
-## ❤️ Support the Project
-If you enjoy using NaturalCron and would like to support its future development, consider buying me a coffee. Your support helps keep the project alive and growing!
-
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-☕-orange)](https://buymeacoffee.com/hugoj0s3)

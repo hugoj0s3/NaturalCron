@@ -12,7 +12,7 @@
 
     <PropertyGroup>
         <PackageId>NaturalCron</PackageId>
-        <Version>0.2.1</Version>
+        <Version>0.2.2</Version>
         <Authors>Hugo Silva</Authors>
         <Company>Hugo Silva</Company>
         <Description> NaturalCron is a C# library for scheduling recurring events using easy-to-read, natural language–inspired expressions. It's like cron, but readable. Features include human-readable recurrence, filtering, time zone support, and more.</Description>

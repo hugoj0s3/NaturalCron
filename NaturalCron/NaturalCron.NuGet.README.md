@@ -74,6 +74,9 @@ every day at 10:00 on [monday, wednesday, friday]
 ```
 
 ## 📖 Documentation
-- [Expression Syntax](docs/expression-syntax.md) — Learn how to write human-readable recurrence rules.
-- [Fluent Builder Guide](docs/builder.md) — Build expressions easily with type safety and IntelliSense.
-- [API Reference](docs/api-reference.md) — Full API details and usage examples_
+- [Expression Syntax](https://github.com/hugoj0s3/NaturalCron/blob/main/docs/expression-syntax.md) — Learn how to write human-readable recurrence rules.
+- [Fluent Builder Guide](https://github.com/hugoj0s3/NaturalCron/blob/main/docs/builder.md) — Build expressions easily with type safety and IntelliSense.
+- [API Reference](https://github.com/hugoj0s3/NaturalCron/blob/main/docs/api-reference.md) — Full API details and usage examples.
+
+## 🔌 JobMaster Integration (Alpha)
+Looking for a complete job scheduling solution with NaturalCron support? Check out [**JobMaster**](https://github.com/hugoj0s3/jobmaster-net/) — a .NET job scheduling library that natively integrates with NaturalCron for human-readable scheduling.

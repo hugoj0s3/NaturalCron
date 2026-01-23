@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.2.2]
+### Added
+- New IANA timezone methods for working with specific timezones:
+  - `TryGetNextOccurrenceInTz()` - Get next occurrence in a specified IANA timezone (returns null if not found)
+  - `GetNextOccurrenceInTz()` - Get next occurrence in a specified IANA timezone (throws if not found)
+  - `TryGetNextOccurrencesInTz()` - Get multiple occurrences in a specified IANA timezone (returns available occurrences)
+  - `GetNextOccurrencesInTz()` - Get multiple occurrences in a specified IANA timezone (throws if not enough found)
+- Case-insensitive IANA timezone ID validation (e.g., "America/New_York" or "america/new_york")
+- Comprehensive unit tests for IANA timezone methods
+- Updated API reference documentation with IANA timezone methods and usage examples
+
 ## [0.2.1] - 2025-09-10
 - Optimize performance of GetNextOccurrence for Multiples times/dates rules e.g At [10:00, 11:00, 12:00]
 - Optimize the parser code
