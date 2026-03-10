@@ -1,4 +1,7 @@
 # Changelog
+## 1.0.0
+### Changed
+- Stable release. No breaking changes from 0.2.2.
 
 ## [0.2.2]
 ### Added
