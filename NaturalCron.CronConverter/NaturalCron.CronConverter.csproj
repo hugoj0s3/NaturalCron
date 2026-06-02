@@ -24,7 +24,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="NaturalCron" Version="1.0.1" />
+      <PackageReference Include="NaturalCron" Version="1.0.1" />
     </ItemGroup>
 
 </Project>
