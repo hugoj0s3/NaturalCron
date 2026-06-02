@@ -1,0 +1,350 @@
+[
+  {
+    "_comment": "All in-boundary cases use base 2024-01-01 00:00:00 UTC (Monday, January 1st) unless noted.",
+    "_format": "assertCount tells the test how many consecutive occurrences to compare between NaturalCron and Cronos — no hardcoded expected values needed.",
+
+    "description": "S1-1 every 5 minutes in january",
+    "expression": "every 5 minutes in january",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S1-2 every 15 minutes in [jan, jun]",
+    "expression": "every 15 minutes in [jan, jun]",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S1-3 every 30 minutes between jan and jun",
+    "expression": "every 30 minutes between jan and jun",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S1-4 every 10 minutes between feb and apr",
+    "expression": "every 10 minutes between feb and apr",
+    "baseTimeUtcStr": "2024-02-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S1-5 every 20 minutes in [mar, sep]",
+    "expression": "every 20 minutes in [mar, sep]",
+    "baseTimeUtcStr": "2024-03-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S2-1 every 2 hours in january",
+    "expression": "every 2 hours in january",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S2-2 every 3 hours between jan and jun",
+    "expression": "every 3 hours between jan and jun",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S2-3 every 4 hours in [jan, jul]",
+    "expression": "every 4 hours in [jan, jul]",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S2-4 every 6 hours in [jan, apr, jul, oct]",
+    "expression": "every 6 hours in [jan, apr, jul, oct]",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S3-1 every 15 minutes on monday",
+    "expression": "every 15 minutes on monday",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S3-2 every 30 minutes between monday and friday",
+    "expression": "every 30 minutes between monday and friday",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S3-3 every 10 minutes on [monday, wednesday, friday]",
+    "expression": "every 10 minutes on [monday, wednesday, friday]",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S3-4 every 20 minutes on [tuesday, thursday] — skips Monday",
+    "expression": "every 20 minutes on [tuesday, thursday]",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S4-1 every 2 hours on monday",
+    "expression": "every 2 hours on monday",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S4-2 every 3 hours between monday and friday",
+    "expression": "every 3 hours between monday and friday",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S4-3 every 4 hours on [monday, thursday]",
+    "expression": "every 4 hours on [monday, thursday]",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S4-4 every 6 hours on [wednesday, saturday] — skips to Wednesday",
+    "expression": "every 6 hours on [wednesday, saturday]",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S5-1 every 2 hours at minute 30",
+    "expression": "every 2 hours at minute 30",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S5-2 every 3 hours at minute 15",
+    "expression": "every 3 hours at minute 15",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S5-3 every 4 hours at minute 45",
+    "expression": "every 4 hours at minute 45",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S5-4 hourly at minute 30",
+    "expression": "hourly at minute 30",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S5-5 every 6 hours at minute 15",
+    "expression": "every 6 hours at minute 15",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S6-1 every 30 minutes in [jan, jun] between monday and friday",
+    "expression": "every 30 minutes in [jan, jun] between monday and friday",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S6-2 every 2 hours at minute 30 in january",
+    "expression": "every 2 hours at minute 30 in january",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S6-3 every 2 hours at minute 30 between monday and friday",
+    "expression": "every 2 hours at minute 30 between monday and friday",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S6-4 every 15 minutes in [jan, jun] on [monday, wednesday, friday]",
+    "expression": "every 15 minutes in [jan, jun] on [monday, wednesday, friday]",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S6-5 every day at 09:00 between jan and jun on [monday, wednesday, friday]",
+    "expression": "every day at 09:00 between jan and jun on [monday, wednesday, friday]",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+
+  {
+    "_comment": "Cross-boundary cases — base times near the end of a constrained period so occurrences span into the next cycle (next year, next range, next week).",
+
+    "description": "CB1-1 every 5 minutes in january — year boundary (Jan 31 → Jan 2025)",
+    "expression": "every 5 minutes in january",
+    "baseTimeUtcStr": "2024-01-31 23:45:00",
+    "assertCount": 1000
+  },
+  {
+    "description": "CB1-2 every 2 hours in january — year boundary (Jan 31 → Jan 2025)",
+    "expression": "every 2 hours in january",
+    "baseTimeUtcStr": "2024-01-31 16:00:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB1-3 every 15 minutes in [jan, jun] — mid-year boundary (Jun 30 → Jan 2025)",
+    "expression": "every 15 minutes in [jan, jun]",
+    "baseTimeUtcStr": "2024-06-30 23:00:00",
+    "assertCount": 1000
+  },
+  {
+    "description": "CB1-4 every 30 minutes between jan and jun — mid-year boundary (Jun 30 → Jan 2025)",
+    "expression": "every 30 minutes between jan and jun",
+    "baseTimeUtcStr": "2024-06-30 22:00:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB1-5 every 10 minutes between feb and apr — boundary (Apr 30 → Feb 2025)",
+    "expression": "every 10 minutes between feb and apr",
+    "baseTimeUtcStr": "2024-04-30 23:20:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB1-6 every 6 hours in [jan, apr, jul, oct] — year boundary (Oct 31 → Jan 2025)",
+    "expression": "every 6 hours in [jan, apr, jul, oct]",
+    "baseTimeUtcStr": "2024-10-31 12:00:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB1-7 every 20 minutes in [mar, sep] — boundary (Sep 30 → Mar 2025)",
+    "expression": "every 20 minutes in [mar, sep]",
+    "baseTimeUtcStr": "2024-09-30 23:00:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB2-1 every 20 minutes on [tuesday, thursday] — week boundary (Thu → next Tue)",
+    "expression": "every 20 minutes on [tuesday, thursday]",
+    "baseTimeUtcStr": "2024-01-04 23:20:00",
+    "assertCount": 1000
+  },
+  {
+    "description": "CB2-2 every 30 minutes between monday and friday — weekend boundary (Fri → next Mon)",
+    "expression": "every 30 minutes between monday and friday",
+    "baseTimeUtcStr": "2024-01-05 23:00:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB2-3 every 6 hours on [wednesday, saturday] — week boundary (Sat → next Wed)",
+    "expression": "every 6 hours on [wednesday, saturday]",
+    "baseTimeUtcStr": "2024-01-06 12:00:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB2-4 every 4 hours on [monday, thursday] — week boundary (Thu → next Mon)",
+    "expression": "every 4 hours on [monday, thursday]",
+    "baseTimeUtcStr": "2024-01-04 16:00:00",
+    "assertCount": 1000
+  },
+  {
+    "description": "CB3-1 every day at 09:00 between jan and jun on [monday, wednesday, friday] — year+weekday boundary (Fri Jun 28 → Jan 2025 Wed)",
+    "expression": "every day at 09:00 between jan and jun on [monday, wednesday, friday]",
+    "baseTimeUtcStr": "2024-06-26 10:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "CB3-2 every 2 hours at minute 30 in january — year boundary (Jan 31 → Jan 2025)",
+    "expression": "every 2 hours at minute 30 in january",
+    "baseTimeUtcStr": "2024-01-31 18:00:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB3-3 every 15 minutes in [jan, jun] on [monday, wednesday, friday] — year+weekday boundary (last Fri Jun → Jan 2025)",
+    "expression": "every 15 minutes in [jan, jun] on [monday, wednesday, friday]",
+    "baseTimeUtcStr": "2024-06-28 23:30:00",
+    "assertCount": 800
+  },
+
+  {
+    "_comment": "S7 — hour-only between range (single time unit, maps to cron hour field).",
+
+    "description": "S7-1 every 15 minutes between 8am and 12pm",
+    "expression": "every 15 minutes between 8am and 12pm",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S7-2 every 30 minutes between 9am and 5pm",
+    "expression": "every 30 minutes between 9am and 5pm",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S7-3 every hour between 8am and 6pm",
+    "expression": "every hour between 8am and 6pm",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S7-4 every 15 minutes between 8hr and 12hr",
+    "expression": "every 15 minutes between 8hr and 12hr",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S7-5 every 30 minutes between 9hr and 17hr",
+    "expression": "every 30 minutes between 9hr and 17hr",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+
+  {
+    "_comment": "S8 — day-of-month between range.",
+
+    "description": "S8-1 every hour between 5th and 20th",
+    "expression": "every hour between 5th and 20th",
+    "baseTimeUtcStr": "2024-01-05 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S8-2 every 30 minutes between 10th and 15th",
+    "expression": "every 30 minutes between 10th and 15th",
+    "baseTimeUtcStr": "2024-01-10 00:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "S8-3 every 2 hours between 1st and 28th",
+    "expression": "every 2 hours between 1st and 28th",
+    "baseTimeUtcStr": "2024-01-01 00:00:00",
+    "assertCount": 500
+  },
+
+  {
+    "_comment": "CB4 — hour-range cross-boundary: base near end of the daily window so occurrences span the overnight gap into the next day's window.",
+
+    "description": "CB4-1 every 15 minutes between 8am and 12pm — daily boundary (end of window → next day 8am)",
+    "expression": "every 15 minutes between 8am and 12pm",
+    "baseTimeUtcStr": "2024-01-01 11:45:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB4-2 every 30 minutes between 9am and 5pm — daily boundary (end of window → next day 9am)",
+    "expression": "every 30 minutes between 9am and 5pm",
+    "baseTimeUtcStr": "2024-01-01 16:30:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB4-3 every hour between 8am and 6pm — daily boundary (end of window → next day 8am)",
+    "expression": "every hour between 8am and 6pm",
+    "baseTimeUtcStr": "2024-01-01 17:00:00",
+    "assertCount": 500
+  },
+  {
+    "description": "CB4-4 every 15 minutes between 8hr and 12hr — daily boundary (end of window → next day 8hr)",
+    "expression": "every 15 minutes between 8hr and 12hr",
+    "baseTimeUtcStr": "2024-01-01 11:45:00",
+    "assertCount": 800
+  },
+
+  {
+    "_comment": "CB5 — day-of-month cross-boundary: base near end of the day range so occurrences span into the next month's range.",
+
+    "description": "CB5-1 every hour between 5th and 20th — month boundary (day 20 → Feb day 5)",
+    "expression": "every hour between 5th and 20th",
+    "baseTimeUtcStr": "2024-01-20 20:00:00",
+    "assertCount": 800
+  },
+  {
+    "description": "CB5-2 every 30 minutes between 10th and 15th — month boundary (day 15 → Feb day 10)",
+    "expression": "every 30 minutes between 10th and 15th",
+    "baseTimeUtcStr": "2024-01-15 22:00:00",
+    "assertCount": 800
+  }
+]

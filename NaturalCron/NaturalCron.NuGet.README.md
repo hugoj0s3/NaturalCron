@@ -7,7 +7,7 @@ NaturalCron is a **human-readable scheduling engine for .NET**. It lets you writ
 
 **Readable schedules reduce mistakes, write expressions that you can understand at a glance.**
 
-> **Note:** NaturalCron is **not a cron converter**. It’s a new expressive syntax for better readability.
+> **Note:** NaturalCron is **not a cron converter** — it is a self-contained scheduling engine. If you need a classic cron string for an external system, install the optional **[NaturalCron.CronConverter](https://www.nuget.org/packages/NaturalCron.CronConverter)** add-on (see below).
 
 ## 💡 Why use NaturalCron?
 - **Readable syntax**: `every 30 minutes in [jan, jun] between 09:00 and 18:00`
@@ -73,10 +73,32 @@ every 30 minutes in [jan, jun] between 09:00 and 18:00
 every day at 10:00 on [monday, wednesday, friday]
 ```
 
+## 🔄 Cron Conversion (optional)
+
+Need to feed a classic cron string into an existing scheduler? Install the add-on:
+
+```bash
+dotnet add package NaturalCron.CronConverter
+```
+
+```csharp
+using NaturalCron.CronConverter;
+
+var expr = NaturalCronExpr.Parse("every day at 18:00");
+string cron = expr.ToCronExpression();                          // "0 18 * * *"
+string quartz = expr.ToCronExpression(CronConverterOptions.ForQuartz());  // "0 0 18 * * ?"
+
+// Or straight from the builder:
+string cron2 = NaturalCronBuilder.Every(30).Minutes().ToCronExpression(); // "*/30 * * * *"
+```
+
+Built-in presets: `ForCrontab()`, `ForCronos()`, `ForQuartz()`. Some NaturalCron features (time-window ranges, timezones, yearly rules) have no cron equivalent — see the [converter docs](https://github.com/hugoj0s3/NaturalCron/blob/main/docs/cron-converter.md) for the full list.
+
 ## 📖 Documentation
 - [Expression Syntax](https://github.com/hugoj0s3/NaturalCron/blob/main/docs/expression-syntax.md) — Learn how to write human-readable recurrence rules.
 - [Fluent Builder Guide](https://github.com/hugoj0s3/NaturalCron/blob/main/docs/builder.md) — Build expressions easily with type safety and IntelliSense.
 - [API Reference](https://github.com/hugoj0s3/NaturalCron/blob/main/docs/api-reference.md) — Full API details and usage examples.
+- [Cron Converter](https://github.com/hugoj0s3/NaturalCron/blob/main/docs/cron-converter.md) — Convert to classic cron strings and what is not supported.
 
 ## 🔌 JobMaster Integration (Alpha)
 Looking for a complete job scheduling solution with NaturalCron support? Check out [**JobMaster**](https://github.com/hugoj0s3/jobmaster-net/) — a .NET job scheduling library that natively integrates with NaturalCron for human-readable scheduling.

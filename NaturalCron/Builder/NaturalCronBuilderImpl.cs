@@ -567,7 +567,7 @@ private static readonly Dictionary<NaturalCronDayOfWeek, string> WeekFullNames =
         return this.AnchoredAt(rawValue);
     }
     
-    public string ToRawExpression()
+    public string ToNaturalExpression()
     {
         var result = new StringBuilder();
 
@@ -581,7 +581,7 @@ private static readonly Dictionary<NaturalCronDayOfWeek, string> WeekFullNames =
             if (everyTimeUnit.HasValue)
             {
                 result.Append(' ').Append(everyTimeUnit.Value.ToString());
-                
+
                 if (everyValue.HasValue && everyValue.Value > 1)
                     result.Append('s');
             }
@@ -606,10 +606,14 @@ private static readonly Dictionary<NaturalCronDayOfWeek, string> WeekFullNames =
 
         return result.ToString();
     }
-    
+
+#pragma warning disable CS0618
+    public string ToRawExpression() => ToNaturalExpression();
+#pragma warning restore CS0618
+
     public NaturalCronExpr Build()
     {
-        var expr = this.ToRawExpression();
+        var expr = this.ToNaturalExpression();
         return NaturalCronExpr.Parse(expr);
     }
     

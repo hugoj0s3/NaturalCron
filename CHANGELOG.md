@@ -1,4 +1,12 @@
 # Changelog
+
+## [1.0.1]
+### Added
+- `ToNaturalExpression()` on `INaturalCronBuildSelector` — returns the natural language expression string (e.g. `"every day at 02:00"`). Replaces the misleadingly named `ToRawExpression()`.
+
+### Deprecated
+- `ToRawExpression()` marked `[Obsolete]` — the name implied a classic cron string to many users. Use `ToNaturalExpression()` instead.
+
 ## 1.0.0
 ### Changed
 - Stable release. No breaking changes from 0.2.2.

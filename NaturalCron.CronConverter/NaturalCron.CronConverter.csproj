@@ -1,35 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>12</LangVersion>
-        <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>
-        <PackageId>NaturalCron</PackageId>
-        <Version>1.0.1</Version>
+        <PackageId>NaturalCron.CronConverter</PackageId>
+        <Version>1.0.0</Version>
         <Authors>Hugo Silva</Authors>
         <Company>Hugo Silva</Company>
-        <Description> NaturalCron is a C# library for scheduling recurring events using easy-to-read, natural language–inspired expressions. It's like cron, but readable. Features include human-readable recurrence, filtering, time zone support, and more.</Description>
+        <Description>Converts NaturalCron natural language expressions to classic cron strings. Supports Unix cron, Cronos, Quartz.NET, and NCrontab via built-in presets.</Description>
         <PackageProjectUrl>https://github.com/hugoj0s3/NaturalCron</PackageProjectUrl>
         <RepositoryUrl>https://github.com/hugoj0s3/NaturalCron</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <Copyright>Copyright 2025 Hugo Silva</Copyright>
-        <PackageTags>recurrence;cron;schedule;scheduling;natural-language;dotnet;csharp;</PackageTags>
+        <PackageTags>cron;naturalcron;cron-converter;schedule;scheduling;quartz;cronos;ncrontab;dotnet;csharp</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IsPackable>true</IsPackable>
-        <PackageReadmeFile>NaturalCron.NuGet.README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="TimeZoneConverter" Version="7.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <None Include="NaturalCron.NuGet.README.md" Pack="true" PackagePath="" />
+        <PackageReference Include="NaturalCron" Version="1.0.1" />
     </ItemGroup>
 
 </Project>

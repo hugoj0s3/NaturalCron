@@ -9,7 +9,7 @@ NaturalCron is a **human-readable scheduling engine for .NET**. It lets you writ
 
 **Readable schedules reduce mistakes, write expressions that you can understand at a glance.**
 
-> **Note:** NaturalCron is **not a cron converter**. It’s a new expressive syntax for better readability.
+> **Note:** NaturalCron is **not a cron converter**. It is a self-contained scheduling engine with its own expressive syntax. If you need a classic cron string for an external system, the optional [`NaturalCron.CronConverter`](docs/cron-converter.md) package can translate expressions — but be aware that [some NaturalCron features have no cron equivalent](docs/cron-converter.md#what-is-not-supported).
 
 ## 💡 Why use NaturalCron?
 - **Readable syntax**: `every 30 minutes in [jan, jun] between 09:00 and 18:00`
@@ -85,6 +85,7 @@ dotnet add package NaturalCron
 - [Expression Syntax](docs/expression-syntax.md) — Learn how to write human-readable recurrence rules.
 - [Fluent Builder Guide](docs/builder.md) — Build expressions easily with type safety and IntelliSense.
 - [API Reference](docs/api-reference.md) — Full API details and usage examples.
+- [Cron Converter](docs/cron-converter.md) — Translate NaturalCron expressions to classic cron strings, and what is not supported.
 
 
 ## 🔌 JobMaster Integration (Alpha)
