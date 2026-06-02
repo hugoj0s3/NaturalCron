@@ -21,10 +21,15 @@
         <PackageTags>cron;naturalcron;cron-converter;schedule;scheduling;quartz;cronos;ncrontab;dotnet;csharp</PackageTags>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <IsPackable>true</IsPackable>
+        <PackageReadmeFile>NaturalCron.CronConverter.NuGet.README.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="NaturalCron" Version="1.0.1" />
+        <None Include="NaturalCron.CronConverter.NuGet.README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="NaturalCron" Version="1.0.1" />
     </ItemGroup>
 
 </Project>
