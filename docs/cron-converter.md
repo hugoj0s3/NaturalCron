@@ -18,15 +18,15 @@ using NaturalCron.CronConverter;
 
 // From a parsed expression
 var expr = NaturalCronExpr.Parse("every day at 18:00");
-string cron = expr.ToCron();              // "0 18 * * *"
+string cron = expr.ToCronExpression();              // "0 18 * * *"
 
 // From the fluent builder (requires NaturalCron.CronConverter)
 string cron2 = NaturalCronBuilder
     .Every(30).Minutes()
-    .ToCron();                            // "*/30 * * * *"
+    .ToCronExpression();                            // "*/30 * * * *"
 
 // Non-throwing variant
-CronConversionResult result = expr.TryToCron();
+CronConversionResult result = expr.TryToCronExpression();
 if (result.IsSuccess)
     Console.WriteLine(result.CronExpression);
 else
@@ -44,9 +44,9 @@ Use the built-in presets to get the right field format for each library:
 | `CronConverterOptions.ForQuartz()` | 6 (with seconds) | `1`–`7` or `MON`–`SUN` | Quartz.NET; enables W and # by default |
 
 ```csharp
-string quartzCron = expr.ToCron(CronConverterOptions.ForQuartz());
-string cronosCron = expr.ToCron(CronConverterOptions.ForCronos());
-string crontabCron = expr.ToCron(CronConverterOptions.ForCrontab());
+string quartzCron = expr.ToCronExpression(CronConverterOptions.ForQuartz());
+string cronosCron = expr.ToCronExpression(CronConverterOptions.ForCronos());
+string crontabCron = expr.ToCronExpression(CronConverterOptions.ForCrontab());
 ```
 
 ---
@@ -170,11 +170,11 @@ var options = new CronConverterOptions { NthWeekdaySupport = NthWeekdaySupport.N
 
 ## Error Handling
 
-By default the converter **throws** a `CronConversionException` when it encounters an unsupported feature. Use `TryToCron()` or set `NonConvertibleBehavior.Ignore` to suppress throwing:
+By default the converter **throws** a `CronConversionException` when it encounters an unsupported feature. Use `TryToCronExpression()` or set `NonConvertibleBehavior.Ignore` to suppress throwing:
 
 ```csharp
 // Option A — non-throwing
-var result = expr.TryToCron();
+var result = expr.TryToCronExpression();
 foreach (var error in result.Errors)
     Console.WriteLine(error);
 
@@ -183,7 +183,7 @@ var options = CronConverterOptions.ForCronos() with
 {
     NonConvertibleBehavior = NonConvertibleBehavior.Ignore
 };
-string partial = expr.ToCron(options);
+string partial = expr.ToCronExpression(options);
 ```
 
 When features are ignored the output is a best-effort partial conversion — verify it produces the schedule you expect.
