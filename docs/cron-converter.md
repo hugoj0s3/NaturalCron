@@ -33,20 +33,63 @@ else
     Console.WriteLine(string.Join(", ", result.Errors));
 ```
 
-## Target-Library Presets
+## Presets
 
-Use the built-in presets to get the right field format for each library:
-
-| Preset | Fields | DOW format | Notes |
-|--------|--------|------------|-------|
-| `CronConverterOptions.ForCrontab()` | 5 | `0`–`6` (Sun=0) | Standard Unix cron |
-| `CronConverterOptions.ForCronos()` | 5 | `0`–`6` (Sun=0) | Cronos .NET library; enables W and # by default |
-| `CronConverterOptions.ForQuartz()` | 6 (with seconds) | `1`–`7` or `MON`–`SUN` | Quartz.NET; enables W and # by default |
+`CronConverterOptions` ships with three ready-made presets that configure all the right field formats and extensions for each scheduler. You don't need to set individual options unless you want to customise beyond what the preset provides.
 
 ```csharp
-string quartzCron = expr.ToCronExpression(CronConverterOptions.ForQuartz());
-string cronosCron = expr.ToCronExpression(CronConverterOptions.ForCronos());
-string crontabCron = expr.ToCronExpression(CronConverterOptions.ForCrontab());
+// Standard Unix/Linux crontab — 5 fields, Sun=0…Sat=6
+expr.ToCronExpression(CronConverterOptions.ForCrontab());
+
+// Cronos .NET library — 5 fields, W and # extensions enabled by default
+expr.ToCronExpression(CronConverterOptions.ForCronos());
+
+// Quartz.NET — 6 fields (with seconds), W and # enabled, DOM/DOW mutual exclusion
+expr.ToCronExpression(CronConverterOptions.ForQuartz());
+```
+
+| Preset | Fields | DOW format | W / # support |
+|--------|--------|------------|---------------|
+| `ForCrontab()` | 5 | `0`–`6` (Sun=0) | ✗ |
+| `ForCronos()` | 5 | `0`–`6` (Sun=0) | ✓ (on by default) |
+| `ForQuartz()` | 6 (seconds) | `1`–`7` or `MON`–`SUN` | ✓ (on by default) |
+
+---
+
+## Options
+
+If a preset doesn't cover your exact setup you can build `CronConverterOptions` manually:
+
+```csharp
+var options = new CronConverterOptions
+{
+    SupportSeconds          = false,                              // true = 6-field cron (prepend seconds)
+    WeekFormat              = WeekFormat.ZeroToSix,               // ZeroToSix | OneToSeven | ThreeLetterName
+    MonthFormat             = MonthFormat.Number,                 // Number | ThreeLetterName
+    ClosestWeekdaySupport   = ClosestWeekdaySupport.NotSupported, // NotSupported | NearestWeekdayW
+    NthWeekdaySupport       = NthWeekdaySupport.NotSupported,     // NotSupported | NthHash
+    DomDowMutualExclusion   = false,                              // true = Quartz-style ? placeholder
+    NonConvertibleBehavior  = NonConvertibleBehavior.ThrowException // ThrowException | Omit
+};
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `SupportSeconds` | `false` | Prepend a seconds field (6-field output). Required for Quartz.NET. |
+| `WeekFormat` | `ZeroToSix` | How day-of-week values are rendered. `ZeroToSix` (Sun=0), `OneToSeven` (Mon=1), or `ThreeLetterName` (MON–SUN). |
+| `MonthFormat` | `Number` | Month values as numbers (`1`–`12`) or three-letter names (`JAN`–`DEC`). |
+| `ClosestWeekdaySupport` | `NotSupported` | Enables `W` notation for `ClosestWeekdayTo` expressions. Supported by Cronos and Quartz. |
+| `NthWeekdaySupport` | `NotSupported` | Enables `#` notation for Nth-weekday expressions (e.g. `1stMonday`). Supported by Cronos and Quartz. |
+| `DomDowMutualExclusion` | `false` | Quartz requires exactly one of DOM / DOW to be `?`. Enable this when targeting Quartz.NET. |
+| `NonConvertibleBehavior` | `ThrowException` | What to do when a feature cannot be converted. `ThrowException` raises a `CronConversionException`; `Omit` silently skips the unsupported part and records an error in `CronConversionResult.Errors`. |
+
+You can also start from a preset and override specific fields using a `with` expression:
+
+```csharp
+var options = CronConverterOptions.ForCronos() with
+{
+    NonConvertibleBehavior = NonConvertibleBehavior.Omit
+};
 ```
 
 ---
