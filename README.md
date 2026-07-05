@@ -2,6 +2,7 @@
 [![NuGet](https://img.shields.io/nuget/v/NaturalCron.svg)](https://www.nuget.org/packages/NaturalCron)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
+[![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-red?logo=github)](https://github.com/sponsors/hugoj0s3)
 
 NaturalCron is a **human-readable scheduling engine for .NET**. It lets you write schedules in a clear and intuitive way instead of memorizing cryptic cron strings.
 
