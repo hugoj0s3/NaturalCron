@@ -87,7 +87,8 @@ public class NaturalCronExpr
         var result = InternalTryGetLocalNextOccurrence(localBaseTime, localMaxLookahead);
 
         // 2. Convert to UTC
-        return !result.HasValue ? null : TimeZoneRule()?.ConvertToUtc(result.Value) ?? result.Value;
+        return !result.HasValue ? null : TimeZoneRule()?.ConvertToUtc(result.Value)
+            ?? DateTime.SpecifyKind(result.Value, DateTimeKind.Utc);
     }
 
     /// <summary>

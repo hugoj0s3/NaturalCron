@@ -24,6 +24,30 @@ public class NaturalCronNextOccurrenceInUtcTests
     }
 
     [Theory]
+    [InlineData("daily at 09:00", 9)]
+    [InlineData("daily at 09:00 tz UTC", 9)]
+    [InlineData("daily at 09:00 tz America/New_York", 14)]
+    public void UtcOccurrenceMethods_ReturnUtcKind(string expression, int expectedHour)
+    {
+        var schedule = NaturalCronExpr.Parse(expression);
+        var baseTime = new DateTime(2025, 1, 15, 0, 0, 0, DateTimeKind.Utc);
+        var first = new DateTime(2025, 1, 15, expectedHour, 0, 0, DateTimeKind.Utc);
+
+        var occurrences = new[]
+            {
+                schedule.TryGetNextOccurrenceInUtc(baseTime)!.Value,
+                schedule.GetNextOccurrenceInUtc(baseTime)
+            }
+            .Concat(schedule.TryGetNextOccurrencesInUtc(baseTime, 2))
+            .Concat(schedule.GetNextOccurrencesInUtc(baseTime, 2))
+            .ToList();
+
+        occurrences.Should().Equal(first, first, first, first.AddDays(1), first, first.AddDays(1));
+        occurrences.Should().OnlyContain(occurrence => occurrence.Kind == DateTimeKind.Utc);
+        occurrences.Select(occurrence => occurrence.ToUniversalTime()).Should().Equal(occurrences);
+    }
+
+    [Theory]
     [MemberData(nameof(LoadNextOccurrenceTestCases))]
     public void GetNextOccurrencesInUtc_ValidExpressions_Success(
         string description, 
@@ -53,6 +77,7 @@ public class NaturalCronNextOccurrenceInUtcTests
 
         nextOccurrences.Should().HaveCount(expectedDateTimeUtc.Count);
         nextOccurrences.Should().Equal(expectedDateTimeUtc);
+        nextOccurrences.Should().OnlyContain(occurrence => occurrence.Kind == DateTimeKind.Utc);
         
         stopwatch.Stop();
         testOutputHelper.WriteLine($"Elapsed time: {stopwatch.ElapsedMilliseconds} ms");
