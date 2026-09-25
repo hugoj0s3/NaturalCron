@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2]
+### Fixed
+- UTC occurrence methods (e.g. `GetNextOccurrenceInUtc()`) now always return `DateTime` values with `Kind = DateTimeKind.Utc`. Previously, expressions without a timezone rule returned `DateTimeKind.Unspecified`. Thanks to [@bensynapse](https://github.com/bensynapse) ([#8](https://github.com/hugoj0s3/NaturalCron/pull/8)).
+
+### Changed
+- `NaturalCron.CronConverter` 1.0.1 now depends on `NaturalCron` 1.0.2.
+
 ## [1.0.1]
 ### Added
 - `ToNaturalExpression()` on `INaturalCronBuildSelector` — returns the natural language expression string (e.g. `"every day at 02:00"`). Replaces the misleadingly named `ToRawExpression()`.

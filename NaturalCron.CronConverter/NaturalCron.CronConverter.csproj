@@ -9,7 +9,7 @@
 
     <PropertyGroup>
         <PackageId>NaturalCron.CronConverter</PackageId>
-        <Version>1.0.0</Version>
+        <Version>1.0.1</Version>
         <Authors>Hugo Silva</Authors>
         <Company>Hugo Silva</Company>
         <Description>Converts NaturalCron natural language expressions to classic cron strings. Supports Unix cron, Cronos, Quartz.NET, and NCrontab via built-in presets.</Description>
@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="NaturalCron" Version="1.0.1" />
+        <PackageReference Include="NaturalCron" Version="1.0.2" />
     </ItemGroup>
 
 </Project>
