@@ -822,6 +822,13 @@ public class NaturalCronExpr
                 minAdvanceUnit = NaturalCronTimeUnit.Day;
             }
 
+            // When the every rule ticks more often than the smallest rule unit (e.g. every hour on wednesday),
+            // advance by the every unit instead, otherwise the ticks in between would be skipped.
+            if (everyRule != null && everyRule.TimeUnit != NaturalCronTimeUnit.Week && everyRule.TimeUnit < minAdvanceUnit)
+            {
+                minAdvanceUnit = everyRule.TimeUnit;
+            }
+
             while (nextOccurrenceInTz <= baseTimeInTz)
             {
                 nextOccurrenceInTz = AdvanceNextOccurrence(nextOccurrenceInTz, minAdvanceUnit, 1);
@@ -829,20 +836,16 @@ public class NaturalCronExpr
         }
 
         // 4. Find the next actual match (with all rules)
-        (nextOccurrenceInTz, var hasMatch) = FindNextMatchOccurrence(nextOccurrenceInTz, maxLookaheadInTz);
+        (nextOccurrenceInTz, var hasMatch) = FindNextMatchOccurrence(nextOccurrenceInTz, maxLookaheadInTz, everyRule);
 
         // 5. Return UTC if match found
         return hasMatch ? nextOccurrenceInTz : (DateTime?)null;
     }
 
-    private (DateTime, bool) FindNextMatchOccurrence(DateTime nextOccurrenceInTz, DateTime maxLookaheadInTz)
-    {
-        return FindNextMatchOccurrence(nextOccurrenceInTz, maxLookaheadInTz, ScheduleRules.ToList());
-    }
-
     private (DateTime, bool) FindNextMatchOccurrence(DateTime nextOccurrenceInTz, DateTime maxLookaheadInTz,
-        IList<NaturalCronRule> rules)
+        NaturalCronEveryXRule? everyRule)
     {
+        var rules = ScheduleRules.ToList();
         bool hasMatch = false;
         while (nextOccurrenceInTz < maxLookaheadInTz && !hasMatch)
         {
@@ -853,10 +856,65 @@ public class NaturalCronExpr
             }
 
             var timeUnitToAdvance = GetTimeToAdvanceToNextOccurence(nextOccurrenceInTz);
-            nextOccurrenceInTz = AdvanceNextOccurrence(nextOccurrenceInTz, timeUnitToAdvance.Item2, timeUnitToAdvance.Item1);
+            var advanced = AdvanceNextOccurrence(nextOccurrenceInTz, timeUnitToAdvance.Item2, timeUnitToAdvance.Item1);
+            nextOccurrenceInTz = RestartEveryAtPeriodStart(advanced, timeUnitToAdvance.Item2, nextOccurrenceInTz, everyRule);
         }
 
         return (nextOccurrenceInTz, hasMatch);
+    }
+
+    private static readonly NaturalCronTimeUnit[] RestartableTimeUnits =
+    [
+        NaturalCronTimeUnit.Second,
+        NaturalCronTimeUnit.Minute,
+        NaturalCronTimeUnit.Hour,
+        NaturalCronTimeUnit.Day,
+        NaturalCronTimeUnit.Month
+    ];
+
+    /// <summary>
+    /// After jumping forward by <paramref name="advancedUnit"/> the every rule restarts at the beginning of the
+    /// period it landed in, otherwise the first occurrences of that period are skipped.
+    /// e.g. "every hour on wednesday" from Tuesday 10:30: the jump to Wednesday lands at 10:30, it must restart at 00:30.
+    /// The units from the every unit up to the advanced unit are reset; the units below the every unit are kept.
+    /// </summary>
+    private DateTime RestartEveryAtPeriodStart(DateTime advanced, NaturalCronTimeUnit advancedUnit, DateTime previous,
+        NaturalCronEveryXRule? everyRule)
+    {
+        // Weeks are not aligned with the other calendar units, so there is no period start to go back to.
+        if (everyRule == null || everyRule.TimeUnit == NaturalCronTimeUnit.Week || advanced >= DateTime.MaxValue)
+        {
+            return advanced;
+        }
+
+        if (advancedUnit == NaturalCronTimeUnit.Week)
+        {
+            advancedUnit = NaturalCronTimeUnit.Day;
+        }
+
+        var restarted = advanced;
+        foreach (var timeUnit in RestartableTimeUnits)
+        {
+            if (timeUnit >= everyRule.TimeUnit && timeUnit < advancedUnit)
+            {
+                restarted = DateTimeUtil.SetPartValue(timeUnit, restarted, ExpressionUtil.GetMinValueByTimeUnit(timeUnit));
+            }
+        }
+
+        if (restarted == advanced)
+        {
+            return advanced;
+        }
+
+        if (!string.IsNullOrEmpty(everyRule.AnchoredValue))
+        {
+            // Anchored values restart in every period, e.g. every 15 minutes anchored on 5: 05, 20, 35, 50.
+            var matchableRules = ScheduleRules.OfType<NaturalCronMatchableRule>().ToList();
+            restarted = everyRule.ApplyAnchoredValueIfPresent(restarted, restarted, matchableRules);
+        }
+
+        // Never go back to an already checked time.
+        return restarted > previous ? restarted : advanced;
     }
 
     // Top-level rules plus the rules wrapped by except and by mixed lists (any-of), without the wrappers themselves.
