@@ -42,6 +42,16 @@
   {
     "description": "2.1 Simple @every 3",
     "expression": "@every 3 seconds",
+    "baseTimeUtcStr": "2020-01-01 00:00:01",
+    "expectedDateTimeStrs": [
+      "2020-01-01 00:00:04",
+      "2020-01-01 00:00:07",
+      "2020-01-01 00:00:10"
+    ]
+  },
+  {
+    "description": "2.2 Simple @every 3",
+    "expression": "@every 3 seconds",
     "baseTimeUtcStr": "2020-01-01 00:00:00",
     "expectedDateTimeStrs": [
       "2020-01-01 00:00:03",
@@ -50,7 +60,7 @@
     ]
   },
   {
-    "description": "2.2 Simple @every 3",
+    "description": "2.3 Simple @every 3",
     "expression": "@every 3 minutes",
     "baseTimeUtcStr": "2020-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -60,7 +70,7 @@
     ]
   },
   {
-    "description": "2.3 Simple @every 3",
+    "description": "2.4 Simple @every 3",
     "expression": "@every 3 hours",
     "baseTimeUtcStr": "2020-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -70,7 +80,7 @@
     ]
   },
   {
-    "description": "2.4 Simple @every 3",
+    "description": "2.5 Simple @every 3",
     "expression": "@every 3 days",
     "baseTimeUtcStr": "2020-01-01 00:00:00",
     "expectedDateTimeStrs": [
@@ -1314,6 +1324,150 @@
     "expression": "@At [FirstDay + 2 3am, LastDay-2 10am]",
     "baseTimeUtcStr": "2020-01-01 00:00:00",
     "expectedDateTimeStrs": ["2020-01-03 03:00:00", "2020-01-29 10:00:00", "2020-02-03 03:00:00", "2020-02-27 10:00:00"]
+  },
+  {
+    "description": "38.1 @every smaller than the rule unit, base time not matching: restarts at the beginning of the day",
+    "expression": "@every hour @on wednesday",
+    "baseTimeUtcStr": "2024-12-24 10:30:00",
+    "expectedDateTimeStrs": ["2024-12-25 00:30:00", "2024-12-25 01:30:00"]
+  },
+  {
+    "description": "38.2 @every smaller than the rule unit, base time one second before the day",
+    "expression": "@every hour @on wednesday",
+    "baseTimeUtcStr": "2024-12-24 23:59:59",
+    "expectedDateTimeStrs": ["2024-12-25 00:59:59", "2024-12-25 01:59:59"]
+  },
+  {
+    "description": "38.3 @every minute with a week rule keeps the seconds of the base time",
+    "expression": "@every minute @on wednesday",
+    "baseTimeUtcStr": "2024-12-24 22:17:35",
+    "expectedDateTimeStrs": ["2024-12-25 00:00:35", "2024-12-25 00:01:35"]
+  },
+  {
+    "description": "38.4 @every second with a week rule",
+    "expression": "@every second @on wednesday",
+    "baseTimeUtcStr": "2024-12-24 22:17:35",
+    "expectedDateTimeStrs": ["2024-12-25 00:00:00", "2024-12-25 00:00:01"]
+  },
+  {
+    "description": "38.5 @every second with an hour rule, base time before the hour",
+    "expression": "@every second @at 9am",
+    "baseTimeUtcStr": "2024-12-23 08:59:57",
+    "expectedDateTimeStrs": ["2024-12-23 09:00:00", "2024-12-23 09:00:01"]
+  },
+  {
+    "description": "38.6 @every second with an hour rule, base time after the hour",
+    "expression": "@every second @at 9am",
+    "baseTimeUtcStr": "2024-12-23 10:59:38",
+    "expectedDateTimeStrs": ["2024-12-24 09:00:00", "2024-12-24 09:00:01"]
+  },
+  {
+    "description": "38.7 @every minute with an hour rule keeps the seconds of the base time",
+    "expression": "@every minute @at 9am",
+    "baseTimeUtcStr": "2024-12-23 08:20:45",
+    "expectedDateTimeStrs": ["2024-12-23 09:00:45", "2024-12-23 09:01:45"]
+  },
+  {
+    "description": "38.8 @every second with @between hours",
+    "expression": "@every second @between 1am and 10am",
+    "baseTimeUtcStr": "2024-12-24 23:59:57",
+    "expectedDateTimeStrs": ["2024-12-25 01:00:00", "2024-12-25 01:00:01"]
+  },
+  {
+    "description": "38.9 @every minute with week and hour rules",
+    "expression": "@every minute @on wednesday @at 9am",
+    "baseTimeUtcStr": "2024-12-25 08:30:15",
+    "expectedDateTimeStrs": ["2024-12-25 09:00:15", "2024-12-25 09:01:15"]
+  },
+  {
+    "description": "38.10 @every hour with a day rule",
+    "expression": "@every hour @on 25th",
+    "baseTimeUtcStr": "2024-12-23 10:30:00",
+    "expectedDateTimeStrs": ["2024-12-25 00:30:00", "2024-12-25 01:30:00"]
+  },
+  {
+    "description": "38.11 @every X restarts at the beginning of the matching period: 5 minutes",
+    "expression": "@every 5 minutes @on wednesday",
+    "baseTimeUtcStr": "2024-12-24 22:17:35",
+    "expectedDateTimeStrs": ["2024-12-25 00:00:35", "2024-12-25 00:05:35"]
+  },
+  {
+    "description": "38.12 @every X restarts at the beginning of the matching period: 2 hours",
+    "expression": "@every 2 hours @on wednesday",
+    "baseTimeUtcStr": "2024-12-24 21:30:00",
+    "expectedDateTimeStrs": ["2024-12-25 00:30:00", "2024-12-25 02:30:00"]
+  },
+  {
+    "description": "38.13 @every X restarts at the beginning of the matching period: 7 hours",
+    "expression": "@every 7 hours @on 25th",
+    "baseTimeUtcStr": "2024-12-26 05:10:03",
+    "expectedDateTimeStrs": ["2025-01-25 00:10:03", "2025-01-25 07:10:03"]
+  },
+  {
+    "description": "38.14 @every X restarts at the beginning of the matching period: 3 days",
+    "expression": "@every 3 days @in january",
+    "baseTimeUtcStr": "2024-12-25 00:00:27",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:27", "2025-01-04 00:00:27"]
+  },
+  {
+    "description": "38.15 @every day with a month rule",
+    "expression": "@every day @in january",
+    "baseTimeUtcStr": "2024-12-23 10:30:00",
+    "expectedDateTimeStrs": ["2025-01-01 10:30:00", "2025-01-02 10:30:00"]
+  },
+  {
+    "description": "38.16 @every X with @between, base time just before the range",
+    "expression": "@every 25 minutes @between hour 10 and 12",
+    "baseTimeUtcStr": "2020-01-01 09:50:00",
+    "expectedDateTimeStrs": ["2020-01-01 10:00:00", "2020-01-01 10:25:00"]
+  },
+  {
+    "description": "38.17 Anchored value is kept when restarting, base time not matching",
+    "expression": "@every 15 minutes AnchoredOn 5 @on wednesday",
+    "baseTimeUtcStr": "2024-12-24 22:17:35",
+    "expectedDateTimeStrs": ["2024-12-25 00:05:35", "2024-12-25 00:20:35"]
+  },
+  {
+    "description": "38.18 Anchored value is kept when restarting, leaving the matching day",
+    "expression": "@every 15 minutes AnchoredOn 5 @on wednesday",
+    "baseTimeUtcStr": "2024-12-25 23:50:35",
+    "expectedDateTimeStrs": ["2025-01-01 00:05:35", "2025-01-01 00:20:35"]
+  },
+  {
+    "description": "38.19 Anchored value is kept when restarting: hours",
+    "expression": "@every 6 hours AnchoredOn 3 @on 25th",
+    "baseTimeUtcStr": "2024-12-23 10:30:00",
+    "expectedDateTimeStrs": ["2024-12-25 03:30:00", "2024-12-25 09:30:00"]
+  },
+  {
+    "description": "38.20 Unchanged: base time at the beginning of the matching day",
+    "expression": "@every hour @on wednesday",
+    "baseTimeUtcStr": "2024-12-25 00:00:00",
+    "expectedDateTimeStrs": ["2024-12-25 01:00:00", "2024-12-25 02:00:00"]
+  },
+  {
+    "description": "38.21 Unchanged: base time inside the matching hour",
+    "expression": "@every second @at 9am",
+    "baseTimeUtcStr": "2024-12-23 09:59:58",
+    "expectedDateTimeStrs": ["2024-12-23 09:59:59", "2024-12-24 09:00:00"]
+  },
+  {
+    "description": "38.22 Unchanged: @every day with smaller rule units",
+    "expression": "@every day @at 09:00",
+    "baseTimeUtcStr": "2024-12-23 10:30:00",
+    "expectedDateTimeStrs": ["2024-12-24 09:00:00", "2024-12-25 09:00:00"]
+  },
+  {
+    "description": "38.23 Unchanged: @every week keeps the time of the base time",
+    "expression": "@every week @on wednesday",
+    "baseTimeUtcStr": "2024-12-24 10:30:00",
+    "expectedDateTimeStrs": ["2024-12-25 10:30:00", "2025-01-01 10:30:00"]
+  },
+  {
+    "description": "38.24 Unchanged: @every month keeps the time of the base time",
+    "expression": "@every month @on 15th",
+    "baseTimeUtcStr": "2024-12-23 10:30:00",
+    "expectedDateTimeStrs": ["2025-01-15 10:30:00", "2025-02-15 10:30:00"]
   },
   {
     "description": "99.1 AI generated: Every 2 hours starting at noon",
