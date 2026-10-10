@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+### Added
+- Custom keywords: user-defined rules usable in expressions, e.g. `every day on holiday at 09:00`, `every day on [holiday, payday] at 09:00`.
+  - Configured once via `NaturalCronCustomKeywords.Configure(cfg => ...)` with a match function, an `INaturalCronCustomRule` class (parameterless constructor), or a factory (e.g. to resolve the rule from IoC).
+  - Rules receive the wall-clock time and the effective `TimeZoneInfo` (the expression's `tz` if present, otherwise the zone of the method called).
+  - A bracket list can mix custom keywords and built-in values and matches when any entry matches, e.g. `every day on [holiday, 15th] at 09:00`, `every day at 09:00 except [holiday, friday]`.
+- `except` rule: accepts the same values as `on`/`at`/`in` (including custom keywords) and skips matching occurrences while keeping the schedule cadence, e.g. `every day at 09:00 except [saturday, sunday]`, `every hour except [12:00, 13:00]`, `every day at 09:00 except holiday`.
+- `NaturalCronCustomKeywordRule`, `NaturalCronAnyOfRule`, `NaturalCronExceptRule`, `NaturalCronRuleSpec.Custom` and `NaturalCronRuleSpec.Except`.
+
+### Changed
+- `NaturalCron.CronConverter` treats custom keyword, mixed-list and `except` rules as not supported: `Convert` throws `CronConversionException` (default), `TryConvert` returns the error, and `Omit` mode drops the rule.
+
 ## [1.0.2]
 ### Fixed
 - UTC occurrence methods (e.g. `GetNextOccurrenceInUtc()`) now always return `DateTime` values with `Kind = DateTimeKind.Utc`. Previously, expressions without a timezone rule returned `DateTimeKind.Unspecified`. Thanks to [@bensynapse](https://github.com/bensynapse) ([#8](https://github.com/hugoj0s3/NaturalCron/pull/8)).

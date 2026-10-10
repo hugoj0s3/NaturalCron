@@ -16,6 +16,7 @@ var compiledExpr = NaturalCronExpr.Parse("daily at 14:30");
 - [Timezone Behavior](#timezone-behavior)
 - [Usage Examples](#usage-examples)
 - [Rule Filter Methods](#rule-filter-methods)
+- [Custom Keywords](#custom-keywords)
 
 
 ## Parse Methods
@@ -406,5 +407,80 @@ Returns all rules that operate on years.
 public NaturalCronIanaTimeZoneRule? TimeZoneRule()
 ```
 Returns the timezone rule if one is defined in the expression, otherwise null.
+
+## Custom Keywords
+Custom keywords let expressions reference your own rules, e.g. `every day at 09:00 except holiday`.
+See [Custom Keywords in the Expression Syntax](expression-syntax.md#custom-keywords) for the syntax.
+
+### Configure()
+```csharp
+public static void NaturalCronCustomKeywords.Configure(Action<NaturalCronCustomKeywordsBuilder> configure)
+```
+Configures all custom keywords at once, typically at application startup and **before** any expression using them is parsed.
+- It can only be called **once**; a second call throws `InvalidOperationException`. There is no unregister.
+- All keywords are validated together (format, duplicates, collisions with built-in words). If any is invalid an
+  `ArgumentException` lists the problems and nothing is applied.
+
+```csharp
+NaturalCronCustomKeywords.Configure(cfg =>
+{
+    // Inline function on the wall-clock time. Time unit defaults to Day.
+    cfg.Add("payday", dt => dt.Day == 15);
+
+    // Inline function that also needs the time zone.
+    cfg.Add("payday2", (dt, tz) => dt.Day == 15);
+
+    // Class implementing INaturalCronCustomRule, created with its parameterless constructor.
+    cfg.Add<MaintenanceWindowRule>("maintenanceWindow");
+
+    // Factory, e.g. to resolve the rule from your IoC container.
+    cfg.Add("holiday", () => serviceProvider.GetRequiredService<HolidayRule>());
+});
+```
+
+### INaturalCronCustomRule
+```csharp
+public interface INaturalCronCustomRule
+{
+    NaturalCronTimeUnit TimeUnit { get; }
+    bool Match(DateTime dateTimeInTz, TimeZoneInfo timeZone);
+}
+```
+- `TimeUnit` is the rule granularity (e.g. `Day` for holidays, `Hour` for an hourly window). It controls how far the engine
+  safely advances when the rule doesn't match. `TimeZone` is not allowed.
+- `Match` receives the wall-clock time (`Kind = Unspecified`) and the time zone it is in:
+
+  | Method | Expression without `tz` | Expression with `tz X` |
+  |---|---|---|
+  | `GetNextOccurrence(local)` | `TimeZoneInfo.Local` (`TimeZoneInfo.Utc` if `Kind == Utc`) | X |
+  | `GetNextOccurrenceInUtc(utc)` | `TimeZoneInfo.Utc` | X |
+  | `GetNextOccurrenceInTz(dt, id)` | `id` | X (the expression's tz always wins) |
+
+- A rule instance is created **once per parsed expression** (at parse time) and reused for all its matches.
+  A factory must work wherever expressions are parsed (including Quartz triggers).
+
+> ⚠️ **Performance:** `Match` is called on every step of the occurrence search, potentially many times per
+> `GetNextOccurrence` call. Keep it fast and non-blocking: load or cache your data up front (e.g. a `HashSet` of holiday
+> dates refreshed periodically, or an injected singleton cache) instead of querying a database or HTTP endpoint inside `Match`.
+
+```csharp
+public class HolidayRule : INaturalCronCustomRule
+{
+    private readonly IHolidayCache cache; // e.g. a singleton holding a HashSet<DateTime> refreshed periodically
+
+    public HolidayRule(IHolidayCache cache) => this.cache = cache;
+
+    public NaturalCronTimeUnit TimeUnit => NaturalCronTimeUnit.Day;
+
+    public bool Match(DateTime dateTimeInTz, TimeZoneInfo timeZone) => cache.IsHoliday(dateTimeInTz.Date);
+}
+```
+
+### NaturalCronCustomKeywordRule, NaturalCronAnyOfRule and NaturalCronExceptRule
+Parsed custom keyword rules appear in `Rules` as `NaturalCronCustomKeywordRule` (`Spec == NaturalCronRuleSpec.Custom`),
+exposing `Keywords`. A list mixing keywords and built-in values (`on [holiday, 15th]`) appears as `NaturalCronAnyOfRule`
+(`Spec == NaturalCronRuleSpec.AtInOn`), whose `Rules` holds the keyword rule and the built-in rule.
+Exclusions (`except`) appear as `NaturalCronExceptRule` (`Spec == NaturalCronRuleSpec.Except`),
+whose `Rules` holds the excluded rules, e.g. a `NaturalCronCustomKeywordRule` or `NaturalCronAtInOnRule`.
 
 ✅ [Back to Main README](../README.md)

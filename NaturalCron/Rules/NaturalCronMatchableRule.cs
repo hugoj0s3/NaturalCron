@@ -18,7 +18,6 @@ public abstract class NaturalCronMatchableRule : NaturalCronRule
             return lastMatchCallResult.Value;
         }
         
-        
         lastMatchCallResult = DoMatch(dateTime);
         lastMatchCall = dateTime;
 
@@ -39,6 +38,13 @@ public abstract class NaturalCronMatchableRule : NaturalCronRule
         return (lastTimeToAdvanceToNextOccurence.Value, lastTimeUnitToAdvanceToNextOccurence.Value);
     }
     
+    internal void ResetCache()
+    {
+        lastMatchCall = null;
+        lastMatchCallResult = null;
+        lastGetTimeToAdvanceToNextOccurenceCall = null;
+    }
+
     protected abstract bool DoMatch(DateTime dateTime);
     protected virtual (int timeToAdvance, NaturalCronTimeUnit timeUnit) DoGetTimeToAdvanceToNextOccurence(DateTime dateTime)
     {

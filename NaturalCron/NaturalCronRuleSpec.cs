@@ -6,4 +6,6 @@ public enum NaturalCronRuleSpec
     Between,
     AtInOn,
     TimeZone,
+    Except,
+    Custom = 999,
 }

@@ -10,7 +10,8 @@ internal static class KeywordsConstants
         "@AT", "@ON", "@IN", 
         "@EVERY", "@YEARLY", "@MONTHLY", "@WEEKLY", "@DAILY", "@HOURLY", "@MINUTELY", "@SECONDLY", 
         "@BETWEEN", "@UPTO", "@FROM",
-        "@TimeZone", "@TZ"
+        "@TimeZone", "@TZ",
+        "@EXCEPT"
     };
     
     internal static readonly string[] RuleSpec = RuleSpecWithAmpersat

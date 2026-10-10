@@ -10,6 +10,17 @@ internal class AtInOnParseRuleSpecStrategy : ParseRuleSpecStrategy
     public override (IList<NaturalCronRule> rules, IList<string> errors) Parse(GroupedRuleSpec groupedRuleSpec)
     {
         var tokens = TokenParserUtil.TrimWhitespaceAndIgnoredTokens(groupedRuleSpec.Tokens);
+        return ParseValues(tokens);
+    }
+
+    // Parses the values after the rule spec token (on/at/in/except).
+    internal static (IList<NaturalCronRule> rules, IList<string> errors) ParseValues(IList<NaturalCronToken> tokens)
+    {
+        if (CustomKeywordParseHelper.ContainsCustomKeyword(tokens))
+        {
+            return CustomKeywordParseHelper.Parse(tokens);
+        }
+
         if (tokens.Any(x => x.Type == NaturalCronTokenType.OpenBrackets))
         {
             return ParseMultiplesAtInOn(tokens);
@@ -47,7 +58,7 @@ internal class AtInOnParseRuleSpecStrategy : ParseRuleSpecStrategy
         return (atInOnRules, errors);
     }
 
-    private static (IList<NaturalCronRule> rules, IList<string> errors) ParseMultiplesAtInOn(IList<NaturalCronToken> tokens)
+    internal static (IList<NaturalCronRule> rules, IList<string> errors) ParseMultiplesAtInOn(IList<NaturalCronToken> tokens)
     {
         var atInOnMultipleValues = new Dictionary<NaturalCronTimeUnitAndUnknown, List<string>>();
 

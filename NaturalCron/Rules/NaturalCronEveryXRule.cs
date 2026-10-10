@@ -123,6 +123,13 @@ public class NaturalCronEveryXRule : NaturalCronRule
     {
         foreach (var matchableRule in rules)
         {
+            // Filter-only rules (except, custom keywords, mixed lists) have no target value to reset to.
+            if (matchableRule is NaturalCronExceptRule || matchableRule is NaturalCronCustomKeywordRule ||
+                matchableRule is NaturalCronAnyOfRule)
+            {
+                continue;
+            }
+
             if (matchableRule.TimeUnit == timeUnit)
             {
                 return true;

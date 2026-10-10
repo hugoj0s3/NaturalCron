@@ -8,6 +8,8 @@ public class NaturalCronIanaTimeZoneRule : NaturalCronRule
 
     public string IanaId { get; internal set; } = string.Empty;
 
+    internal TimeZoneInfo TimeZoneInfo => TZConvert.GetTimeZoneInfo(IanaId);
+
     public DateTime ConvertFromUtc(DateTime utcDateTime)
     {
         return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, TZConvert.GetTimeZoneInfo(IanaId));
