@@ -36,8 +36,8 @@ public class NaturalCronCustomKeywordTests : IDisposable
     {
         NaturalCronCustomKeywords.Configure(cfg =>
         {
-            cfg.Add("holiday", (dt, _) => Holidays.Contains(dt.Date));
-            cfg.Add("payday2", (dt, _) => dt.Day == 15);
+            cfg.AddMatchable("holiday", (dt, _) => Holidays.Contains(dt.Date));
+            cfg.AddMatchable("payday2", (dt, _) => dt.Day == 15);
             extra?.Invoke(cfg);
         });
     }
@@ -63,8 +63,8 @@ public class NaturalCronCustomKeywordTests : IDisposable
     {
         var act = () => NaturalCronCustomKeywords.Configure(cfg =>
         {
-            cfg.Add("holiday", (_, _) => true);
-            cfg.Add(keyword, (_, _) => true);
+            cfg.AddMatchable("holiday", (_, _) => true);
+            cfg.AddMatchable(keyword, (_, _) => true);
         });
 
         act.Should().Throw<ArgumentException>();
@@ -77,8 +77,8 @@ public class NaturalCronCustomKeywordTests : IDisposable
     {
         var act = () => NaturalCronCustomKeywords.Configure(cfg =>
         {
-            cfg.Add("holiday", (_, _) => true);
-            cfg.Add("HOLIDAY", (_, _) => true);
+            cfg.AddMatchable("holiday", (_, _) => true);
+            cfg.AddMatchable("HOLIDAY", (_, _) => true);
         });
 
         act.Should().Throw<ArgumentException>().WithMessage("*more than once*");
@@ -89,7 +89,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     {
         ConfigureDefaults();
 
-        var act = () => NaturalCronCustomKeywords.Configure(cfg => cfg.Add("other", (_, _) => true));
+        var act = () => NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("other", (_, _) => true));
 
         act.Should().Throw<InvalidOperationException>();
         NaturalCronCustomKeywords.IsConfigured.Should().BeTrue();
@@ -163,7 +163,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     [Fact]
     public void Except_BracketList_SkipsAllKeywords()
     {
-        ConfigureDefaults(cfg => cfg.Add("weekend", (dt, _) => dt.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday));
+        ConfigureDefaults(cfg => cfg.AddMatchable("weekend", (dt, _) => dt.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday));
 
         var occurrences = NaturalCronExpr.Parse("every day at 09:00 except [holiday, weekend]")
             .GetNextOccurrencesInUtc(Utc(2024, 12, 23), 4);
@@ -188,7 +188,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     public void On_HourGranularRule_AdvancesWithinTheDay()
     {
         NaturalCronCustomKeywords.Configure(cfg =>
-            cfg.Add("window", (dt, _) => dt.Hour == 14, NaturalCronTimeUnit.Hour));
+            cfg.AddMatchable("window", (dt, _) => dt.Hour == 14, NaturalCronTimeUnit.Hour));
 
         var occurrences = NaturalCronExpr.Parse("every 30 minutes on window")
             .GetNextOccurrencesInUtc(Utc(2025, 1, 15), 3);
@@ -199,9 +199,9 @@ public class NaturalCronCustomKeywordTests : IDisposable
     // ── Rule instances ────────────────────────────────────────────────────────
 
     [Fact]
-    public void AddTRule_UsesParameterlessConstructor()
+    public void AddMatchableOfT_UsesParameterlessConstructor()
     {
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add<FifteenthRule>("fifteenth"));
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable<FifteenthRule>("fifteenth"));
 
         var next = NaturalCronExpr.Parse("every day on fifteenth at 09:00").GetNextOccurrenceInUtc(Utc(2025, 1, 1));
 
@@ -212,7 +212,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     public void AddFactory_FactoryInvokedOncePerParse()
     {
         var calls = 0;
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("fifteenth", () =>
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("fifteenth", () =>
         {
             calls++;
             return new FifteenthRule();
@@ -228,17 +228,144 @@ public class NaturalCronCustomKeywordTests : IDisposable
     [Fact]
     public void AddMatchWithoutTimeZone_MatchesWallClock()
     {
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("fifteenth", dt => dt.Day == 15));
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("fifteenth", dt => dt.Day == 15));
 
         var next = NaturalCronExpr.Parse("every day on fifteenth at 09:00").GetNextOccurrenceInUtc(Utc(2025, 1, 1));
 
         next.Should().Be(Utc(2025, 1, 15, 9));
     }
 
+    // ── Several keywords for the same implementation ──────────────────────────
+
+    [Theory]
+    [InlineData("every day on holiday at 09:00")]
+    [InlineData("every day on holidays at 09:00")]
+    [InlineData("every day on HOLIDAYS at 09:00")]
+    [InlineData("every day on [holiday, holidays] at 09:00")]
+    public void AddMatchable_SeveralKeywords_AllUseTheSameMatch(string expression)
+    {
+        NaturalCronCustomKeywords.Configure(cfg =>
+            cfg.AddMatchable(["holiday", "holidays"], dt => Holidays.Contains(dt.Date)));
+
+        var occurrences = NaturalCronExpr.Parse(expression).GetNextOccurrencesInUtc(Utc(2024, 12, 20), 2);
+
+        occurrences.Should().Equal(Utc(2024, 12, 25, 9), Utc(2025, 1, 1, 9));
+    }
+
+    [Theory]
+    [InlineData("every day at 09:00 except holiday")]
+    [InlineData("every day at 09:00 except holidays")]
+    [InlineData("every day at 09:00 except [holiday, holidays]")]
+    public void AddMatchable_SeveralKeywords_ExceptWorksWithEitherKeyword(string expression)
+    {
+        NaturalCronCustomKeywords.Configure(cfg =>
+            cfg.AddMatchable(["holiday", "holidays"], dt => Holidays.Contains(dt.Date)));
+
+        var occurrences = NaturalCronExpr.Parse(expression).GetNextOccurrencesInUtc(Utc(2024, 12, 24, 10), 2);
+
+        // 2024-12-25 is a holiday.
+        occurrences.Should().Equal(Utc(2024, 12, 26, 9), Utc(2024, 12, 27, 9));
+    }
+
+    [Theory]
+    [InlineData("every day on [holiday, 20th] at 09:00")]
+    [InlineData("every day on [holidays, 20th] at 09:00")]
+    public void AddMatchable_SeveralKeywords_MixedListWorksWithEitherKeyword(string expression)
+    {
+        NaturalCronCustomKeywords.Configure(cfg =>
+            cfg.AddMatchable(["holiday", "holidays"], dt => Holidays.Contains(dt.Date)));
+
+        var occurrences = NaturalCronExpr.Parse(expression).GetNextOccurrencesInUtc(Utc(2024, 12, 10), 3);
+
+        occurrences.Should().Equal(Utc(2024, 12, 20, 9), Utc(2024, 12, 25, 9), Utc(2025, 1, 1, 9));
+    }
+
+    [Theory]
+    [InlineData("holiday")]
+    [InlineData("holidays")]
+    public void AddMatchable_SeveralKeywords_EachKeywordReceivesTheExpressionZone(string keyword)
+    {
+        TimeZoneInfo? received = null;
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable(["holiday", "holidays"], (dt, tz) =>
+        {
+            received = tz;
+            return Holidays.Contains(dt.Date);
+        }));
+
+        var next = NaturalCronExpr.Parse($"every day on {keyword} at 09:00 tz Asia/Tokyo").GetNextOccurrenceInUtc(Utc(2024, 12, 30));
+
+        // 2025-01-01 09:00 in Tokyo is 2025-01-01 00:00 UTC.
+        next.Should().Be(Utc(2025, 1, 1, 0));
+        received!.Id.Should().Be(TZConvert.GetTimeZoneInfo("Asia/Tokyo").Id);
+    }
+
+    [Fact]
+    public void AddMatchable_SeveralKeywords_FactoryInvokedOncePerKeywordUsed()
+    {
+        var calls = 0;
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable(new[] { "fifteenth", "midmonth" }, () =>
+        {
+            calls++;
+            return new FifteenthRule();
+        }));
+
+        NaturalCronExpr.Parse("every day on fifteenth at 09:00");
+        calls.Should().Be(1);
+
+        NaturalCronExpr.Parse("every day on [fifteenth, midmonth] at 09:00");
+        calls.Should().Be(3);
+    }
+
+    [Fact]
+    public void AddMatchable_SeveralKeywords_WorksForEveryOverload()
+    {
+        NaturalCronCustomKeywords.Configure(cfg => cfg
+            .AddMatchable<FifteenthRule>(new[] { "fifteenth", "midmonth" })
+            .AddMatchable(new List<string> { "payday", "paydays" }, () => new FifteenthRule())
+            .AddMatchable(["window", "windows"], (dt, _) => dt.Hour == 14, NaturalCronTimeUnit.Hour));
+
+        foreach (var keyword in new[] { "fifteenth", "midmonth", "payday", "paydays" })
+        {
+            NaturalCronExpr.Parse($"every day on {keyword} at 09:00").GetNextOccurrenceInUtc(Utc(2025, 1, 1))
+                .Should().Be(Utc(2025, 1, 15, 9));
+        }
+
+        foreach (var keyword in new[] { "window", "windows" })
+        {
+            NaturalCronExpr.Parse($"every 30 minutes on {keyword}").GetNextOccurrenceInUtc(Utc(2025, 1, 15))
+                .Should().Be(Utc(2025, 1, 15, 14));
+        }
+    }
+
+    [Fact]
+    public void AddMatchable_SeveralKeywords_EmptyOrNullList_Throws()
+    {
+        var empty = () => NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable(Array.Empty<string>(), _ => true));
+        var nullList = () => NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable((IEnumerable<string>)null!, _ => true));
+
+        empty.Should().Throw<ArgumentException>().WithMessage("*At least one keyword*");
+        nullList.Should().Throw<ArgumentNullException>();
+        NaturalCronCustomKeywords.IsConfigured.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("holiday", "holiday")]
+    [InlineData("holiday", "HOLIDAY")]
+    [InlineData("holiday", "mon")]
+    [InlineData("holiday", "holi-day")]
+    public void AddMatchable_SeveralKeywords_DuplicateOrInvalidKeyword_ThrowsAndAppliesNothing(string first, string second)
+    {
+        var act = () => NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable(new[] { first, second }, _ => true));
+
+        act.Should().Throw<ArgumentException>();
+        NaturalCronCustomKeywords.IsConfigured.Should().BeFalse();
+        NaturalCronExpr.TryParse("every day on holiday at 09:00").errors.Should().NotBeEmpty();
+    }
+
     [Fact]
     public void AddFactory_TimeZoneTimeUnit_ReturnsParseError()
     {
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("broken", () => new BrokenTimeUnitRule()));
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("broken", () => new BrokenTimeUnitRule()));
 
         var (expr, errors) = NaturalCronExpr.TryParse("every day on broken at 09:00");
 
@@ -252,7 +379,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     public void InUtc_WithTzRule_RuleReceivesWallClockAndZoneOfTheExpression()
     {
         var received = new List<(DateTime dateTime, TimeZoneInfo timeZone)>();
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("holiday", (dt, tz) =>
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("holiday", (dt, tz) =>
         {
             received.Add((dt, tz));
             return Holidays.Contains(dt.Date);
@@ -271,7 +398,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     public void InUtc_WithoutTzRule_RuleReceivesUtc()
     {
         TimeZoneInfo? received = null;
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("holiday", (dt, tz) =>
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("holiday", (dt, tz) =>
         {
             received = tz;
             return Holidays.Contains(dt.Date);
@@ -286,7 +413,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     public void InTz_WithoutTzRule_RuleReceivesProvidedZone()
     {
         TimeZoneInfo? received = null;
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("holiday", (dt, tz) =>
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("holiday", (dt, tz) =>
         {
             received = tz;
             return Holidays.Contains(dt.Date);
@@ -303,7 +430,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     public void Local_WithoutTzRule_RuleReceivesLocalZone()
     {
         TimeZoneInfo? received = null;
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("holiday", (dt, tz) =>
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("holiday", (dt, tz) =>
         {
             received = tz;
             return Holidays.Contains(dt.Date);
@@ -319,7 +446,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     public void SameExpression_DifferentZones_DoesNotReuseCachedMatch()
     {
         // Matches only when evaluated in UTC, to detect a stale cached result across zones.
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("utconly", (_, tz) => tz.Equals(TimeZoneInfo.Utc)));
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("utconly", (_, tz) => tz.Equals(TimeZoneInfo.Utc)));
         var expr = NaturalCronExpr.Parse("every day on utconly at 09:00");
 
         expr.TryGetNextOccurrenceInUtc(Utc(2025, 1, 1)).Should().Be(Utc(2025, 1, 1, 9));
@@ -331,7 +458,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     public void SameExpression_DifferentZones_ExceptDoesNotReuseCachedMatch()
     {
         // Matches only when evaluated in UTC, to detect a stale cached result across zones.
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("utconly", (_, tz) => tz.Equals(TimeZoneInfo.Utc)));
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("utconly", (_, tz) => tz.Equals(TimeZoneInfo.Utc)));
         var expr = NaturalCronExpr.Parse("every day at 09:00 except utconly");
 
         // In UTC every occurrence is excluded, the last one checked is 2025-01-01 09:00.
@@ -393,7 +520,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     public void On_MixedList_RuleReceivesExpressionZone()
     {
         TimeZoneInfo? received = null;
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("holiday", (dt, tz) =>
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("holiday", (dt, tz) =>
         {
             received = tz;
             return Holidays.Contains(dt.Date);
@@ -418,7 +545,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     [Fact]
     public void Add_UndefinedTimeUnit_ReturnsParseError()
     {
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("broken", _ => true, (NaturalCronTimeUnit)42));
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("broken", _ => true, (NaturalCronTimeUnit)42));
 
         var (expr, errors) = NaturalCronExpr.TryParse("every day on broken at 09:00");
 
@@ -429,7 +556,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
     [Fact]
     public void Except_EverythingExcludedWithoutLookahead_ReturnsNullAtEndOfCalendar()
     {
-        NaturalCronCustomKeywords.Configure(cfg => cfg.Add("always", _ => true));
+        NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable("always", _ => true));
         var nearEnd = DateTime.SpecifyKind(DateTime.MaxValue.AddDays(-3), DateTimeKind.Utc);
 
         NaturalCronExpr.Parse("every day at 09:00 except always").TryGetNextOccurrenceInUtc(nearEnd).Should().BeNull();
@@ -476,13 +603,13 @@ public class NaturalCronCustomKeywordTests : IDisposable
         errors.Should().Contain(x => x.Contains("Invalid token"));
     }
 
-    private sealed class FifteenthRule : INaturalCronCustomRule
+    private sealed class FifteenthRule : INaturalCronMatchableCustomKeyword
     {
         public NaturalCronTimeUnit TimeUnit => NaturalCronTimeUnit.Day;
         public bool Match(DateTime dateTimeInTz, TimeZoneInfo timeZone) => dateTimeInTz.Day == 15;
     }
 
-    private sealed class BrokenTimeUnitRule : INaturalCronCustomRule
+    private sealed class BrokenTimeUnitRule : INaturalCronMatchableCustomKeyword
     {
         public NaturalCronTimeUnit TimeUnit => NaturalCronTimeUnit.TimeZone;
         public bool Match(DateTime dateTimeInTz, TimeZoneInfo timeZone) => true;

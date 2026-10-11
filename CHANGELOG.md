@@ -10,8 +10,10 @@
 ## [Unreleased]
 ### Added
 - Custom keywords: user-defined rules usable in expressions, e.g. `every day on holiday at 09:00`, `every day on [holiday, payday] at 09:00`.
-  - Configured once via `NaturalCronCustomKeywords.Configure(cfg => ...)` with a match function, an `INaturalCronCustomRule` class (parameterless constructor), or a factory (e.g. to resolve the rule from IoC).
-  - Rules receive the wall-clock time and the effective `TimeZoneInfo` (the expression's `tz` if present, otherwise the zone of the method called).
+  - Configured once via `NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable(...))` with a match function, an `INaturalCronMatchableCustomKeyword` class (parameterless constructor), or a factory (e.g. to resolve the keyword from IoC).
+  - Several keywords can share one implementation, e.g. `cfg.AddMatchable(new[] { "holiday", "holidays" }, ...)`.
+  - Matchable keywords work with `on`, `at`, `in` and `except`; they cannot be used as a boundary of `between`, `upto` or `from`.
+  - Keywords receive the wall-clock time and the effective `TimeZoneInfo` (the expression's `tz` if present, otherwise the zone of the method called).
   - A bracket list can mix custom keywords and built-in values and matches when any entry matches, e.g. `every day on [holiday, 15th] at 09:00`, `every day at 09:00 except [holiday, friday]`.
 - `except` rule: accepts the same values as `on`/`at`/`in` (including custom keywords) and skips matching occurrences while keeping the schedule cadence, e.g. `every day at 09:00 except [saturday, sunday]`, `every hour except [12:00, 13:00]`, `every day at 09:00 except holiday`.
 - `NaturalCronCustomKeywordRule`, `NaturalCronAnyOfRule`, `NaturalCronExceptRule`, `NaturalCronRuleSpec.Custom` and `NaturalCronRuleSpec.Except`.

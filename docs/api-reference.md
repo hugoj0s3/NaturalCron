@@ -425,29 +425,37 @@ Configures all custom keywords at once, typically at application startup and **b
 NaturalCronCustomKeywords.Configure(cfg =>
 {
     // Inline function on the wall-clock time. Time unit defaults to Day.
-    cfg.Add("payday", dt => dt.Day == 15);
+    cfg.AddMatchable("payday", dt => dt.Day == 15);
 
     // Inline function that also needs the time zone.
-    cfg.Add("payday2", (dt, tz) => dt.Day == 15);
+    cfg.AddMatchable("payday2", (dt, tz) => dt.Day == 15);
 
-    // Class implementing INaturalCronCustomRule, created with its parameterless constructor.
-    cfg.Add<MaintenanceWindowRule>("maintenanceWindow");
+    // Class implementing INaturalCronMatchableCustomKeyword, created with its parameterless constructor.
+    cfg.AddMatchable<MaintenanceWindowKeyword>("maintenanceWindow");
 
-    // Factory, e.g. to resolve the rule from your IoC container.
-    cfg.Add("holiday", () => serviceProvider.GetRequiredService<HolidayRule>());
+    // Factory, e.g. to resolve the keyword from your IoC container.
+    cfg.AddMatchable("holiday", () => serviceProvider.GetRequiredService<HolidayKeyword>());
+
+    // Several keywords for the same implementation. Every overload accepts a list.
+    cfg.AddMatchable(new[] { "weekend", "weekends" }, dt => dt.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday);
 });
 ```
+A keyword can only be registered once: registering the same keyword twice (ignoring case), or a built-in word, makes
+`Configure` throw and nothing is applied.
 
-### INaturalCronCustomRule
+### INaturalCronMatchableCustomKeyword
 ```csharp
-public interface INaturalCronCustomRule
+public interface INaturalCronMatchableCustomKeyword
 {
     NaturalCronTimeUnit TimeUnit { get; }
     bool Match(DateTime dateTimeInTz, TimeZoneInfo timeZone);
 }
 ```
-- `TimeUnit` is the rule granularity (e.g. `Day` for holidays, `Hour` for an hourly window). It controls how far the engine
-  safely advances when the rule doesn't match. `TimeZone` is not allowed.
+A matchable keyword says whether a time matches. It is registered with `AddMatchable` and can be used with `on`, `at`, `in`
+and `except`. It cannot be used as a boundary of `between`, `upto` or `from`.
+
+- `TimeUnit` is the keyword granularity (e.g. `Day` for holidays, `Hour` for an hourly window). It controls how far the engine
+  safely advances when the keyword doesn't match. `TimeZone` is not allowed.
 - `Match` receives the wall-clock time (`Kind = Unspecified`) and the time zone it is in:
 
   | Method | Expression without `tz` | Expression with `tz X` |
@@ -456,7 +464,7 @@ public interface INaturalCronCustomRule
   | `GetNextOccurrenceInUtc(utc)` | `TimeZoneInfo.Utc` | X |
   | `GetNextOccurrenceInTz(dt, id)` | `id` | X (the expression's tz always wins) |
 
-- A rule instance is created **once per parsed expression** (at parse time) and reused for all its matches.
+- A keyword instance is created **once per parsed expression** (at parse time) and reused for all its matches.
   A factory must work wherever expressions are parsed (including Quartz triggers).
 
 > ⚠️ **Performance:** `Match` is called on every step of the occurrence search, potentially many times per
@@ -464,11 +472,11 @@ public interface INaturalCronCustomRule
 > dates refreshed periodically, or an injected singleton cache) instead of querying a database or HTTP endpoint inside `Match`.
 
 ```csharp
-public class HolidayRule : INaturalCronCustomRule
+public class HolidayKeyword : INaturalCronMatchableCustomKeyword
 {
     private readonly IHolidayCache cache; // e.g. a singleton holding a HashSet<DateTime> refreshed periodically
 
-    public HolidayRule(IHolidayCache cache) => this.cache = cache;
+    public HolidayKeyword(IHolidayCache cache) => this.cache = cache;
 
     public NaturalCronTimeUnit TimeUnit => NaturalCronTimeUnit.Day;
 

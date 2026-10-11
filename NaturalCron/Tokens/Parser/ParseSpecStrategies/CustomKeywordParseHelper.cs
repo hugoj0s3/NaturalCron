@@ -164,7 +164,7 @@ internal static class CustomKeywordParseHelper
         }
 
         var keywords = new List<string>();
-        var instances = new List<INaturalCronCustomRule>();
+        var instances = new List<INaturalCronMatchableCustomKeyword>();
         foreach (var keywordToken in keywordTokens)
         {
             if (!NaturalCronCustomKeywords.TryGet(keywordToken.Value, out var registration))

@@ -1,8 +1,10 @@
 namespace NaturalCron.CustomRules;
 
 /// <summary>
-/// A user-defined rule bound to a custom keyword (e.g. "holiday") configured via
+/// A custom keyword (e.g. "holiday") that says whether a time matches, configured via
 /// <see cref="NaturalCronCustomKeywords.Configure"/>.
+/// It can be used with on/at/in and except, e.g. <c>every day on holiday</c>, <c>every day except holiday</c>.
+/// It cannot be used as a boundary of between, upto or from.
 /// </summary>
 /// <remarks>
 /// <see cref="Match"/> is called on every step of the occurrence search (potentially many times per
@@ -10,16 +12,16 @@ namespace NaturalCron.CustomRules;
 /// (e.g. a HashSet of holiday dates refreshed periodically) instead of querying a database or HTTP endpoint inside Match.
 /// The instance is created once per parsed expression and reused for every match.
 /// </remarks>
-public interface INaturalCronCustomRule
+public interface INaturalCronMatchableCustomKeyword
 {
     /// <summary>
-    /// Granularity of the rule. It drives how far the engine safely advances when the rule doesn't match
+    /// Granularity of the keyword. It drives how far the engine safely advances when the keyword doesn't match
     /// (e.g. Day for a holiday calendar, Hour for an hourly maintenance window).
     /// </summary>
     NaturalCronTimeUnit TimeUnit { get; }
 
     /// <summary>
-    /// Returns true when the given time matches the rule.
+    /// Returns true when the given time matches the keyword.
     /// </summary>
     /// <param name="dateTimeInTz">Wall-clock time (Kind = Unspecified) in <paramref name="timeZone"/>.</param>
     /// <param name="timeZone">

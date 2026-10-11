@@ -251,6 +251,8 @@ Keywords must be configured once at startup, see [Custom Keywords in the API Ref
 **Notes:**
 - Keywords are case-insensitive and must match `[A-Za-z][A-Za-z0-9]*` (start with a letter, letters and digits only).
 - Keywords cannot reuse a built-in word (e.g. `mon`, `day`, `last`, `except`, `UTC`).
+- Custom keywords work with `on`, `at`, `in` and `except`. They cannot be used as a boundary of `between`, `upto` or `from`:
+  `between holiday and payday` ❌
 - Keywords and built-in values can only be combined inside brackets, one per entry:
   `on [holiday, 15th]` ✅, `on holiday 15th` ❌, `on [holiday 15th]` ❌
 - In a mixed list the built-in values follow the usual list rules (every built-in entry sets the same time units).

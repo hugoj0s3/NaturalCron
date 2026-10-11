@@ -120,12 +120,12 @@ public static class NaturalCronCustomKeywords
 
 internal sealed class CustomKeywordRegistration
 {
-    public CustomKeywordRegistration(string keyword, Func<INaturalCronCustomRule> createRule)
+    public CustomKeywordRegistration(string keyword, Func<INaturalCronMatchableCustomKeyword> createRule)
     {
         Keyword = keyword;
         CreateRule = createRule;
     }
 
     public string Keyword { get; }
-    public Func<INaturalCronCustomRule> CreateRule { get; }
+    public Func<INaturalCronMatchableCustomKeyword> CreateRule { get; }
 }

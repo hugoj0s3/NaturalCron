@@ -9,41 +9,71 @@ public sealed class NaturalCronCustomKeywordsBuilder
     {
     }
 
-    internal List<(string Keyword, Func<INaturalCronCustomRule> CreateRule)> Registrations { get; } = new();
+    internal List<(string Keyword, Func<INaturalCronMatchableCustomKeyword> CreateRule)> Registrations { get; } = new();
 
     /// <summary>
-    /// Registers a keyword backed by <typeparamref name="TRule"/>, created with its parameterless constructor
-    /// once per parsed expression.
+    /// Registers a matchable keyword (usable with on/at/in and except) implemented by <typeparamref name="TKeyword"/>,
+    /// created with its parameterless constructor once per parsed expression.
     /// </summary>
-    public NaturalCronCustomKeywordsBuilder Add<TRule>(string keyword) where TRule : INaturalCronCustomRule, new()
+    public NaturalCronCustomKeywordsBuilder AddMatchable<TKeyword>(string keyword) where TKeyword : INaturalCronMatchableCustomKeyword, new()
     {
-        Registrations.Add((keyword, () => new TRule()));
-        return this;
+        return AddMatchable<TKeyword>(new[] { keyword });
     }
 
     /// <summary>
-    /// Registers a keyword whose rule instance is created by <paramref name="factory"/> once per parsed expression,
-    /// e.g. to resolve it from an IoC container: <c>() => serviceProvider.GetRequiredService&lt;HolidayRule&gt;()</c>.
+    /// Registers several keywords for the same implementation, e.g. <c>["holiday", "holidays"]</c>.
+    /// See <see cref="AddMatchable{TKeyword}(string)"/>.
     /// </summary>
-    public NaturalCronCustomKeywordsBuilder Add(string keyword, Func<INaturalCronCustomRule> factory)
+    public NaturalCronCustomKeywordsBuilder AddMatchable<TKeyword>(IEnumerable<string> keywords) where TKeyword : INaturalCronMatchableCustomKeyword, new()
+    {
+        return Register(keywords, () => new TKeyword());
+    }
+
+    /// <summary>
+    /// Registers a matchable keyword whose instance is created by <paramref name="factory"/> once per parsed expression,
+    /// e.g. to resolve it from an IoC container: <c>() => serviceProvider.GetRequiredService&lt;HolidayKeyword&gt;()</c>.
+    /// </summary>
+    public NaturalCronCustomKeywordsBuilder AddMatchable(string keyword, Func<INaturalCronMatchableCustomKeyword> factory)
+    {
+        return AddMatchable(new[] { keyword }, factory);
+    }
+
+    /// <summary>
+    /// Registers several keywords for the same implementation, e.g. <c>["holiday", "holidays"]</c>.
+    /// See <see cref="AddMatchable(string, Func{INaturalCronMatchableCustomKeyword})"/>.
+    /// </summary>
+    public NaturalCronCustomKeywordsBuilder AddMatchable(IEnumerable<string> keywords, Func<INaturalCronMatchableCustomKeyword> factory)
     {
         if (factory == null)
         {
             throw new ArgumentNullException(nameof(factory));
         }
 
-        Registrations.Add((keyword, factory));
-        return this;
+        return Register(keywords, factory);
     }
 
     /// <summary>
-    /// Registers a keyword backed by a match function.
+    /// Registers a matchable keyword backed by a match function.
     /// </summary>
     /// <param name="keyword">The keyword, [A-Za-z][A-Za-z0-9]*, case-insensitive.</param>
-    /// <param name="match">Receives the wall-clock time and the time zone it is in. See <see cref="INaturalCronCustomRule.Match"/>.</param>
-    /// <param name="timeUnit">Granularity of the rule, default Day.</param>
-    public NaturalCronCustomKeywordsBuilder Add(
+    /// <param name="match">Receives the wall-clock time and the time zone it is in. See <see cref="INaturalCronMatchableCustomKeyword.Match"/>.</param>
+    /// <param name="timeUnit">Granularity of the keyword, default Day.</param>
+    public NaturalCronCustomKeywordsBuilder AddMatchable(
         string keyword,
+        Func<DateTime, TimeZoneInfo, bool> match,
+        NaturalCronTimeUnit timeUnit = NaturalCronTimeUnit.Day)
+    {
+        return AddMatchable(new[] { keyword }, match, timeUnit);
+    }
+
+    /// <summary>
+    /// Registers several keywords for the same match function, e.g. <c>["holiday", "holidays"]</c>.
+    /// </summary>
+    /// <param name="keywords">The keywords, each [A-Za-z][A-Za-z0-9]*, case-insensitive.</param>
+    /// <param name="match">Receives the wall-clock time and the time zone it is in. See <see cref="INaturalCronMatchableCustomKeyword.Match"/>.</param>
+    /// <param name="timeUnit">Granularity of the keywords, default Day.</param>
+    public NaturalCronCustomKeywordsBuilder AddMatchable(
+        IEnumerable<string> keywords,
         Func<DateTime, TimeZoneInfo, bool> match,
         NaturalCronTimeUnit timeUnit = NaturalCronTimeUnit.Day)
     {
@@ -52,18 +82,31 @@ public sealed class NaturalCronCustomKeywordsBuilder
             throw new ArgumentNullException(nameof(match));
         }
 
-        Registrations.Add((keyword, () => new FuncWithTimeZoneCustomRule(match, timeUnit)));
-        return this;
+        return Register(keywords, () => new FuncWithTimeZoneMatchableKeyword(match, timeUnit));
     }
-    
+
     /// <summary>
-    /// Registers a keyword backed by a match function.
+    /// Registers a matchable keyword backed by a match function.
     /// </summary>
     /// <param name="keyword">The keyword, [A-Za-z][A-Za-z0-9]*, case-insensitive.</param>
-    /// <param name="match">Receives the wall-clock time in the evaluated time zone. See <see cref="INaturalCronCustomRule.Match"/>.</param>
-    /// <param name="timeUnit">Granularity of the rule, default Day.</param>
-    public NaturalCronCustomKeywordsBuilder Add(
+    /// <param name="match">Receives the wall-clock time in the evaluated time zone. See <see cref="INaturalCronMatchableCustomKeyword.Match"/>.</param>
+    /// <param name="timeUnit">Granularity of the keyword, default Day.</param>
+    public NaturalCronCustomKeywordsBuilder AddMatchable(
         string keyword,
+        Func<DateTime, bool> match,
+        NaturalCronTimeUnit timeUnit = NaturalCronTimeUnit.Day)
+    {
+        return AddMatchable(new[] { keyword }, match, timeUnit);
+    }
+
+    /// <summary>
+    /// Registers several keywords for the same match function, e.g. <c>["holiday", "holidays"]</c>.
+    /// </summary>
+    /// <param name="keywords">The keywords, each [A-Za-z][A-Za-z0-9]*, case-insensitive.</param>
+    /// <param name="match">Receives the wall-clock time in the evaluated time zone. See <see cref="INaturalCronMatchableCustomKeyword.Match"/>.</param>
+    /// <param name="timeUnit">Granularity of the keywords, default Day.</param>
+    public NaturalCronCustomKeywordsBuilder AddMatchable(
+        IEnumerable<string> keywords,
         Func<DateTime, bool> match,
         NaturalCronTimeUnit timeUnit = NaturalCronTimeUnit.Day)
     {
@@ -72,16 +115,36 @@ public sealed class NaturalCronCustomKeywordsBuilder
             throw new ArgumentNullException(nameof(match));
         }
 
-        Registrations.Add((keyword, () => new FuncCustomRule(match, timeUnit)));
+        return Register(keywords, () => new FuncMatchableKeyword(match, timeUnit));
+    }
+
+    private NaturalCronCustomKeywordsBuilder Register(IEnumerable<string> keywords, Func<INaturalCronMatchableCustomKeyword> createRule)
+    {
+        if (keywords == null)
+        {
+            throw new ArgumentNullException(nameof(keywords));
+        }
+
+        var keywordList = keywords.ToList();
+        if (keywordList.Count == 0)
+        {
+            throw new ArgumentException("At least one keyword is required.", nameof(keywords));
+        }
+
+        foreach (var keyword in keywordList)
+        {
+            Registrations.Add((keyword, createRule));
+        }
+
         return this;
     }
 }
 
-internal sealed class FuncWithTimeZoneCustomRule : INaturalCronCustomRule
+internal sealed class FuncWithTimeZoneMatchableKeyword : INaturalCronMatchableCustomKeyword
 {
     private readonly Func<DateTime, TimeZoneInfo, bool> match;
 
-    public FuncWithTimeZoneCustomRule(Func<DateTime, TimeZoneInfo, bool> match, NaturalCronTimeUnit timeUnit)
+    public FuncWithTimeZoneMatchableKeyword(Func<DateTime, TimeZoneInfo, bool> match, NaturalCronTimeUnit timeUnit)
     {
         this.match = match;
         TimeUnit = timeUnit;
@@ -92,11 +155,11 @@ internal sealed class FuncWithTimeZoneCustomRule : INaturalCronCustomRule
     public bool Match(DateTime dateTimeInTz, TimeZoneInfo timeZone) => match(dateTimeInTz, timeZone);
 }
 
-internal sealed class FuncCustomRule : INaturalCronCustomRule
+internal sealed class FuncMatchableKeyword : INaturalCronMatchableCustomKeyword
 {
     private readonly Func<DateTime, bool> match;
 
-    public FuncCustomRule(Func<DateTime, bool> match, NaturalCronTimeUnit timeUnit)
+    public FuncMatchableKeyword(Func<DateTime, bool> match, NaturalCronTimeUnit timeUnit)
     {
         this.match = match;
         TimeUnit = timeUnit;

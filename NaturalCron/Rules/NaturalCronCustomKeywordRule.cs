@@ -16,7 +16,7 @@ public class NaturalCronCustomKeywordRule : NaturalCronMatchableRule
     /// </summary>
     public IReadOnlyList<string> Keywords { get; internal set; } = Array.Empty<string>();
 
-    internal IReadOnlyList<INaturalCronCustomRule> Instances { get; set; } = Array.Empty<INaturalCronCustomRule>();
+    internal IReadOnlyList<INaturalCronMatchableCustomKeyword> Instances { get; set; } = Array.Empty<INaturalCronMatchableCustomKeyword>();
 
     internal TimeZoneInfo EffectiveTimeZone { get; private set; } = TimeZoneInfo.Local;
 
