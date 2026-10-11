@@ -48,5 +48,6 @@ Some NaturalCron features have no classic cron equivalent and will throw a `Cron
 - Timezone rules
 - Every N weeks (N > 1) / yearly rules
 - LastDay, LastWeekday, FirstWeekday, day arithmetic
+- Custom keywords (`on holiday`) and `except` rules
 
 See the [full converter documentation](https://github.com/hugoj0s3/NaturalCron/blob/main/docs/cron-converter.md) for details and workarounds.

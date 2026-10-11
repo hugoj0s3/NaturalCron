@@ -14,7 +14,7 @@
 
 ### Changed
 - The local occurrence methods (e.g. `GetNextOccurrence()`) return a `DateTime` with the same `Kind` as the base time when the expression has no timezone rule. Previously the result was always `DateTimeKind.Unspecified`.
-- `NaturalCron.CronConverter` treats custom keyword, mixed-list and `except` rules as not supported: `Convert` throws `CronConversionException` (default), `TryConvert` returns the error, and `Omit` mode drops the rule.
+- `NaturalCron.CronConverter` 1.0.2 now depends on `NaturalCron` 1.1.0. It treats custom keyword, mixed-list and `except` rules as not supported: `Convert` throws `CronConversionException` (default), `TryConvert` returns the error, and `Omit` mode drops the rule.
 
 ### Fixed
 - Occurrences were skipped when `every` used a smaller unit than another rule and the base time did not satisfy that rule. The next occurrence was a whole unit of that rule after the base time instead of the beginning of the next matching period. `every` now restarts at the beginning of that period, keeping the units below the `every` unit:

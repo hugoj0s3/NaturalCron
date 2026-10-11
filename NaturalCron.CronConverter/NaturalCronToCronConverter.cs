@@ -75,9 +75,16 @@ public static class NaturalCronToCronConverter
                 case NaturalCronIanaTimeZoneRule timezone:
                     errors.Add($"Timezone '{timezone.IanaId}' is not supported in classic cron and was omitted.");
                     break;
+                case NaturalCronCustomKeywordRule customKeyword:
+                    errors.Add($"Custom keyword rule '{customKeyword.FullExpression}' is not supported in cron conversion.");
+                    break;
+                case NaturalCronAnyOfMatchableRule anyOf:
+                    errors.Add($"Rule '{anyOf.FullExpression}' mixes custom keywords with other values and is not supported in cron conversion.");
+                    break;
+                case NaturalCronExceptRule except:
+                    errors.Add($"Except rule '{except.FullExpression}' is not supported in cron conversion.");
+                    break;
                 default:
-                    // Custom keywords (on holiday), lists with custom keywords and except rules have no cron equivalent:
-                    // they are reported as not supported.
                     errors.Add($"Rule '{rule.FullExpression}' is not supported in cron conversion.");
                     break;
             }

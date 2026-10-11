@@ -170,6 +170,26 @@ every 25 secs between [1:00pm and 03:00pm, 6:00pm and 8:00pm]   ✅ (NaturalCron
 
 Classic cron cannot express multiple active windows in a single expression, so this feature cannot be converted.
 
+### Custom keywords
+
+```
+every day on holiday at 09:00              ❌
+every holiday at 09:00                     ❌
+every day on [holiday, 15th] at 09:00      ❌
+```
+
+A [custom keyword](api-reference.md#custom-keywords) runs your own code to decide whether a date matches, so it has no cron equivalent. A bracket list that mixes a custom keyword with built-in values is not supported either.
+
+### Except
+
+```
+every day at 09:00 except [saturday, sunday]   ❌
+every hour except [12:00, 13:00]               ❌
+every day at 09:00 except holiday              ❌
+```
+
+Classic cron has no way to exclude occurrences. When the exclusion is simple, write the positive form instead, e.g. `every day at 09:00 between monday and friday`.
+
 ### AnchoredOn / AnchoredAt (on EveryX rules)
 
 ```
