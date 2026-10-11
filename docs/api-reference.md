@@ -434,7 +434,7 @@ NaturalCronCustomKeywords.Configure(cfg =>
     cfg.AddMatchable("payday", dt => dt.Day == 15);
 
     // An hour keyword: pass the time unit of what the function looks at.
-    cfg.AddMatchable("primeHour", dt => dt.Hour is 2 or 3 or 5 or 7 or 11 or 13 or 17 or 19 or 23, NaturalCronTimeUnit.Hour);
+    cfg.AddMatchable("evenHour", dt => dt.Hour % 2 == 0, NaturalCronTimeUnit.Hour);
 
     // A month keyword: the first month of each quarter.
     cfg.AddMatchable("quarter", dt => dt.Month is 1 or 4 or 7 or 10, NaturalCronTimeUnit.Month);
@@ -442,14 +442,16 @@ NaturalCronCustomKeywords.Configure(cfg =>
     // Inline function that also needs the time zone.
     cfg.AddMatchable("payday2", (dt, tz) => dt.Day == 15);
 
-    // Class implementing INaturalCronMatchableCustomKeyword, created with its parameterless constructor.
+    // A class that implements INaturalCronMatchableCustomKeyword (parameterless constructor).
     cfg.AddMatchable<MaintenanceWindowKeyword>("maintenanceWindow");
 
     // Factory, e.g. to resolve the keyword from your IoC container.
     cfg.AddMatchable("holiday", () => serviceProvider.GetRequiredService<HolidayKeyword>());
 
     // Several keywords for the same implementation. Every overload accepts a list.
-    cfg.AddMatchable(new[] { "weekend", "weekends" }, dt => dt.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday);
+    cfg.AddMatchable(
+        new[] { "weekend", "weekends" },
+        dt => dt.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday);
 });
 ```
 A keyword can only be registered once: registering the same keyword twice (ignoring case), or a built-in word, makes
@@ -458,9 +460,9 @@ A keyword can only be registered once: registering the same keyword twice (ignor
 The keywords above can then be used in any expression:
 ```
 every payday at 09:00                 the 15th of every month at 09:00
-every primeHour                       every hour, in the prime hours: 02:00, 03:00, 05:00, 07:00, 11:00 …
-every 15 minutes on primeHour         every 15 minutes during the prime hours
-every quarter on 1st at 09:00         January 1st, April 1st, July 1st and October 1st at 09:00
+every evenHour                        every hour, in the even hours: 00:00, 02:00, 04:00 …
+every 15 minutes on evenHour          every 15 minutes during the even hours
+every quarter on 1st at 09:00         the 1st of January, April, July and October at 09:00
 every day at 09:00 except weekend     every day but Saturday and Sunday
 ```
 
