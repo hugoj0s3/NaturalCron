@@ -13,9 +13,11 @@ var compiledExpr = NaturalCronExpr.Parse("daily at 14:30");
 - [Local Time Occurrence Methods](#local-time-occurrence-methods)
 - [UTC Occurrence Methods](#utc-occurrence-methods)
 - [IANA Timezone Occurrence Methods](#iana-timezone-occurrence-methods)
+- [Thread Safety](#thread-safety)
 - [Timezone Behavior](#timezone-behavior)
 - [Usage Examples](#usage-examples)
 - [Rule Filter Methods](#rule-filter-methods)
+- [Custom Keywords](#custom-keywords)
 
 
 ## Parse Methods
@@ -248,6 +250,11 @@ Gets the next occurrences in a specified IANA timezone. Throws an exception if f
 - `InvalidOperationException` when fewer than the requested number of occurrences are found
 
 
+## Thread Safety
+A `NaturalCronExpr` instance is **not thread-safe**.
+Do not call the occurrence methods of the same instance from several threads at the same time, the results can be wrong.
+Use one instance per thread, or parse the expression again. Different instances can be used in parallel.
+
 ## Timezone Behavior
 Understanding how timezones work in NaturalCron is crucial for correct usage:
 
@@ -406,5 +413,108 @@ Returns all rules that operate on years.
 public NaturalCronIanaTimeZoneRule? TimeZoneRule()
 ```
 Returns the timezone rule if one is defined in the expression, otherwise null.
+
+## Custom Keywords
+Custom keywords let expressions reference your own rules, e.g. `every day at 09:00 except holiday`.
+See [Custom Keywords in the Expression Syntax](expression-syntax.md#custom-keywords) for the syntax.
+
+### Configure()
+```csharp
+public static void NaturalCronCustomKeywords.Configure(Action<NaturalCronCustomKeywordsBuilder> configure)
+```
+Configures all custom keywords at once, typically at application startup and **before** any expression using them is parsed.
+- It can only be called **once**; a second call throws `InvalidOperationException`. There is no unregister.
+- All keywords are validated together (format, duplicates, collisions with built-in words). If any is invalid an
+  `ArgumentException` lists the problems and nothing is applied.
+
+```csharp
+NaturalCronCustomKeywords.Configure(cfg =>
+{
+    // Inline function on the wall-clock time. Time unit defaults to Day.
+    cfg.AddMatchable("payday", dt => dt.Day == 15);
+
+    // An hour keyword: pass the time unit of what the function looks at.
+    cfg.AddMatchable("evenHour", dt => dt.Hour % 2 == 0, NaturalCronTimeUnit.Hour);
+
+    // A month keyword: the first month of each quarter.
+    cfg.AddMatchable("quarter", dt => dt.Month is 1 or 4 or 7 or 10, NaturalCronTimeUnit.Month);
+
+    // Inline function that also needs the time zone.
+    cfg.AddMatchable("payday2", (dt, tz) => dt.Day == 15);
+
+    // A class that implements INaturalCronMatchableCustomKeyword (parameterless constructor).
+    cfg.AddMatchable<MaintenanceWindowKeyword>("maintenanceWindow");
+
+    // Factory, e.g. to resolve the keyword from your IoC container.
+    cfg.AddMatchable("holiday", () => serviceProvider.GetRequiredService<HolidayKeyword>());
+
+    // Several keywords for the same implementation. Every overload accepts a list.
+    cfg.AddMatchable(
+        new[] { "weekend", "weekends" },
+        dt => dt.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday);
+});
+```
+A keyword can only be registered once: registering the same keyword twice (ignoring case), or a built-in word, makes
+`Configure` throw and nothing is applied.
+
+The keywords above can then be used in any expression:
+```
+every payday at 09:00                 the 15th of every month at 09:00
+every evenHour                        every hour, in the even hours: 00:00, 02:00, 04:00 …
+every 15 minutes on evenHour          every 15 minutes during the even hours
+every quarter on 1st at 09:00         the 1st of January, April, July and October at 09:00
+every day at 09:00 except weekend     every day but Saturday and Sunday
+```
+
+### INaturalCronMatchableCustomKeyword
+```csharp
+public interface INaturalCronMatchableCustomKeyword
+{
+    NaturalCronTimeUnit TimeUnit { get; }
+    bool Match(DateTime dateTimeInTz, TimeZoneInfo timeZone);
+}
+```
+A matchable keyword says whether a time matches. It is registered with `AddMatchable` and can be used with `on`, `at`, `in`
+and `except`. It cannot be used as a boundary of `between`, `upto` or `from`.
+
+- `TimeUnit` is the keyword granularity (e.g. `Day` for holidays, `Hour` for an hourly window). It controls how far the engine
+  safely advances when the keyword doesn't match.
+- `Match` receives the wall-clock time (`Kind = Unspecified`) and the time zone it is in:
+
+  | Method | Expression without `tz` | Expression with `tz X` |
+  |---|---|---|
+  | `GetNextOccurrence(local)` | `TimeZoneInfo.Local` (`TimeZoneInfo.Utc` if `Kind == Utc`) | X |
+  | `GetNextOccurrenceInUtc(utc)` | `TimeZoneInfo.Utc` | X |
+  | `GetNextOccurrenceInTz(dt, id)` | `id` | X (the expression's tz always wins) |
+
+- A keyword instance is created **once per parsed expression** (at parse time) and reused for all its matches.
+  A factory must work wherever expressions are parsed (including Quartz triggers).
+
+> ⚠️ **Performance:** `Match` is called on every step of the occurrence search, potentially many times per
+> `GetNextOccurrence` call. Avoid a database or HTTP round trip on every call: keep the data in memory and let `Match`
+> read from it. Loading the data now and then is fine. For example:
+> - load all the holidays once and refresh them periodically, or
+> - cache the holidays per year: the database is only reached the first time a date of a new year is checked,
+>   every other call for that year is answered from memory.
+
+```csharp
+public class HolidayKeyword : INaturalCronMatchableCustomKeyword
+{
+    private readonly IHolidayCache cache; // e.g. a singleton holding a HashSet<DateTime> refreshed periodically
+
+    public HolidayKeyword(IHolidayCache cache) => this.cache = cache;
+
+    public NaturalCronTimeUnit TimeUnit => NaturalCronTimeUnit.Day;
+
+    public bool Match(DateTime dateTimeInTz, TimeZoneInfo timeZone) => cache.IsHoliday(dateTimeInTz.Date);
+}
+```
+
+### NaturalCronCustomKeywordRule, NaturalCronAnyOfMatchableRule and NaturalCronExceptRule
+Parsed custom keyword rules appear in `Rules` as `NaturalCronCustomKeywordRule` (`Spec == NaturalCronRuleSpec.Custom`),
+exposing `Keywords`. A list mixing keywords and built-in values (`on [holiday, 15th]`) appears as `NaturalCronAnyOfMatchableRule`
+(`Spec == NaturalCronRuleSpec.AtInOn`), whose `Rules` holds the keyword rule and the built-in rule.
+Exclusions (`except`) appear as `NaturalCronExceptRule` (`Spec == NaturalCronRuleSpec.Except`),
+whose `Rules` holds the excluded rules, e.g. a `NaturalCronCustomKeywordRule` or `NaturalCronAtInOnRule`.
 
 ✅ [Back to Main README](../README.md)

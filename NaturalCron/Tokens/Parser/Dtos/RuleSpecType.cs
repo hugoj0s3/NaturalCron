@@ -13,5 +13,6 @@ internal enum RuleSpecType
     Daily,
     Monthly,
     Yearly,
-    Weekly
+    Weekly,
+    Except
 }

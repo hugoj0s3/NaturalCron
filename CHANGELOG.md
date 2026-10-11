@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.1.0]
+### Added
+- `every <value>` shorthand for `every <period> on <value>`: `every 9am` (every day), `every 15th` / `every 1stMonday` / `every LastDay` (every month), `every [monday, friday]` (every week), `every january` (every year) and `every holiday` for a custom keyword (every unit of the keyword, e.g. every day).
+- Custom keywords: user-defined rules usable in expressions, e.g. `every day on holiday at 09:00`, `every day on [holiday, payday] at 09:00`.
+  - Configured once via `NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable(...))` with a match function, an `INaturalCronMatchableCustomKeyword` class (parameterless constructor), or a factory (e.g. to resolve the keyword from IoC).
+  - Several keywords can share one implementation, e.g. `cfg.AddMatchable(new[] { "holiday", "holidays" }, ...)`.
+  - Matchable keywords work with `on`, `at`, `in` and `except`; they cannot be used as a boundary of `between`, `upto` or `from`.
+  - Keywords receive the wall-clock time and the effective `TimeZoneInfo` (the expression's `tz` if present, otherwise the zone of the method called).
+  - A bracket list can mix custom keywords and built-in values and matches when any entry matches, e.g. `every day on [holiday, 15th] at 09:00`, `every day at 09:00 except [holiday, friday]`.
+- `except` rule: accepts the same values as `on`/`at`/`in` (including custom keywords) and skips matching occurrences while keeping the schedule cadence, e.g. `every day at 09:00 except [saturday, sunday]`, `every hour except [12:00, 13:00]`, `every day at 09:00 except holiday`.
+- `NaturalCronCustomKeywordRule`, `NaturalCronAnyOfMatchableRule`, `NaturalCronExceptRule`, `NaturalCronRuleSpec.Custom` and `NaturalCronRuleSpec.Except`.
+
+### Changed
+- The local occurrence methods (e.g. `GetNextOccurrence()`) return a `DateTime` with the same `Kind` as the base time when the expression has no timezone rule. Previously the result was always `DateTimeKind.Unspecified`.
+- `NaturalCron.CronConverter` treats custom keyword, mixed-list and `except` rules as not supported: `Convert` throws `CronConversionException` (default), `TryConvert` returns the error, and `Omit` mode drops the rule.
+
+### Fixed
+- Occurrences were skipped when `every` used a smaller unit than another rule and the base time did not satisfy that rule. The next occurrence was a whole unit of that rule after the base time instead of the beginning of the next matching period. `every` now restarts at the beginning of that period, keeping the units below the `every` unit:
+  - `every second at 9am` from 08:59:57 returned 09:59:57; it now returns 09:00:00.
+  - `every hour on wednesday` from Tuesday 10:30 returned Wednesday 10:30; it now returns Wednesday 00:30.
+  - `every day in january` from December 23rd 10:30 now returns January 1st at 10:30.
+- `every 15th` (a number with an ordinal suffix) was parsed as `every 15 days`. It now means the 15th of every month.
+- `every monday 9am` ignored the time and was parsed as `every monday`. It now means every Monday at 9am.
+- `every <weekday>` combined with other rules could return a day that is not that weekday. `every monday` is now exactly `every week on monday`:
+  - `every monday at 08:00` from a Sunday at 09:00 returned Tuesday 08:00; it now returns Monday 08:00.
+  - `every monday at 08:00` from a Monday at 09:00 returned Tuesday 08:00; it now returns the next Monday at 08:00.
+  - `every monday at 10:00 in [jan, feb, mar]` returned Thursday, January 1st when the months started again; it now returns the first Monday of January.
+  - `Rules` now has an `every week` rule and an `on monday` rule for it, instead of one `every week` rule with `AnchoredValue = "MONDAY"`.
+
 ## [1.0.2]
 ### Fixed
 - UTC occurrence methods (e.g. `GetNextOccurrenceInUtc()`) now always return `DateTime` values with `Kind = DateTimeKind.Utc`. Previously, expressions without a timezone rule returned `DateTimeKind.Unspecified`. Thanks to [@bensynapse](https://github.com/bensynapse) ([#8](https://github.com/hugoj0s3/NaturalCron/pull/8)).

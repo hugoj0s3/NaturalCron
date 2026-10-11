@@ -64,6 +64,9 @@ public enum NaturalCronTokenType
     
     EndOfExpression,
 
+    // User-defined keyword configured via NaturalCronCustomKeywords
+    CustomKeyword,
+
     // ; . , will be ignored
     IgnoredToken = 98,
 

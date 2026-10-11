@@ -1,4 +1,5 @@
 using System.Text;
+using NaturalCron.CustomRules;
 using NaturalCron.Rules;
 using NaturalCron.Tokens.Parser.Dtos;
 using NaturalCron.Tokens.Parser.ParseSpecStrategies;
@@ -99,6 +100,12 @@ internal static class TokenParserUtil
                         Type = RuleSpecType.UptoOrFrom
                     };
                     break;
+                case "except":
+                    currentGroupSpec = new GroupedRuleSpec()
+                    {
+                        Type = RuleSpecType.Except
+                    };
+                    break;
             }
 
             if (currentGroupSpec == null)
@@ -131,12 +138,13 @@ internal static class TokenParserUtil
             {
                 shouldBreak = true;
             }
-            else if (i > 0 && char.IsDigit(c) && !char.IsDigit(expression[i - 1]) )
+            else if (i > 0 && char.IsDigit(c) && !char.IsDigit(expression[i - 1]) && !IsCustomKeywordBoundary(i, expression))
             {
                 holdingChar = c;
                 shouldBreak = true;
             }
-            else if (i > 0 && !char.IsDigit(c) && char.IsDigit(expression[i - 1]) && !IsNthWeekOrdinal(i, expression))
+            else if (i > 0 && !char.IsDigit(c) && char.IsDigit(expression[i - 1]) && !IsNthWeekOrdinal(i, expression) &&
+                     !IsCustomKeywordBoundary(i, expression))
             {
                 holdingChar = c;
                 shouldBreak = true;
@@ -236,6 +244,29 @@ internal static class TokenParserUtil
 
         return KeywordsConstants.NthWeekDays.Any(kw => string.Equals(kw, candidate, StringComparison.OrdinalIgnoreCase));
     }
+
+    // Custom keywords may mix letters and digits (e.g. payday2), keep them as a single token.
+    private static bool IsCustomKeywordBoundary(int i, string expression)
+    {
+        if (!NaturalCronCustomKeywords.HasAny)
+        {
+            return false;
+        }
+
+        int start = i;
+        while (start > 0 && IsAsciiLetterOrDigit(expression[start - 1]))
+            start--;
+
+        int end = i;
+        while (end < expression.Length && IsAsciiLetterOrDigit(expression[end]))
+            end++;
+
+        var candidate = expression.Substring(start, end - start);
+        return NaturalCronCustomKeywords.TryGet(candidate, out _);
+    }
+
+    private static bool IsAsciiLetterOrDigit(char c) =>
+        c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9';
 
     private static NaturalCronTokenType RecognizeBreak(char c)
     {
@@ -444,6 +475,11 @@ internal static class TokenParserUtil
         if (KeywordsConstants.And.ToUpper().Contains(tokenValue))
         {
             return NaturalCronTokenType.And;
+        }
+
+        if (NaturalCronCustomKeywords.TryGet(tokenValue, out _))
+        {
+            return NaturalCronTokenType.CustomKeyword;
         }
 
         return NaturalCronTokenType.Unknown;

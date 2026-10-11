@@ -16,6 +16,7 @@ For example:
 - `between` — Range filters
 - `upto`, `from` — Boundary filters
 - `timezone` or `tz` — Time zone specification
+- `except` — Exclusions
 ---
 
 ## `every` or `@every` — Main Recurrence Interval
@@ -24,6 +25,7 @@ The interval must be a positive integer, and the time unit must be one of the su
 
 **Syntax:**
 - `every <number> <time-unit>`
+- `every <value>` — shorthand, see [Every + Value](#every--value)
 
 
 **Examples:**
@@ -31,6 +33,34 @@ The interval must be a positive integer, and the time unit must be one of the su
 - `every 2 weeks` — every 2 weeks
 - `every 6 months` — every 6 months
 - `every year` — every year
+
+---
+
+### Every + Value
+`every` can also be followed directly by a value. It is a shorthand for `every <period> on <value>`, where the period
+is the one that contains the value once.
+
+| You write | It means |
+|---|---|
+| `every 9am`, `every 09:30`, `every [09:00, 18:00]` | `every day at …` |
+| `every 15th`, `every 1stMonday`, `every LastDay`, `every ClosestWeekdayTo 15`, `every [1st, 15th]` | `every month on …` |
+| `every monday`, `every [monday, friday]` | `every week on …` |
+| `every january`, `every [jan, jul]`, `every 1st jan` | `every year on …` |
+| `every holiday` *(considering `holiday` as a [custom keyword](#custom-keywords))* | `every <the keyword's time unit> on …`, e.g. `every day on holiday` |
+
+**Examples:**
+- `every 15th at 18:00` — the 15th of every month at 18:00
+- `every 1stMonday at 9am` — the first Monday of every month at 09:00
+- `every january on 1st at 00:00` — every January 1st at midnight
+- `every 9am` — every day at 09:00
+- `every holiday at 09:00` — every holiday at 09:00 *(considering `holiday` as a [custom keyword](#custom-keywords))*
+
+**Notes:**
+- A number followed by a time unit is still an interval: `every 15 days` is every 15 days, `every 15th` is the 15th of every month.
+- Without a time (`at …`), the time of the base time is kept, like for the other `every` expressions. Add `at …` to fix it.
+  A list of days of the month or of dates is different: `every [1st, 15th]` and `every [1st jan, 2nd mar]` start at 00:00.
+- A date with a year happens only once, so it is not accepted: `every 2025-12-25` ❌, use `on 2025-12-25`.
+- A list mixing custom keywords and built-in values follows the keyword: `every [holiday, 15th]` is `every day on [holiday, 15th]`.
 
 ---
 
@@ -169,6 +199,25 @@ The `between` rule allows you to restrict occurrences to a specific range—such
 - You can use any supported aliases for days, times, or months in the `between` rule.
 - `between` can be combined with other rules (such as `on`, `at`, etc.) for more precise filtering.
 
+## `except` or `@except` — Exclusions
+`except` accepts the same values as `on`, `at` and `in` (single values, bracket lists and [custom keywords](#custom-keywords)),
+and removes the matching occurrences from the schedule.
+
+**Examples:**
+- `every day at 09:00 except [saturday, sunday]` — weekdays only
+- `every day at 09:00 except 2025-12-25` — every day except Christmas 2025
+- `every month on 1st at 09:00 except [feb, mar]` — skip February and March
+- `every hour except [12:00, 13:00]` — every hour, skipping 12:00 and 13:00
+- `every day at 09:00 except holiday` — skip a custom keyword
+
+**Notes:**
+- Excluded occurrences are skipped, the rest of the schedule is unchanged:
+  `every 2 hours except friday` keeps its 2-hour cadence on the days after Friday.
+- Unlike `on`, an exclusion can use the same time unit as `every` (e.g. `every day ... except 3rd`) and can be combined
+  with an `on` rule at the same unit (e.g. `every week on monday at 09:00 except 2025-01-13`).
+- Values follow the same rules as `on`/`at`/`in`, e.g. a bare number needs a unit (`except 22hr`, not `except 22`).
+- If every occurrence is excluded, no occurrence is found: use a `maxLookahead` to bound the search.
+
 ## `upto` and `from` or `@upto` and `@from` Rules
 The `upto` and `from` rules allow you to restrict occurrences to only those before or after a specific point (such as a time, day, or other supported unit), relative to the recurrence interval.
 
@@ -208,6 +257,58 @@ This ensures that all date and time calculations are made in the specified IANA 
 **Notes:**
 - The engine uses IANA time zone names (e.g., `America/Los_Angeles`, `Europe/London`).
 - Time zone rules affect all time-based calculations, including DST transitions.
+
+## Custom Keywords
+You can define your own keywords (e.g. `holiday`, `payday`) backed by your own match logic, and use them in expressions.
+Keywords must be configured once at startup, see [Custom Keywords in the API Reference](api-reference.md#custom-keywords).
+
+**Syntax:**
+- `on <keyword>` (or `at`/`in`) — matches when the keyword matches
+- `on [<keyword>, <keyword>]` — matches when **any** keyword matches
+- `on [<keyword>, <value>]` — a list can mix keywords and built-in values; it matches when **any** entry matches
+- `every <keyword>` or `every [<keyword>, <keyword>]` — shorthand for `every <the keyword's time unit> on …`,
+  e.g. `every holiday` is `every day on holiday` (see [Every + Value](#every--value)).
+  A keyword about days of the week (time unit `Week`) is also checked every day.
+- `except <keyword>` — skips occurrences where the keyword matches (see [Exclusions](#except-or-except--exclusions))
+- `except [<keyword>, <keyword>]` — skips occurrences where **any** of the keywords match
+
+**Examples:**
+- `every day on holiday at 09:00` — at 09:00 on holidays only
+- `every holiday at 09:00` — the same, with the [`every` shorthand](#every--value)
+- `every [holiday, payday] at 09:00` — at 09:00 on holidays or paydays, with the shorthand
+- `every day at 09:00 except holiday` — at 09:00 every day, skipping holidays
+- `every day on [holiday, payday] at 09:00` — at 09:00 on holidays or paydays
+- `every day on [holiday, 15th] at 09:00` — at 09:00 on holidays or on the 15th
+- `every day at 09:00 except [holiday, friday]` — at 09:00 every day, skipping holidays and Fridays
+- `every 30 minutes on maintenanceWindow` — every 30 minutes while the window is open
+
+**Notes:**
+- Keywords are case-insensitive and must match `[A-Za-z][A-Za-z0-9]*` (start with a letter, letters and digits only).
+- Keywords cannot reuse a built-in word (e.g. `mon`, `day`, `last`, `except`, `UTC`).
+- Custom keywords work with `on`, `at`, `in` and `except`. They cannot be used as a boundary of `between`, `upto` or `from`:
+  `between holiday and payday` ❌
+- To get every match of a keyword, use an `every` unit that is not larger than the keyword's own time unit: for a day
+  keyword such as `holiday`, write `every holiday` or `every day on holiday`.
+- With a larger `every` unit the keyword matches **once per period, at its first match**. The first occurrence is the
+  first match after the base time; from then on it is the first match of each new period.
+
+  Example: the base time is **Dec 24, 2024** and the holidays of every year are Jan 1, Apr 18, Apr 21, May 1 and Dec 25.
+
+  | Expression | Occurrences | Why |
+  |---|---|---|
+  | `every day on holiday` (or `every holiday`) | Dec 25, Jan 1, Apr 18, Apr 21, May 1, Dec 25, … | every holiday |
+  | `every month on holiday` | Dec 25, Jan 1, Apr 18, May 1, Dec 25, Jan 1, … | the first holiday of each month; Apr 21 is the second holiday of April |
+  | `every year on holiday` | Dec 25, 2024, then Jan 1, 2025, Jan 1, 2026, … | Dec 25 is the first holiday after the base time; after that it is always the first holiday of the year, Jan 1 |
+  | `every week on holiday` | Dec 25, Jan 1, Apr 18, May 1, Dec 25, … | a week is 7 days counted from the last occurrence, not a calendar week, so Apr 21 (3 days after Apr 18) is skipped |
+
+  The same applies to the smaller units: `every day on officeHours` from 10:30 returns 09:30 on the following days,
+  the first office hour of each day.
+- Keywords and built-in values can only be combined inside brackets, one per entry:
+  `on [holiday, 15th]` ✅, `on holiday 15th` ❌, `on [holiday 15th]` ❌
+- In a mixed list the built-in values follow the usual list rules (every built-in entry sets the same time units).
+- A list means "any of": `on [holiday, friday]` is holidays or Fridays. Separate `on` rules must **all** match:
+  `on holiday on friday` is only holidays that fall on a Friday.
+- Custom keyword and `except` rules cannot be converted to classic cron.
 
 ## Supported time units and aliases
 The following units and their aliases can be used with all relevant rules, such as `every`, `on`, and `between`, as well as `upto` and `from`:

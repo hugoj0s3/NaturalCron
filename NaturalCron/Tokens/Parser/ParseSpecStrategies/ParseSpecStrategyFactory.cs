@@ -32,6 +32,8 @@ internal class ParseSpecStrategyFactory
                 return new EveryXParseRuleSpecStrategy();
             case RuleSpecType.UptoOrFrom:
                 return new UptoFromParseRuleSpecStrategy();
+            case RuleSpecType.Except:
+                return new ExceptParseRuleSpecStrategy();
             default:
                 throw new ArgumentOutOfRangeException(nameof(type), type, null);
         }

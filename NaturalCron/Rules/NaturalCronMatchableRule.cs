@@ -18,7 +18,6 @@ public abstract class NaturalCronMatchableRule : NaturalCronRule
             return lastMatchCallResult.Value;
         }
         
-        
         lastMatchCallResult = DoMatch(dateTime);
         lastMatchCall = dateTime;
 
@@ -39,12 +38,31 @@ public abstract class NaturalCronMatchableRule : NaturalCronRule
         return (lastTimeToAdvanceToNextOccurence.Value, lastTimeUnitToAdvanceToNextOccurence.Value);
     }
     
+    internal void ResetCache()
+    {
+        lastMatchCall = null;
+        lastMatchCallResult = null;
+        lastGetTimeToAdvanceToNextOccurenceCall = null;
+    }
+
     protected abstract bool DoMatch(DateTime dateTime);
     protected virtual (int timeToAdvance, NaturalCronTimeUnit timeUnit) DoGetTimeToAdvanceToNextOccurence(DateTime dateTime)
     {
         return GetMinSafeTimeToAdvance(dateTime);
     }
     
+    // For rules that only say whether a time matches (custom keywords): advance one unit of the rule at a time.
+    // It keeps the smaller units of the time being checked, e.g. "every day on holiday" continues at the same time of the day.
+    internal (int, NaturalCronTimeUnit) GetOneUnitTimeToAdvance(DateTime dateTime)
+    {
+        if (this.TimeUnit == NaturalCronTimeUnit.Month || this.TimeUnit == NaturalCronTimeUnit.Year)
+        {
+            return GetMinSafeTimeToAdvance(dateTime);
+        }
+
+        return (1, this.TimeUnit);
+    }
+
     internal (int, NaturalCronTimeUnit) GetMinSafeTimeToAdvance(DateTime dateTime)
     {
         if (this.TimeUnit == NaturalCronTimeUnit.Second)

@@ -18,6 +18,8 @@ NaturalCron is a **human-readable scheduling engine for .NET**. It lets you writ
     - Weekday list
     - Closest weekday, first/last day handling
     - Time zone support with IANA TZ names
+    - Exclusions with `except`
+    - Your own keywords, such as `holiday`
 
 ## 🚀 Quick Start
 
@@ -71,6 +73,31 @@ every 5 minutes
 every day at 18:00
 every 30 minutes in [jan, jun] between 09:00 and 18:00
 every day at 10:00 on [monday, wednesday, friday]
+every day at 09:00 except [saturday, sunday]
+```
+
+`every` can also be followed directly by a value, as a shorthand:
+```
+every 9am                     same as: every day at 9am
+every 15th at 18:00           same as: every month on 15th at 18:00
+every 1stMonday at 09:00      same as: every month on 1stMonday at 09:00
+every [monday, friday] at 09:00
+every january on 1st at 00:00
+```
+
+### Custom keywords
+Define your own keywords once at startup and use them in any expression:
+```csharp
+using NaturalCron.CustomRules;
+
+NaturalCronCustomKeywords.Configure(cfg =>
+    cfg.AddMatchable("holiday", date => myHolidays.Contains(date.Date)));
+```
+```
+every holiday at 09:00              every holiday
+every day on holiday at 09:00       the same, written in full
+every day at 09:00 except holiday   every day but the holidays
+every day on [holiday, 15th] at 09:00
 ```
 
 ## 🔄 Cron Conversion (optional)

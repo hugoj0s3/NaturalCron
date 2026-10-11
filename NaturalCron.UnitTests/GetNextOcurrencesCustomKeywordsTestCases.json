@@ -1,0 +1,2498 @@
+[
+  {
+    "description": "1.1 @every second @on primeSecond",
+    "expression": "@every second @on primeSecond",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:02", "2025-01-01 00:00:03", "2025-01-01 00:00:05", "2025-01-01 00:00:07", "2025-01-01 00:00:11"]
+  },
+  {
+    "description": "1.2 @every second @on evenSecond",
+    "expression": "@every second @on evenSecond",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:02", "2025-01-01 00:00:04", "2025-01-01 00:00:06", "2025-01-01 00:00:08", "2025-01-01 00:00:10"]
+  },
+  {
+    "description": "1.3 @every second @on oddSecond",
+    "expression": "@every second @on oddSecond",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:01", "2025-01-01 00:00:03", "2025-01-01 00:00:05", "2025-01-01 00:00:07", "2025-01-01 00:00:09"]
+  },
+  {
+    "description": "1.4 @every second @on primeMinute",
+    "expression": "@every second @on primeMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:02:00", "2025-01-01 00:02:01", "2025-01-01 00:02:02", "2025-01-01 00:02:03", "2025-01-01 00:02:04"]
+  },
+  {
+    "description": "1.5 @every second @on evenMinute",
+    "expression": "@every second @on evenMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:01", "2025-01-01 00:00:02", "2025-01-01 00:00:03", "2025-01-01 00:00:04", "2025-01-01 00:00:05"]
+  },
+  {
+    "description": "1.6 @every second @on quarterHour",
+    "expression": "@every second @on quarterHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:01", "2025-01-01 00:00:02", "2025-01-01 00:00:03", "2025-01-01 00:00:04", "2025-01-01 00:00:05"]
+  },
+  {
+    "description": "1.7 @every second @on lunchtime",
+    "expression": "@every second @on lunchtime",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 12:00:00", "2025-01-01 12:00:01", "2025-01-01 12:00:02", "2025-01-01 12:00:03", "2025-01-01 12:00:04"]
+  },
+  {
+    "description": "1.8 @every minute @on primeMinute",
+    "expression": "@every minute @on primeMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:02:00", "2025-01-01 00:03:00", "2025-01-01 00:05:00", "2025-01-01 00:07:00", "2025-01-01 00:11:00"]
+  },
+  {
+    "description": "1.9 @every minute @on evenMinute",
+    "expression": "@every minute @on evenMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:02:00", "2025-01-01 00:04:00", "2025-01-01 00:06:00", "2025-01-01 00:08:00", "2025-01-01 00:10:00"]
+  },
+  {
+    "description": "1.10 @every minute @on quarterHour",
+    "expression": "@every minute @on quarterHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:15:00", "2025-01-01 00:30:00", "2025-01-01 00:45:00", "2025-01-01 01:00:00", "2025-01-01 01:15:00"]
+  },
+  {
+    "description": "1.11 @every minute @on primeHour",
+    "expression": "@every minute @on primeHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 02:00:00", "2025-01-01 02:01:00", "2025-01-01 02:02:00", "2025-01-01 02:03:00", "2025-01-01 02:04:00"]
+  },
+  {
+    "description": "1.12 @every minute @on evenHour",
+    "expression": "@every minute @on evenHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:01:00", "2025-01-01 00:02:00", "2025-01-01 00:03:00", "2025-01-01 00:04:00", "2025-01-01 00:05:00"]
+  },
+  {
+    "description": "1.13 @every minute @on officeHours",
+    "expression": "@every minute @on officeHours",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-01 09:01:00", "2025-01-01 09:02:00", "2025-01-01 09:03:00", "2025-01-01 09:04:00"]
+  },
+  {
+    "description": "1.14 @every minute @on nightShift",
+    "expression": "@every minute @on nightShift",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:01:00", "2025-01-01 00:02:00", "2025-01-01 00:03:00", "2025-01-01 00:04:00", "2025-01-01 00:05:00"]
+  },
+  {
+    "description": "1.15 @every minute @on lunchtime",
+    "expression": "@every minute @on lunchtime",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 12:00:00", "2025-01-01 12:01:00", "2025-01-01 12:02:00", "2025-01-01 12:03:00", "2025-01-01 12:04:00"]
+  },
+  {
+    "description": "1.16 @every minute @on primeDay",
+    "expression": "@every minute @on primeDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-02 00:01:00", "2025-01-02 00:02:00", "2025-01-02 00:03:00", "2025-01-02 00:04:00"]
+  },
+  {
+    "description": "1.17 @every minute @on weekend",
+    "expression": "@every minute @on weekend",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 00:00:00", "2025-01-04 00:01:00", "2025-01-04 00:02:00", "2025-01-04 00:03:00", "2025-01-04 00:04:00"]
+  },
+  {
+    "description": "1.18 @every hour @on primeHour",
+    "expression": "@every hour @on primeHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 02:00:00", "2025-01-01 03:00:00", "2025-01-01 05:00:00", "2025-01-01 07:00:00", "2025-01-01 11:00:00"]
+  },
+  {
+    "description": "1.19 @every hour @on evenHour",
+    "expression": "@every hour @on evenHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 02:00:00", "2025-01-01 04:00:00", "2025-01-01 06:00:00", "2025-01-01 08:00:00", "2025-01-01 10:00:00"]
+  },
+  {
+    "description": "1.20 @every hour @on officeHours",
+    "expression": "@every hour @on officeHours",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-01 10:00:00", "2025-01-01 11:00:00", "2025-01-01 12:00:00", "2025-01-01 13:00:00"]
+  },
+  {
+    "description": "1.21 @every hour @on nightShift",
+    "expression": "@every hour @on nightShift",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 01:00:00", "2025-01-01 02:00:00", "2025-01-01 03:00:00", "2025-01-01 04:00:00", "2025-01-01 05:00:00"]
+  },
+  {
+    "description": "1.22 @every hour @on lunchtime",
+    "expression": "@every hour @on lunchtime",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 12:00:00", "2025-01-02 12:00:00", "2025-01-03 12:00:00", "2025-01-04 12:00:00", "2025-01-05 12:00:00"]
+  },
+  {
+    "description": "1.23 @every hour @on primeDay",
+    "expression": "@every hour @on primeDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-02 01:00:00", "2025-01-02 02:00:00", "2025-01-02 03:00:00", "2025-01-02 04:00:00"]
+  },
+  {
+    "description": "1.24 @every hour @on evenDay",
+    "expression": "@every hour @on evenDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-02 01:00:00", "2025-01-02 02:00:00", "2025-01-02 03:00:00", "2025-01-02 04:00:00"]
+  },
+  {
+    "description": "1.25 @every hour @on weekend",
+    "expression": "@every hour @on weekend",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 00:00:00", "2025-01-04 01:00:00", "2025-01-04 02:00:00", "2025-01-04 03:00:00", "2025-01-04 04:00:00"]
+  },
+  {
+    "description": "1.26 @every hour @on holiday",
+    "expression": "@every hour @on holiday",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 01:00:00", "2025-01-01 02:00:00", "2025-01-01 03:00:00", "2025-01-01 04:00:00", "2025-01-01 05:00:00"]
+  },
+  {
+    "description": "1.27 @every hour @on businessDay",
+    "expression": "@every hour @on businessDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-02 01:00:00", "2025-01-02 02:00:00", "2025-01-02 03:00:00", "2025-01-02 04:00:00"]
+  },
+  {
+    "description": "1.28 @every hour @on midweek",
+    "expression": "@every hour @on midweek",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 01:00:00", "2025-01-01 02:00:00", "2025-01-01 03:00:00", "2025-01-01 04:00:00", "2025-01-01 05:00:00"]
+  },
+  {
+    "description": "1.29 @every hour @on twinDay",
+    "expression": "@every hour @on twinDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-11 00:00:00", "2025-01-11 01:00:00", "2025-01-11 02:00:00", "2025-01-11 03:00:00", "2025-01-11 04:00:00"]
+  },
+  {
+    "description": "1.30 @every day @on primeDay",
+    "expression": "@every day @on primeDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-03 00:00:00", "2025-01-05 00:00:00", "2025-01-07 00:00:00"]
+  },
+  {
+    "description": "1.31 @every day @on primeDay, base time at noon",
+    "expression": "@every day @on primeDay",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-17 12:00:00", "2025-06-19 12:00:00", "2025-06-23 12:00:00", "2025-06-29 12:00:00"]
+  },
+  {
+    "description": "1.32 @every day @on evenDay",
+    "expression": "@every day @on evenDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-04 00:00:00", "2025-01-06 00:00:00", "2025-01-08 00:00:00"]
+  },
+  {
+    "description": "1.33 @every day @on evenDay, base time at noon",
+    "expression": "@every day @on evenDay",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-14 12:00:00", "2025-06-16 12:00:00", "2025-06-18 12:00:00", "2025-06-20 12:00:00"]
+  },
+  {
+    "description": "1.34 @every day @on oddDay",
+    "expression": "@every day @on oddDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-03 00:00:00", "2025-01-05 00:00:00", "2025-01-07 00:00:00", "2025-01-09 00:00:00"]
+  },
+  {
+    "description": "1.35 @every day @on oddDay, base time at noon",
+    "expression": "@every day @on oddDay",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-15 12:00:00", "2025-06-17 12:00:00", "2025-06-19 12:00:00", "2025-06-21 12:00:00"]
+  },
+  {
+    "description": "1.36 @every day @on fibonacciDay",
+    "expression": "@every day @on fibonacciDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-03 00:00:00", "2025-01-05 00:00:00", "2025-01-08 00:00:00"]
+  },
+  {
+    "description": "1.37 @every day @on fibonacciDay, base time at noon",
+    "expression": "@every day @on fibonacciDay",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-21 12:00:00", "2025-07-01 12:00:00", "2025-07-02 12:00:00", "2025-07-03 12:00:00"]
+  },
+  {
+    "description": "1.38 @every day @on twinDay",
+    "expression": "@every day @on twinDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-11 00:00:00", "2025-01-22 00:00:00", "2025-02-11 00:00:00", "2025-02-22 00:00:00"]
+  },
+  {
+    "description": "1.39 @every day @on twinDay, base time at noon",
+    "expression": "@every day @on twinDay",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-22 12:00:00", "2025-07-11 12:00:00", "2025-07-22 12:00:00", "2025-08-11 12:00:00"]
+  },
+  {
+    "description": "1.40 @every day @on holiday",
+    "expression": "@every day @on holiday",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-18 00:00:00", "2025-04-21 00:00:00", "2025-05-01 00:00:00", "2025-12-25 00:00:00"]
+  },
+  {
+    "description": "1.41 @every day @on holiday, base time at noon",
+    "expression": "@every day @on holiday",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-12-25 12:00:00", "2025-12-26 12:00:00", "2026-01-01 12:00:00", "2026-04-03 12:00:00"]
+  },
+  {
+    "description": "1.42 @every day @on weekend",
+    "expression": "@every day @on weekend",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 00:00:00", "2025-01-05 00:00:00", "2025-01-11 00:00:00", "2025-01-12 00:00:00"]
+  },
+  {
+    "description": "1.43 @every day @on weekend, base time at noon",
+    "expression": "@every day @on weekend",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-14 12:00:00", "2025-06-15 12:00:00", "2025-06-21 12:00:00", "2025-06-22 12:00:00"]
+  },
+  {
+    "description": "1.44 @every day @on businessDay",
+    "expression": "@every day @on businessDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-03 00:00:00", "2025-01-06 00:00:00", "2025-01-07 00:00:00"]
+  },
+  {
+    "description": "1.45 @every day @on businessDay, base time at noon",
+    "expression": "@every day @on businessDay",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-16 12:00:00", "2025-06-17 12:00:00", "2025-06-18 12:00:00", "2025-06-19 12:00:00"]
+  },
+  {
+    "description": "1.46 @every day @on lastBusinessDay",
+    "expression": "@every day @on lastBusinessDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-31 00:00:00", "2025-02-28 00:00:00", "2025-03-31 00:00:00", "2025-04-30 00:00:00"]
+  },
+  {
+    "description": "1.47 @every day @on lastBusinessDay, base time at noon",
+    "expression": "@every day @on lastBusinessDay",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-30 12:00:00", "2025-07-31 12:00:00", "2025-08-29 12:00:00", "2025-09-30 12:00:00"]
+  },
+  {
+    "description": "1.48 @every day @on fridayThe13th",
+    "expression": "@every day @on fridayThe13th",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 00:00:00", "2026-02-13 00:00:00", "2026-03-13 00:00:00", "2026-11-13 00:00:00"]
+  },
+  {
+    "description": "1.49 @every day @on fridayThe13th, base time at noon",
+    "expression": "@every day @on fridayThe13th",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2026-02-13 12:00:00", "2026-03-13 12:00:00", "2026-11-13 12:00:00", "2027-08-13 12:00:00"]
+  },
+  {
+    "description": "1.50 @every day @on firstDayOfQuarter",
+    "expression": "@every day @on firstDayOfQuarter",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-01 00:00:00", "2025-07-01 00:00:00", "2025-10-01 00:00:00", "2026-01-01 00:00:00"]
+  },
+  {
+    "description": "1.51 @every day @on firstDayOfQuarter, base time at noon",
+    "expression": "@every day @on firstDayOfQuarter",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 12:00:00", "2025-10-01 12:00:00", "2026-01-01 12:00:00", "2026-04-01 12:00:00"]
+  },
+  {
+    "description": "1.52 @every day @on lastDayOfQuarter",
+    "expression": "@every day @on lastDayOfQuarter",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-31 00:00:00", "2025-06-30 00:00:00", "2025-09-30 00:00:00", "2025-12-31 00:00:00"]
+  },
+  {
+    "description": "1.53 @every day @on lastDayOfQuarter, base time at noon",
+    "expression": "@every day @on lastDayOfQuarter",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-30 12:00:00", "2025-09-30 12:00:00", "2025-12-31 12:00:00", "2026-03-31 12:00:00"]
+  },
+  {
+    "description": "1.54 @every day @on payday",
+    "expression": "@every day @on payday",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-15 00:00:00", "2025-01-31 00:00:00", "2025-02-15 00:00:00", "2025-02-28 00:00:00"]
+  },
+  {
+    "description": "1.55 @every day @on payday, base time at noon",
+    "expression": "@every day @on payday",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-15 12:00:00", "2025-06-30 12:00:00", "2025-07-15 12:00:00", "2025-07-31 12:00:00"]
+  },
+  {
+    "description": "1.56 @every day @on leapDay",
+    "expression": "@every day @on leapDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2028-02-29 00:00:00", "2032-02-29 00:00:00", "2036-02-29 00:00:00", "2040-02-29 00:00:00"]
+  },
+  {
+    "description": "1.57 @every day @on leapDay, base time at noon",
+    "expression": "@every day @on leapDay",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2028-02-29 12:00:00", "2032-02-29 12:00:00", "2036-02-29 12:00:00", "2040-02-29 12:00:00"]
+  },
+  {
+    "description": "1.58 @every day @on midweek",
+    "expression": "@every day @on midweek",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-07 00:00:00", "2025-01-08 00:00:00", "2025-01-09 00:00:00"]
+  },
+  {
+    "description": "1.59 @every day @on midweek, base time at noon",
+    "expression": "@every day @on midweek",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-17 12:00:00", "2025-06-18 12:00:00", "2025-06-19 12:00:00", "2025-06-24 12:00:00"]
+  },
+  {
+    "description": "1.60 @every day @on quarter",
+    "expression": "@every day @on quarter",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-03 00:00:00", "2025-01-04 00:00:00", "2025-01-05 00:00:00"]
+  },
+  {
+    "description": "1.61 @every day @on quarter, base time at noon",
+    "expression": "@every day @on quarter",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 12:00:00", "2025-07-02 12:00:00", "2025-07-03 12:00:00", "2025-07-04 12:00:00"]
+  },
+  {
+    "description": "1.62 @every day @on summer",
+    "expression": "@every day @on summer",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-01 00:00:00", "2025-06-02 00:00:00", "2025-06-03 00:00:00", "2025-06-04 00:00:00"]
+  },
+  {
+    "description": "1.63 @every day @on summer, base time at noon",
+    "expression": "@every day @on summer",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-14 12:00:00", "2025-06-15 12:00:00", "2025-06-16 12:00:00", "2025-06-17 12:00:00"]
+  },
+  {
+    "description": "1.64 @every day @on primeMonth",
+    "expression": "@every day @on primeMonth",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-02-01 00:00:00", "2025-02-02 00:00:00", "2025-02-03 00:00:00", "2025-02-04 00:00:00"]
+  },
+  {
+    "description": "1.65 @every day @on primeMonth, base time at noon",
+    "expression": "@every day @on primeMonth",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 12:00:00", "2025-07-02 12:00:00", "2025-07-03 12:00:00", "2025-07-04 12:00:00"]
+  },
+  {
+    "description": "1.66 @every day @on q1",
+    "expression": "@every day @on q1",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-03 00:00:00", "2025-01-04 00:00:00", "2025-01-05 00:00:00"]
+  },
+  {
+    "description": "1.67 @every day @on q1, base time at noon",
+    "expression": "@every day @on q1",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2026-01-01 12:00:00", "2026-01-02 12:00:00", "2026-01-03 12:00:00", "2026-01-04 12:00:00"]
+  },
+  {
+    "description": "1.68 @every day @on q2",
+    "expression": "@every day @on q2",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-01 00:00:00", "2025-04-02 00:00:00", "2025-04-03 00:00:00", "2025-04-04 00:00:00"]
+  },
+  {
+    "description": "1.69 @every day @on q2, base time at noon",
+    "expression": "@every day @on q2",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-14 12:00:00", "2025-06-15 12:00:00", "2025-06-16 12:00:00", "2025-06-17 12:00:00"]
+  },
+  {
+    "description": "1.70 @every day @on q3",
+    "expression": "@every day @on q3",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 00:00:00", "2025-07-02 00:00:00", "2025-07-03 00:00:00", "2025-07-04 00:00:00"]
+  },
+  {
+    "description": "1.71 @every day @on q3, base time at noon",
+    "expression": "@every day @on q3",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 12:00:00", "2025-07-02 12:00:00", "2025-07-03 12:00:00", "2025-07-04 12:00:00"]
+  },
+  {
+    "description": "1.72 @every day @on q4",
+    "expression": "@every day @on q4",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-10-01 00:00:00", "2025-10-02 00:00:00", "2025-10-03 00:00:00", "2025-10-04 00:00:00"]
+  },
+  {
+    "description": "1.73 @every day @on q4, base time at noon",
+    "expression": "@every day @on q4",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-10-01 12:00:00", "2025-10-02 12:00:00", "2025-10-03 12:00:00", "2025-10-04 12:00:00"]
+  },
+  {
+    "description": "1.74 @every day @on h2",
+    "expression": "@every day @on h2",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 00:00:00", "2025-07-02 00:00:00", "2025-07-03 00:00:00", "2025-07-04 00:00:00"]
+  },
+  {
+    "description": "1.75 @every day @on h2, base time at noon",
+    "expression": "@every day @on h2",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 12:00:00", "2025-07-02 12:00:00", "2025-07-03 12:00:00", "2025-07-04 12:00:00"]
+  },
+  {
+    "description": "1.76 @every day @on leapYear",
+    "expression": "@every day @on leapYear",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2028-01-01 00:00:00", "2028-01-02 00:00:00", "2028-01-03 00:00:00", "2028-01-04 00:00:00"]
+  },
+  {
+    "description": "1.77 @every day @on leapYear, base time at noon",
+    "expression": "@every day @on leapYear",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2028-01-01 12:00:00", "2028-01-02 12:00:00", "2028-01-03 12:00:00", "2028-01-04 12:00:00"]
+  },
+  {
+    "description": "2.1 @every 10 seconds @on primeMinute",
+    "expression": "@every 10 seconds @on primeMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:02:00", "2025-01-01 00:02:10", "2025-01-01 00:02:20", "2025-01-01 00:02:30", "2025-01-01 00:02:40", "2025-01-01 00:02:50", "2025-01-01 00:03:00", "2025-01-01 00:03:10"]
+  },
+  {
+    "description": "2.2 @every 15 seconds @on evenMinute",
+    "expression": "@every 15 seconds @on evenMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:15", "2025-01-01 00:00:30", "2025-01-01 00:00:45", "2025-01-01 00:02:00", "2025-01-01 00:02:15", "2025-01-01 00:02:30", "2025-01-01 00:02:45", "2025-01-01 00:04:00"]
+  },
+  {
+    "description": "2.3 @every 20 seconds @on quarterHour",
+    "expression": "@every 20 seconds @on quarterHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:20", "2025-01-01 00:00:40", "2025-01-01 00:15:00", "2025-01-01 00:15:20", "2025-01-01 00:15:40", "2025-01-01 00:30:00"]
+  },
+  {
+    "description": "2.4 @every 5 minutes @on officeHours",
+    "expression": "@every 5 minutes @on officeHours",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-01 09:05:00", "2025-01-01 09:10:00", "2025-01-01 09:15:00", "2025-01-01 09:20:00"]
+  },
+  {
+    "description": "2.5 @every 15 minutes @on primeHour",
+    "expression": "@every 15 minutes @on primeHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 02:00:00", "2025-01-01 02:15:00", "2025-01-01 02:30:00", "2025-01-01 02:45:00", "2025-01-01 03:00:00", "2025-01-01 03:15:00", "2025-01-01 03:30:00", "2025-01-01 03:45:00", "2025-01-01 05:00:00", "2025-01-01 05:15:00"]
+  },
+  {
+    "description": "2.6 @every 30 minutes @on businessDay",
+    "expression": "@every 30 minutes @on businessDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-02 00:30:00", "2025-01-02 01:00:00", "2025-01-02 01:30:00"]
+  },
+  {
+    "description": "2.7 @every 45 minutes @on lunchtime",
+    "expression": "@every 45 minutes @on lunchtime",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 12:00:00", "2025-01-01 12:45:00", "2025-01-02 12:00:00", "2025-01-02 12:45:00", "2025-01-03 12:00:00"]
+  },
+  {
+    "description": "2.8 @every 2 hours @on weekend",
+    "expression": "@every 2 hours @on weekend",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 00:00:00", "2025-01-04 02:00:00", "2025-01-04 04:00:00", "2025-01-04 06:00:00", "2025-01-04 08:00:00", "2025-01-04 10:00:00", "2025-01-04 12:00:00", "2025-01-04 14:00:00", "2025-01-04 16:00:00", "2025-01-04 18:00:00", "2025-01-04 20:00:00", "2025-01-04 22:00:00", "2025-01-05 00:00:00", "2025-01-05 02:00:00"]
+  },
+  {
+    "description": "2.9 @every 3 hours @on officeHours",
+    "expression": "@every 3 hours @on officeHours",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-01 12:00:00", "2025-01-01 15:00:00", "2025-01-02 09:00:00", "2025-01-02 12:00:00", "2025-01-02 15:00:00", "2025-01-03 09:00:00"]
+  },
+  {
+    "description": "2.10 @every 6 hours @on holiday",
+    "expression": "@every 6 hours @on holiday",
+    "baseTimeUtcStr": "2025-04-17 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-18 00:00:00", "2025-04-18 06:00:00", "2025-04-18 12:00:00", "2025-04-18 18:00:00", "2025-04-21 00:00:00", "2025-04-21 06:00:00", "2025-04-21 12:00:00", "2025-04-21 18:00:00", "2025-05-01 00:00:00"]
+  },
+  {
+    "description": "2.11 @every 8 hours @on nightShift",
+    "expression": "@every 8 hours @on nightShift",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 22:00:00", "2025-01-02 22:00:00", "2025-01-03 22:00:00", "2025-01-04 22:00:00", "2025-01-05 22:00:00", "2025-01-06 22:00:00"]
+  },
+  {
+    "description": "2.12 @every 2 days @on primeDay",
+    "expression": "@every 2 days @on primeDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-05 00:00:00", "2025-01-07 00:00:00", "2025-01-11 00:00:00", "2025-01-13 00:00:00", "2025-01-17 00:00:00", "2025-01-19 00:00:00", "2025-01-23 00:00:00"]
+  },
+  {
+    "description": "2.13 @every 3 days @on summer",
+    "expression": "@every 3 days @on summer",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-01 00:00:00", "2025-06-04 00:00:00", "2025-06-07 00:00:00", "2025-06-10 00:00:00"]
+  },
+  {
+    "description": "2.14 @every 7 days @on businessDay",
+    "expression": "@every 7 days @on businessDay",
+    "baseTimeUtcStr": "2025-04-04 09:00:00",
+    "expectedDateTimeStrs": ["2025-04-11 09:00:00", "2025-04-22 09:00:00", "2025-04-29 09:00:00", "2025-05-06 09:00:00", "2025-05-13 09:00:00", "2025-05-20 09:00:00"]
+  },
+  {
+    "description": "2.15 @every 2 days @on q2",
+    "expression": "@every 2 days @on q2",
+    "baseTimeUtcStr": "2025-06-25 08:00:00",
+    "expectedDateTimeStrs": ["2025-06-27 08:00:00", "2025-06-29 08:00:00", "2026-04-01 08:00:00", "2026-04-03 08:00:00", "2026-04-05 08:00:00"]
+  },
+  {
+    "description": "2.16 @every 10 days @on evenDay",
+    "expression": "@every 10 days @on evenDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-12 00:00:00", "2025-01-22 00:00:00", "2025-02-02 00:00:00", "2025-02-12 00:00:00", "2025-02-22 00:00:00"]
+  },
+  {
+    "description": "3.1 @every second @on primeMinute, base time not aligned",
+    "expression": "@every second @on primeMinute",
+    "baseTimeUtcStr": "2025-03-07 22:20:35",
+    "expectedDateTimeStrs": ["2025-03-07 22:23:00", "2025-03-07 22:23:01", "2025-03-07 22:23:02"]
+  },
+  {
+    "description": "3.2 @every second @on primeHour, base time not aligned",
+    "expression": "@every second @on primeHour",
+    "baseTimeUtcStr": "2025-03-07 20:17:35",
+    "expectedDateTimeStrs": ["2025-03-07 23:00:00", "2025-03-07 23:00:01", "2025-03-07 23:00:02"]
+  },
+  {
+    "description": "3.3 @every second @on weekend, base time not aligned",
+    "expression": "@every second @on weekend",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-08 00:00:00", "2025-03-08 00:00:01", "2025-03-08 00:00:02"]
+  },
+  {
+    "description": "3.4 @every 7 seconds @on evenMinute, base time not aligned",
+    "expression": "@every 7 seconds @on evenMinute",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-07 22:18:00", "2025-03-07 22:18:07", "2025-03-07 22:18:14", "2025-03-07 22:18:21", "2025-03-07 22:18:28", "2025-03-07 22:18:35", "2025-03-07 22:18:42", "2025-03-07 22:18:49", "2025-03-07 22:18:56", "2025-03-07 22:20:00"]
+  },
+  {
+    "description": "3.5 @every minute @on primeHour, base time not aligned",
+    "expression": "@every minute @on primeHour",
+    "baseTimeUtcStr": "2025-03-07 20:17:35",
+    "expectedDateTimeStrs": ["2025-03-07 23:00:35", "2025-03-07 23:01:35", "2025-03-07 23:02:35"]
+  },
+  {
+    "description": "3.6 @every minute @on primeDay, base time not aligned",
+    "expression": "@every minute @on primeDay",
+    "baseTimeUtcStr": "2025-03-08 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-11 00:00:35", "2025-03-11 00:01:35", "2025-03-11 00:02:35"]
+  },
+  {
+    "description": "3.7 @every minute @on weekend, base time not aligned",
+    "expression": "@every minute @on weekend",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-08 00:00:35", "2025-03-08 00:01:35", "2025-03-08 00:02:35"]
+  },
+  {
+    "description": "3.8 @every minute @on holiday, base time not aligned",
+    "expression": "@every minute @on holiday",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-04-18 00:00:35", "2025-04-18 00:01:35", "2025-04-18 00:02:35"]
+  },
+  {
+    "description": "3.9 @every 5 minutes @on weekend, base time not aligned",
+    "expression": "@every 5 minutes @on weekend",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-08 00:00:35", "2025-03-08 00:05:35", "2025-03-08 00:10:35"]
+  },
+  {
+    "description": "3.10 @every hour @on primeDay, base time not aligned",
+    "expression": "@every hour @on primeDay",
+    "baseTimeUtcStr": "2025-03-08 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-11 00:17:35", "2025-03-11 01:17:35", "2025-03-11 02:17:35"]
+  },
+  {
+    "description": "3.11 @every hour @on weekend, base time not aligned",
+    "expression": "@every hour @on weekend",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-08 00:17:35", "2025-03-08 01:17:35", "2025-03-08 02:17:35"]
+  },
+  {
+    "description": "3.12 @every hour @on holiday, base time not aligned",
+    "expression": "@every hour @on holiday",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-04-18 00:17:35", "2025-04-18 01:17:35", "2025-04-18 02:17:35"]
+  },
+  {
+    "description": "3.13 @every hour @on businessDay, base time not aligned",
+    "expression": "@every hour @on businessDay",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-07 23:17:35", "2025-03-10 00:17:35", "2025-03-10 01:17:35", "2025-03-10 02:17:35"]
+  },
+  {
+    "description": "3.14 @every hour @on firstDayOfQuarter, base time not aligned",
+    "expression": "@every hour @on firstDayOfQuarter",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-04-01 00:17:35", "2025-04-01 01:17:35", "2025-04-01 02:17:35"]
+  },
+  {
+    "description": "3.15 @every hour @on summer, base time not aligned",
+    "expression": "@every hour @on summer",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-06-01 00:17:35", "2025-06-01 01:17:35", "2025-06-01 02:17:35"]
+  },
+  {
+    "description": "3.16 @every 2 hours @on primeDay, base time not aligned",
+    "expression": "@every 2 hours @on primeDay",
+    "baseTimeUtcStr": "2025-03-08 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-11 00:17:35", "2025-03-11 02:17:35", "2025-03-11 04:17:35"]
+  },
+  {
+    "description": "3.17 @every minute @on primeMinute, same time unit, base time not aligned",
+    "expression": "@every minute @on primeMinute",
+    "baseTimeUtcStr": "2025-03-07 22:23:35",
+    "expectedDateTimeStrs": ["2025-03-07 22:29:35", "2025-03-07 22:31:35", "2025-03-07 22:37:35", "2025-03-07 22:41:35"]
+  },
+  {
+    "description": "3.18 @every hour @on officeHours, same time unit, base time not aligned",
+    "expression": "@every hour @on officeHours",
+    "baseTimeUtcStr": "2025-03-06 16:20:35",
+    "expectedDateTimeStrs": ["2025-03-06 17:20:35", "2025-03-07 09:20:35", "2025-03-07 10:20:35", "2025-03-07 11:20:35"]
+  },
+  {
+    "description": "3.19 @every hour @on primeHour, same time unit, base time not aligned",
+    "expression": "@every hour @on primeHour",
+    "baseTimeUtcStr": "2025-03-07 13:20:00",
+    "expectedDateTimeStrs": ["2025-03-07 17:20:00", "2025-03-07 19:20:00", "2025-03-07 23:20:00", "2025-03-08 02:20:00"]
+  },
+  {
+    "description": "3.20 @every 3 hours @on officeHours, same time unit, base time not aligned",
+    "expression": "@every 3 hours @on officeHours",
+    "baseTimeUtcStr": "2025-03-06 08:45:10",
+    "expectedDateTimeStrs": ["2025-03-06 09:45:10", "2025-03-06 12:45:10", "2025-03-06 15:45:10", "2025-03-07 09:45:10", "2025-03-07 12:45:10"]
+  },
+  {
+    "description": "3.21 @every day @on businessDay, same time unit, base time not aligned",
+    "expression": "@every day @on businessDay",
+    "baseTimeUtcStr": "2025-04-16 22:17:35",
+    "expectedDateTimeStrs": ["2025-04-17 22:17:35", "2025-04-22 22:17:35", "2025-04-23 22:17:35", "2025-04-24 22:17:35"]
+  },
+  {
+    "description": "3.22 @every 2 days @on weekend, same time unit, base time not aligned",
+    "expression": "@every 2 days @on weekend",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-08 22:17:35", "2025-03-15 22:17:35", "2025-03-22 22:17:35", "2025-03-29 22:17:35"]
+  },
+  {
+    "description": "3.23 @every hour @on [officeHours, saturday], base time not aligned",
+    "expression": "@every hour @on [officeHours, saturday]",
+    "baseTimeUtcStr": "2025-01-03 15:20:35",
+    "expectedDateTimeStrs": ["2025-01-03 16:20:35", "2025-01-03 17:20:35", "2025-01-04 00:20:35", "2025-01-04 01:20:35", "2025-01-04 02:20:35", "2025-01-04 03:20:35"]
+  },
+  {
+    "description": "3.24 @every day @on [holiday, 15th], base time not aligned",
+    "expression": "@every day @on [holiday, 15th]",
+    "baseTimeUtcStr": "2025-04-14 22:17:35",
+    "expectedDateTimeStrs": ["2025-04-15 22:17:35", "2025-04-18 22:17:35", "2025-04-21 22:17:35", "2025-05-01 22:17:35"]
+  },
+  {
+    "description": "3.25 @every day @on leapYear, base time not aligned",
+    "expression": "@every day @on leapYear",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2028-01-01 22:17:35", "2028-01-02 22:17:35", "2028-01-03 22:17:35"]
+  },
+  {
+    "description": "3.26 @every day @on q4, base time not aligned",
+    "expression": "@every day @on q4",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-10-01 22:17:35", "2025-10-02 22:17:35", "2025-10-03 22:17:35"]
+  },
+  {
+    "description": "4.1 @every day @on primeDay @at 09:00",
+    "expression": "@every day @on primeDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-05 09:00:00", "2025-01-07 09:00:00"]
+  },
+  {
+    "description": "4.2 @every day @on evenDay @at 09:00",
+    "expression": "@every day @on evenDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-04 09:00:00", "2025-01-06 09:00:00", "2025-01-08 09:00:00"]
+  },
+  {
+    "description": "4.3 @every day @on oddDay @at 09:00",
+    "expression": "@every day @on oddDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-03 09:00:00", "2025-01-05 09:00:00", "2025-01-07 09:00:00"]
+  },
+  {
+    "description": "4.4 @every day @on fibonacciDay @at 09:00",
+    "expression": "@every day @on fibonacciDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-05 09:00:00"]
+  },
+  {
+    "description": "4.5 @every day @on twinDay @at 09:00",
+    "expression": "@every day @on twinDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-11 09:00:00", "2025-01-22 09:00:00", "2025-02-11 09:00:00", "2025-02-22 09:00:00"]
+  },
+  {
+    "description": "4.6 @every day @on holiday @at 09:00",
+    "expression": "@every day @on holiday @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-05-01 09:00:00"]
+  },
+  {
+    "description": "4.7 @every day @on weekend @at 09:00",
+    "expression": "@every day @on weekend @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-11 09:00:00", "2025-01-12 09:00:00"]
+  },
+  {
+    "description": "4.8 @every day @on businessDay @at 09:00",
+    "expression": "@every day @on businessDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-06 09:00:00", "2025-01-07 09:00:00"]
+  },
+  {
+    "description": "4.9 @every day @on lastBusinessDay @at 09:00",
+    "expression": "@every day @on lastBusinessDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-31 09:00:00", "2025-02-28 09:00:00", "2025-03-31 09:00:00", "2025-04-30 09:00:00"]
+  },
+  {
+    "description": "4.10 @every day @on fridayThe13th @at 09:00",
+    "expression": "@every day @on fridayThe13th @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 09:00:00", "2026-02-13 09:00:00", "2026-03-13 09:00:00", "2026-11-13 09:00:00"]
+  },
+  {
+    "description": "4.11 @every day @on firstDayOfQuarter @at 09:00",
+    "expression": "@every day @on firstDayOfQuarter @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-01 09:00:00", "2025-07-01 09:00:00", "2025-10-01 09:00:00"]
+  },
+  {
+    "description": "4.12 @every day @on lastDayOfQuarter @at 09:00",
+    "expression": "@every day @on lastDayOfQuarter @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-31 09:00:00", "2025-06-30 09:00:00", "2025-09-30 09:00:00", "2025-12-31 09:00:00"]
+  },
+  {
+    "description": "4.13 @every day @on payday @at 09:00",
+    "expression": "@every day @on payday @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-15 09:00:00", "2025-01-31 09:00:00", "2025-02-15 09:00:00", "2025-02-28 09:00:00"]
+  },
+  {
+    "description": "4.14 @every day @on leapDay @at 09:00",
+    "expression": "@every day @on leapDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2028-02-29 09:00:00", "2032-02-29 09:00:00", "2036-02-29 09:00:00", "2040-02-29 09:00:00"]
+  },
+  {
+    "description": "4.15 @every day @on midweek @at 09:00",
+    "expression": "@every day @on midweek @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-02 09:00:00", "2025-01-07 09:00:00", "2025-01-08 09:00:00"]
+  },
+  {
+    "description": "4.16 @every day @on quarter @at 09:00",
+    "expression": "@every day @on quarter @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-04 09:00:00"]
+  },
+  {
+    "description": "4.17 @every day @on summer @at 09:00",
+    "expression": "@every day @on summer @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-01 09:00:00", "2025-06-02 09:00:00", "2025-06-03 09:00:00", "2025-06-04 09:00:00"]
+  },
+  {
+    "description": "4.18 @every day @on primeMonth @at 09:00",
+    "expression": "@every day @on primeMonth @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-02-01 09:00:00", "2025-02-02 09:00:00", "2025-02-03 09:00:00", "2025-02-04 09:00:00"]
+  },
+  {
+    "description": "4.19 @every day @on q1 @at 09:00",
+    "expression": "@every day @on q1 @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-04 09:00:00"]
+  },
+  {
+    "description": "4.20 @every day @on q2 @at 09:00",
+    "expression": "@every day @on q2 @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-01 09:00:00", "2025-04-02 09:00:00", "2025-04-03 09:00:00", "2025-04-04 09:00:00"]
+  },
+  {
+    "description": "4.21 @every day @on q3 @at 09:00",
+    "expression": "@every day @on q3 @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 09:00:00", "2025-07-02 09:00:00", "2025-07-03 09:00:00", "2025-07-04 09:00:00"]
+  },
+  {
+    "description": "4.22 @every day @on q4 @at 09:00",
+    "expression": "@every day @on q4 @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-10-01 09:00:00", "2025-10-02 09:00:00", "2025-10-03 09:00:00", "2025-10-04 09:00:00"]
+  },
+  {
+    "description": "4.23 @every day @on h2 @at 09:00",
+    "expression": "@every day @on h2 @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 09:00:00", "2025-07-02 09:00:00", "2025-07-03 09:00:00", "2025-07-04 09:00:00"]
+  },
+  {
+    "description": "4.24 @every day @on leapYear @at 09:00",
+    "expression": "@every day @on leapYear @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2028-01-01 09:00:00", "2028-01-02 09:00:00", "2028-01-03 09:00:00", "2028-01-04 09:00:00"]
+  },
+  {
+    "description": "4.25 @on businessDay @at two times",
+    "expression": "@every day @on businessDay @at [09:00, 17:30]",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-02 17:30:00", "2025-01-03 09:00:00", "2025-01-03 17:30:00", "2025-01-06 09:00:00", "2025-01-06 17:30:00"]
+  },
+  {
+    "description": "4.26 @on weekend @at three times",
+    "expression": "@every day @on weekend @at [08:00, 12:00, 20:00]",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 08:00:00", "2025-01-04 12:00:00", "2025-01-04 20:00:00", "2025-01-05 08:00:00", "2025-01-05 12:00:00", "2025-01-05 20:00:00", "2025-01-11 08:00:00"]
+  },
+  {
+    "description": "4.27 @on payday with pm time",
+    "expression": "@every day @on payday @at 6:15pm",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-15 18:15:00", "2025-01-31 18:15:00", "2025-02-15 18:15:00", "2025-02-28 18:15:00"]
+  },
+  {
+    "description": "4.28 @on primeDay @at midnight, base time on a prime day",
+    "expression": "@every day @on primeDay @at 00:00",
+    "baseTimeUtcStr": "2025-01-02 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-03 00:00:00", "2025-01-05 00:00:00", "2025-01-07 00:00:00", "2025-01-11 00:00:00", "2025-01-13 00:00:00", "2025-01-17 00:00:00"]
+  },
+  {
+    "description": "4.29 @on holiday, base time after the time on a holiday",
+    "expression": "@every day @on holiday @at 09:00",
+    "baseTimeUtcStr": "2025-04-18 09:00:00",
+    "expectedDateTimeStrs": ["2025-04-21 09:00:00", "2025-05-01 09:00:00", "2025-12-25 09:00:00", "2025-12-26 09:00:00"]
+  },
+  {
+    "description": "4.30 @on lastBusinessDay @at 17:00, base time at noon",
+    "expression": "@every day @on lastBusinessDay @at 17:00",
+    "baseTimeUtcStr": "2025-06-13 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-30 17:00:00", "2025-07-31 17:00:00", "2025-08-29 17:00:00", "2025-09-30 17:00:00", "2025-10-31 17:00:00", "2025-11-28 17:00:00"]
+  },
+  {
+    "description": "4.31 @in keyword is the same as @on",
+    "expression": "@every day @in summer @at 07:30",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-01 07:30:00", "2025-06-02 07:30:00", "2025-06-03 07:30:00", "2025-06-04 07:30:00"]
+  },
+  {
+    "description": "4.32 @at keyword is the same as @on",
+    "expression": "@every day @at weekend @at 10:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 10:00:00", "2025-01-05 10:00:00", "2025-01-11 10:00:00", "2025-01-12 10:00:00"]
+  },
+  {
+    "description": "5.1 @every primeDay @at 09:00",
+    "expression": "@every primeDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-05 09:00:00", "2025-01-07 09:00:00"]
+  },
+  {
+    "description": "5.2 @every evenDay @at 09:00",
+    "expression": "@every evenDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-04 09:00:00", "2025-01-06 09:00:00", "2025-01-08 09:00:00"]
+  },
+  {
+    "description": "5.3 @every fibonacciDay @at 09:00",
+    "expression": "@every fibonacciDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-05 09:00:00"]
+  },
+  {
+    "description": "5.4 @every holiday @at 09:00",
+    "expression": "@every holiday @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-05-01 09:00:00"]
+  },
+  {
+    "description": "5.5 @every weekend @at 09:00",
+    "expression": "@every weekend @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-11 09:00:00", "2025-01-12 09:00:00"]
+  },
+  {
+    "description": "5.6 @every businessDay @at 09:00",
+    "expression": "@every businessDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-06 09:00:00", "2025-01-07 09:00:00"]
+  },
+  {
+    "description": "5.7 @every lastBusinessDay @at 09:00",
+    "expression": "@every lastBusinessDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-31 09:00:00", "2025-02-28 09:00:00", "2025-03-31 09:00:00", "2025-04-30 09:00:00"]
+  },
+  {
+    "description": "5.8 @every fridayThe13th @at 09:00",
+    "expression": "@every fridayThe13th @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 09:00:00", "2026-02-13 09:00:00", "2026-03-13 09:00:00", "2026-11-13 09:00:00"]
+  },
+  {
+    "description": "5.9 @every firstDayOfQuarter @at 09:00",
+    "expression": "@every firstDayOfQuarter @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-01 09:00:00", "2025-07-01 09:00:00", "2025-10-01 09:00:00"]
+  },
+  {
+    "description": "5.10 @every lastDayOfQuarter @at 09:00",
+    "expression": "@every lastDayOfQuarter @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-31 09:00:00", "2025-06-30 09:00:00", "2025-09-30 09:00:00", "2025-12-31 09:00:00"]
+  },
+  {
+    "description": "5.11 @every payday @at 09:00",
+    "expression": "@every payday @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-15 09:00:00", "2025-01-31 09:00:00", "2025-02-15 09:00:00", "2025-02-28 09:00:00"]
+  },
+  {
+    "description": "5.12 @every leapDay @at 09:00",
+    "expression": "@every leapDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2028-02-29 09:00:00", "2032-02-29 09:00:00", "2036-02-29 09:00:00", "2040-02-29 09:00:00"]
+  },
+  {
+    "description": "5.13 @every twinDay @at 09:00",
+    "expression": "@every twinDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-11 09:00:00", "2025-01-22 09:00:00", "2025-02-11 09:00:00", "2025-02-22 09:00:00"]
+  },
+  {
+    "description": "5.14 @every primeSecond",
+    "expression": "@every primeSecond",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:02", "2025-01-01 00:00:03", "2025-01-01 00:00:05", "2025-01-01 00:00:07", "2025-01-01 00:00:11", "2025-01-01 00:00:13"]
+  },
+  {
+    "description": "5.15 @every evenSecond",
+    "expression": "@every evenSecond",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:02", "2025-01-01 00:00:04", "2025-01-01 00:00:06", "2025-01-01 00:00:08", "2025-01-01 00:00:10"]
+  },
+  {
+    "description": "5.16 @every primeMinute",
+    "expression": "@every primeMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:02:00", "2025-01-01 00:03:00", "2025-01-01 00:05:00", "2025-01-01 00:07:00", "2025-01-01 00:11:00", "2025-01-01 00:13:00"]
+  },
+  {
+    "description": "5.17 @every quarterHour",
+    "expression": "@every quarterHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:15:00", "2025-01-01 00:30:00", "2025-01-01 00:45:00", "2025-01-01 01:00:00", "2025-01-01 01:15:00", "2025-01-01 01:30:00"]
+  },
+  {
+    "description": "5.18 @every primeHour",
+    "expression": "@every primeHour",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 02:00:00", "2025-01-01 03:00:00", "2025-01-01 05:00:00", "2025-01-01 07:00:00", "2025-01-01 11:00:00", "2025-01-01 13:00:00", "2025-01-01 17:00:00", "2025-01-01 19:00:00", "2025-01-01 23:00:00", "2025-01-02 02:00:00"]
+  },
+  {
+    "description": "5.19 @every officeHours",
+    "expression": "@every officeHours",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-01 10:00:00", "2025-01-01 11:00:00", "2025-01-01 12:00:00", "2025-01-01 13:00:00", "2025-01-01 14:00:00", "2025-01-01 15:00:00", "2025-01-01 16:00:00", "2025-01-01 17:00:00", "2025-01-02 09:00:00"]
+  },
+  {
+    "description": "5.20 @every nightShift",
+    "expression": "@every nightShift",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 01:00:00", "2025-01-01 02:00:00", "2025-01-01 03:00:00", "2025-01-01 04:00:00", "2025-01-01 05:00:00", "2025-01-01 22:00:00", "2025-01-01 23:00:00", "2025-01-02 00:00:00", "2025-01-02 01:00:00"]
+  },
+  {
+    "description": "5.21 @every quarter @on 1st @at 09:00",
+    "expression": "@every quarter @on 1st @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-01 09:00:00", "2025-07-01 09:00:00", "2025-10-01 09:00:00"]
+  },
+  {
+    "description": "5.22 @every primeMonth @on 1st @at 09:00",
+    "expression": "@every primeMonth @on 1st @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-02-01 09:00:00", "2025-03-01 09:00:00", "2025-05-01 09:00:00", "2025-07-01 09:00:00", "2025-11-01 09:00:00"]
+  },
+  {
+    "description": "5.23 @every list of keywords",
+    "expression": "@every [primeDay, weekend] @at 12:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 12:00:00", "2025-01-03 12:00:00", "2025-01-04 12:00:00", "2025-01-05 12:00:00", "2025-01-07 12:00:00", "2025-01-11 12:00:00", "2025-01-12 12:00:00", "2025-01-13 12:00:00"]
+  },
+  {
+    "description": "5.24 @every list with a keyword and a day",
+    "expression": "@every [holiday, 15th] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-15 09:00:00", "2025-02-15 09:00:00", "2025-03-15 09:00:00", "2025-04-15 09:00:00", "2025-04-18 09:00:00"]
+  },
+  {
+    "description": "5.25 @every list with a keyword and a weekday",
+    "expression": "@every [holiday, friday] @at 09:00",
+    "baseTimeUtcStr": "2025-04-14 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-04-25 09:00:00", "2025-05-01 09:00:00", "2025-05-02 09:00:00"]
+  },
+  {
+    "description": "5.26 @every keyword with two times",
+    "expression": "@every businessDay @at [09:00, 17:30]",
+    "baseTimeUtcStr": "2025-04-17 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-17 09:00:00", "2025-04-17 17:30:00", "2025-04-22 09:00:00", "2025-04-22 17:30:00", "2025-04-23 09:00:00", "2025-04-23 17:30:00"]
+  },
+  {
+    "description": "6.1 @on list of day keywords",
+    "expression": "@every day @on [primeDay, weekend] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-07 09:00:00", "2025-01-11 09:00:00", "2025-01-12 09:00:00", "2025-01-13 09:00:00"]
+  },
+  {
+    "description": "6.2 @on [holiday, payday]",
+    "expression": "@every day @on [holiday, payday] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-15 09:00:00", "2025-01-31 09:00:00", "2025-02-15 09:00:00", "2025-02-28 09:00:00", "2025-03-15 09:00:00"]
+  },
+  {
+    "description": "6.3 @on three rare keywords",
+    "expression": "@every day @on [fridayThe13th, leapDay, firstDayOfQuarter] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-01 09:00:00", "2025-06-13 09:00:00", "2025-07-01 09:00:00", "2025-10-01 09:00:00", "2026-01-01 09:00:00"]
+  },
+  {
+    "description": "6.4 @on [firstDayOfQuarter, lastDayOfQuarter]",
+    "expression": "@every day @on [firstDayOfQuarter, lastDayOfQuarter] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-03-31 09:00:00", "2025-04-01 09:00:00", "2025-06-30 09:00:00", "2025-07-01 09:00:00", "2025-09-30 09:00:00"]
+  },
+  {
+    "description": "6.5 @on list of keywords with different time units: second and minute",
+    "expression": "@every second @on [primeSecond, quarterHour]",
+    "baseTimeUtcStr": "2025-01-01 00:14:55",
+    "expectedDateTimeStrs": ["2025-01-01 00:14:59", "2025-01-01 00:15:00", "2025-01-01 00:15:01", "2025-01-01 00:15:02", "2025-01-01 00:15:03", "2025-01-01 00:15:04", "2025-01-01 00:15:05", "2025-01-01 00:15:06"]
+  },
+  {
+    "description": "6.6 @on list of keywords with different time units: minute and hour",
+    "expression": "@every minute @on [primeMinute, lunchtime]",
+    "baseTimeUtcStr": "2025-01-01 11:55:00",
+    "expectedDateTimeStrs": ["2025-01-01 11:59:00", "2025-01-01 12:00:00", "2025-01-01 12:01:00", "2025-01-01 12:02:00", "2025-01-01 12:03:00", "2025-01-01 12:04:00"]
+  },
+  {
+    "description": "6.7 @on list of keywords with different time units: hour and day",
+    "expression": "@every hour @on [nightShift, weekend]",
+    "baseTimeUtcStr": "2025-01-03 20:00:00",
+    "expectedDateTimeStrs": ["2025-01-03 22:00:00", "2025-01-03 23:00:00", "2025-01-04 00:00:00", "2025-01-04 01:00:00", "2025-01-04 02:00:00", "2025-01-04 03:00:00", "2025-01-04 04:00:00", "2025-01-04 05:00:00", "2025-01-04 06:00:00", "2025-01-04 07:00:00", "2025-01-04 08:00:00", "2025-01-04 09:00:00"]
+  },
+  {
+    "description": "6.8 @on list of month keywords",
+    "expression": "@every day @on [q1, q3] @at 09:00",
+    "baseTimeUtcStr": "2025-03-30 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-30 09:00:00", "2025-03-31 09:00:00", "2025-07-01 09:00:00", "2025-07-02 09:00:00"]
+  },
+  {
+    "description": "6.9 @on list with the same keyword twice",
+    "expression": "@every day @on [holiday, holiday] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-05-01 09:00:00"]
+  },
+  {
+    "description": "6.10 @on list with two keywords for the same condition",
+    "expression": "@every day @on [holiday, holidays] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-05-01 09:00:00"]
+  },
+  {
+    "description": "7.1 @on [holiday, 15th]",
+    "expression": "@every day @on [holiday, 15th] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-15 09:00:00", "2025-02-15 09:00:00", "2025-03-15 09:00:00", "2025-04-15 09:00:00", "2025-04-18 09:00:00"]
+  },
+  {
+    "description": "7.2 @on [primeDay, friday]",
+    "expression": "@every day @on [primeDay, friday] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-05 09:00:00", "2025-01-07 09:00:00", "2025-01-10 09:00:00", "2025-01-11 09:00:00", "2025-01-13 09:00:00", "2025-01-17 09:00:00"]
+  },
+  {
+    "description": "7.3 @on [weekend, 1st, 15th]",
+    "expression": "@every day @on [weekend, 1st, 15th] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-11 09:00:00", "2025-01-12 09:00:00", "2025-01-15 09:00:00", "2025-01-18 09:00:00", "2025-01-19 09:00:00"]
+  },
+  {
+    "description": "7.4 @on [firstDayOfQuarter, LastDay]",
+    "expression": "@every day @on [firstDayOfQuarter, LastDay] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-31 09:00:00", "2025-02-28 09:00:00", "2025-03-31 09:00:00", "2025-04-01 09:00:00", "2025-04-30 09:00:00"]
+  },
+  {
+    "description": "7.5 @on [20th, holiday, 22nd, twinDay]",
+    "expression": "@every day @on [20th, holiday, 22nd, twinDay] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-11 09:00:00", "2025-01-20 09:00:00", "2025-01-22 09:00:00", "2025-02-11 09:00:00", "2025-02-20 09:00:00", "2025-02-22 09:00:00", "2025-03-11 09:00:00"]
+  },
+  {
+    "description": "7.6 @on [payday, monday, wednesday]",
+    "expression": "@every day @on [payday, monday, wednesday] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-06 09:00:00", "2025-01-08 09:00:00", "2025-01-13 09:00:00", "2025-01-15 09:00:00", "2025-01-20 09:00:00", "2025-01-22 09:00:00", "2025-01-27 09:00:00"]
+  },
+  {
+    "description": "7.7 @on [holiday, 1stMonday]",
+    "expression": "@every day @on [holiday, 1stMonday] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-06 09:00:00", "2025-02-03 09:00:00", "2025-03-03 09:00:00", "2025-04-07 09:00:00", "2025-04-18 09:00:00"]
+  },
+  {
+    "description": "7.8 @every hour @on [officeHours, saturday]",
+    "expression": "@every hour @on [officeHours, saturday]",
+    "baseTimeUtcStr": "2025-01-03 15:00:00",
+    "expectedDateTimeStrs": ["2025-01-03 16:00:00", "2025-01-03 17:00:00", "2025-01-04 00:00:00", "2025-01-04 01:00:00", "2025-01-04 02:00:00", "2025-01-04 03:00:00", "2025-01-04 04:00:00", "2025-01-04 05:00:00"]
+  },
+  {
+    "description": "7.9 @every hour @on [weekend, 15th]",
+    "expression": "@every hour @on [weekend, 15th]",
+    "baseTimeUtcStr": "2025-01-14 22:00:00",
+    "expectedDateTimeStrs": ["2025-01-15 00:00:00", "2025-01-15 01:00:00", "2025-01-15 02:00:00", "2025-01-15 03:00:00"]
+  },
+  {
+    "description": "8.1 @every day @at 09:00 @except weekend",
+    "expression": "@every day @at 09:00 @except weekend",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-06 09:00:00", "2025-01-07 09:00:00", "2025-01-08 09:00:00"]
+  },
+  {
+    "description": "8.2 @every day @at 09:00 @except holiday",
+    "expression": "@every day @at 09:00 @except holiday",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-06 09:00:00", "2025-01-07 09:00:00"]
+  },
+  {
+    "description": "8.3 @every day @at 09:00 @except primeDay",
+    "expression": "@every day @at 09:00 @except primeDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-04 09:00:00", "2025-01-06 09:00:00", "2025-01-08 09:00:00", "2025-01-09 09:00:00", "2025-01-10 09:00:00"]
+  },
+  {
+    "description": "8.4 @every day @at 09:00 @except evenDay",
+    "expression": "@every day @at 09:00 @except evenDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-03 09:00:00", "2025-01-05 09:00:00", "2025-01-07 09:00:00", "2025-01-09 09:00:00", "2025-01-11 09:00:00"]
+  },
+  {
+    "description": "8.5 @every day @at 09:00 @except businessDay",
+    "expression": "@every day @at 09:00 @except businessDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-11 09:00:00", "2025-01-12 09:00:00", "2025-01-18 09:00:00"]
+  },
+  {
+    "description": "8.6 @every day @at 09:00 @except fridayThe13th",
+    "expression": "@every day @at 09:00 @except fridayThe13th",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-06 09:00:00"]
+  },
+  {
+    "description": "8.7 @every day @at 09:00 @except payday",
+    "expression": "@every day @at 09:00 @except payday",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-06 09:00:00"]
+  },
+  {
+    "description": "8.8 @every day @at 09:00 @except summer",
+    "expression": "@every day @at 09:00 @except summer",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-06 09:00:00"]
+  },
+  {
+    "description": "8.9 @every day @at 09:00 @except q1",
+    "expression": "@every day @at 09:00 @except q1",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-01 09:00:00", "2025-04-02 09:00:00", "2025-04-03 09:00:00", "2025-04-04 09:00:00", "2025-04-05 09:00:00", "2025-04-06 09:00:00"]
+  },
+  {
+    "description": "8.10 @every day @at 09:00 @except midweek",
+    "expression": "@every day @at 09:00 @except midweek",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-03 09:00:00", "2025-01-04 09:00:00", "2025-01-05 09:00:00", "2025-01-06 09:00:00", "2025-01-10 09:00:00", "2025-01-11 09:00:00"]
+  },
+  {
+    "description": "8.11 @every day @at 09:00 @except fibonacciDay",
+    "expression": "@every day @at 09:00 @except fibonacciDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 09:00:00", "2025-01-06 09:00:00", "2025-01-07 09:00:00", "2025-01-09 09:00:00", "2025-01-10 09:00:00", "2025-01-11 09:00:00"]
+  },
+  {
+    "description": "8.12 @except leapYear skips whole years",
+    "expression": "@every day @at 09:00 @except leapYear",
+    "baseTimeUtcStr": "2027-12-30 00:00:00",
+    "expectedDateTimeStrs": ["2027-12-30 09:00:00", "2027-12-31 09:00:00", "2029-01-01 09:00:00", "2029-01-02 09:00:00"]
+  },
+  {
+    "description": "8.13 @except list of keywords",
+    "expression": "@every day @at 09:00 @except [weekend, holiday]",
+    "baseTimeUtcStr": "2025-04-16 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-16 09:00:00", "2025-04-17 09:00:00", "2025-04-22 09:00:00", "2025-04-23 09:00:00", "2025-04-24 09:00:00", "2025-04-25 09:00:00"]
+  },
+  {
+    "description": "8.14 @except list with a keyword and a weekday",
+    "expression": "@every day @at 09:00 @except [holiday, friday]",
+    "baseTimeUtcStr": "2025-04-16 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-16 09:00:00", "2025-04-17 09:00:00", "2025-04-19 09:00:00", "2025-04-20 09:00:00", "2025-04-22 09:00:00", "2025-04-23 09:00:00"]
+  },
+  {
+    "description": "8.15 @except list with a keyword and days",
+    "expression": "@every day @at 09:00 @except [weekend, 1st, 15th]",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-06 09:00:00", "2025-01-07 09:00:00", "2025-01-08 09:00:00", "2025-01-09 09:00:00", "2025-01-10 09:00:00", "2025-01-13 09:00:00"]
+  },
+  {
+    "description": "8.16 two @except rules",
+    "expression": "@every day @at 09:00 @except weekend @except holiday",
+    "baseTimeUtcStr": "2025-04-16 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-16 09:00:00", "2025-04-17 09:00:00", "2025-04-22 09:00:00", "2025-04-23 09:00:00", "2025-04-24 09:00:00", "2025-04-25 09:00:00"]
+  },
+  {
+    "description": "8.17 @except keyword and @except built-in values",
+    "expression": "@every day @at 09:00 @except holiday @except [saturday, sunday]",
+    "baseTimeUtcStr": "2025-04-16 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-16 09:00:00", "2025-04-17 09:00:00", "2025-04-22 09:00:00", "2025-04-23 09:00:00", "2025-04-24 09:00:00", "2025-04-25 09:00:00"]
+  },
+  {
+    "description": "8.18 @every hour @except nightShift",
+    "expression": "@every hour @except nightShift",
+    "baseTimeUtcStr": "2025-01-01 20:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 21:00:00", "2025-01-02 06:00:00", "2025-01-02 07:00:00", "2025-01-02 08:00:00", "2025-01-02 09:00:00", "2025-01-02 10:00:00"]
+  },
+  {
+    "description": "8.19 @every hour @except [nightShift, weekend]",
+    "expression": "@every hour @except [nightShift, weekend]",
+    "baseTimeUtcStr": "2025-01-03 20:00:00",
+    "expectedDateTimeStrs": ["2025-01-03 21:00:00", "2025-01-06 06:00:00", "2025-01-06 07:00:00", "2025-01-06 08:00:00"]
+  },
+  {
+    "description": "8.20 @every 15 minutes @except officeHours",
+    "expression": "@every 15 minutes @except officeHours",
+    "baseTimeUtcStr": "2025-01-01 08:30:00",
+    "expectedDateTimeStrs": ["2025-01-01 08:45:00", "2025-01-01 18:00:00", "2025-01-01 18:15:00", "2025-01-01 18:30:00"]
+  },
+  {
+    "description": "8.21 @every second @except primeSecond",
+    "expression": "@every second @except primeSecond",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:01", "2025-01-01 00:00:04", "2025-01-01 00:00:06", "2025-01-01 00:00:08", "2025-01-01 00:00:09", "2025-01-01 00:00:10", "2025-01-01 00:00:12", "2025-01-01 00:00:14"]
+  },
+  {
+    "description": "8.22 @every minute @except [primeMinute, evenMinute]",
+    "expression": "@every minute @except [primeMinute, evenMinute]",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:01:00", "2025-01-01 00:09:00", "2025-01-01 00:15:00", "2025-01-01 00:21:00", "2025-01-01 00:25:00", "2025-01-01 00:27:00", "2025-01-01 00:33:00", "2025-01-01 00:35:00"]
+  },
+  {
+    "description": "8.23 @except keeps the cadence: @every 2 hours @except primeHour",
+    "expression": "@every 2 hours @except primeHour",
+    "baseTimeUtcStr": "2025-01-01 01:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-01 15:00:00", "2025-01-01 21:00:00", "2025-01-02 01:00:00", "2025-01-02 09:00:00", "2025-01-02 15:00:00"]
+  },
+  {
+    "description": "8.24 @except keeps the cadence: @every 10 seconds @except evenMinute",
+    "expression": "@every 10 seconds @except evenMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:35",
+    "expectedDateTimeStrs": ["2025-01-01 00:01:05", "2025-01-01 00:01:15", "2025-01-01 00:01:25", "2025-01-01 00:01:35", "2025-01-01 00:01:45", "2025-01-01 00:01:55", "2025-01-01 00:03:05", "2025-01-01 00:03:15"]
+  },
+  {
+    "description": "8.25 @except keeps the cadence: @every 7 hours @except weekend, base time not aligned",
+    "expression": "@every 7 hours @except weekend",
+    "baseTimeUtcStr": "2025-03-07 22:17:35",
+    "expectedDateTimeStrs": ["2025-03-10 06:17:35", "2025-03-10 13:17:35", "2025-03-10 20:17:35", "2025-03-11 03:17:35", "2025-03-11 10:17:35"]
+  },
+  {
+    "description": "8.26 @on keyword and @except keyword",
+    "expression": "@every day @on businessDay @at 09:00 @except payday",
+    "baseTimeUtcStr": "2025-01-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-13 09:00:00", "2025-01-14 09:00:00", "2025-01-16 09:00:00", "2025-01-17 09:00:00", "2025-01-20 09:00:00", "2025-01-21 09:00:00"]
+  },
+  {
+    "description": "8.27 @every keyword @except keyword",
+    "expression": "@every primeDay @at 09:00 @except weekend",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-07 09:00:00", "2025-01-13 09:00:00", "2025-01-17 09:00:00", "2025-01-23 09:00:00", "2025-01-29 09:00:00", "2025-01-31 09:00:00"]
+  },
+  {
+    "description": "8.28 @on keyword and two @except rules",
+    "expression": "@every hour @on officeHours @except lunchtime @except weekend",
+    "baseTimeUtcStr": "2025-01-03 10:00:00",
+    "expectedDateTimeStrs": ["2025-01-03 11:00:00", "2025-01-03 13:00:00", "2025-01-03 14:00:00", "2025-01-03 15:00:00", "2025-01-03 16:00:00", "2025-01-03 17:00:00", "2025-01-06 09:00:00", "2025-01-06 10:00:00", "2025-01-06 11:00:00", "2025-01-06 13:00:00"]
+  },
+  {
+    "description": "8.29 @except everything but the keyword",
+    "expression": "@every day @at 09:00 @except [businessDay, weekend]",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-05-01 09:00:00"]
+  },
+  {
+    "description": "9.1 two @on keywords",
+    "expression": "@every day @on primeDay @on weekend @at 10:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-05 10:00:00", "2025-01-11 10:00:00", "2025-01-19 10:00:00", "2025-02-02 10:00:00", "2025-02-23 10:00:00", "2025-03-02 10:00:00"]
+  },
+  {
+    "description": "9.2 @on hour keyword and @on day keyword",
+    "expression": "@every hour @on officeHours @on businessDay",
+    "baseTimeUtcStr": "2025-04-17 15:00:00",
+    "expectedDateTimeStrs": ["2025-04-17 16:00:00", "2025-04-17 17:00:00", "2025-04-22 09:00:00", "2025-04-22 10:00:00", "2025-04-22 11:00:00", "2025-04-22 12:00:00"]
+  },
+  {
+    "description": "9.3 @on hour keyword and @on week keyword",
+    "expression": "@every 30 minutes @on officeHours @on midweek",
+    "baseTimeUtcStr": "2025-01-02 17:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 17:30:00", "2025-01-07 09:00:00", "2025-01-07 09:30:00", "2025-01-07 10:00:00"]
+  },
+  {
+    "description": "9.4 @on day keyword and @in month keyword",
+    "expression": "@every day @on evenDay @in summer @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-02 09:00:00", "2025-06-04 09:00:00", "2025-06-06 09:00:00", "2025-06-08 09:00:00"]
+  },
+  {
+    "description": "9.5 @on keyword and @on weekday",
+    "expression": "@every day @on primeDay @on friday @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-03 09:00:00", "2025-01-17 09:00:00", "2025-01-31 09:00:00", "2025-02-07 09:00:00", "2025-03-07 09:00:00"]
+  },
+  {
+    "description": "9.6 @on keyword and @in month",
+    "expression": "@every day @on holiday @in december @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-12-25 09:00:00", "2025-12-26 09:00:00", "2026-12-25 09:00:00"]
+  },
+  {
+    "description": "9.7 three keywords with different time units",
+    "expression": "@every minute @on primeMinute @on primeHour @on primeDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 02:02:00", "2025-01-02 02:03:00", "2025-01-02 02:05:00", "2025-01-02 02:07:00", "2025-01-02 02:11:00"]
+  },
+  {
+    "description": "9.8 @on keyword with @between",
+    "expression": "@every 30 minutes @on businessDay @between 9am and 5pm",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-02 09:30:00", "2025-01-02 10:00:00", "2025-01-02 10:30:00"]
+  },
+  {
+    "description": "9.9 @on keyword with @between months",
+    "expression": "@every day @on payday @between Mar and May @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-15 09:00:00", "2025-03-31 09:00:00", "2025-04-15 09:00:00", "2025-04-30 09:00:00", "2025-05-15 09:00:00", "2025-05-31 09:00:00", "2026-03-15 09:00:00"]
+  },
+  {
+    "description": "9.10 @on list and @on keyword",
+    "expression": "@every day @on [primeDay, twinDay] @on businessDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-07 09:00:00", "2025-01-13 09:00:00", "2025-01-17 09:00:00", "2025-01-22 09:00:00", "2025-01-23 09:00:00", "2025-01-29 09:00:00"]
+  },
+  {
+    "description": "9.11 @on keyword that is always the last business day of a quarter",
+    "expression": "@every day @on lastBusinessDay @on [q1, q2, q3, q4] @in [mar, jun, sep, dec] @at 17:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-31 17:00:00", "2025-06-30 17:00:00", "2025-09-30 17:00:00", "2025-12-31 17:00:00", "2026-03-31 17:00:00"]
+  },
+  {
+    "description": "10.1 @on holiday in Tokyo",
+    "expression": "@every day @on holiday @at 09:00 @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2024-12-30 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:00", "2025-04-18 00:00:00", "2025-04-21 00:00:00", "2025-05-01 00:00:00"]
+  },
+  {
+    "description": "10.2 @every businessDay in Tokyo",
+    "expression": "@every businessDay @at 08:30 @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-04-16 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-16 23:30:00", "2025-04-21 23:30:00", "2025-04-22 23:30:00", "2025-04-23 23:30:00", "2025-04-24 23:30:00", "2025-04-27 23:30:00"]
+  },
+  {
+    "description": "10.3 @every hour @on officeHours in Tokyo",
+    "expression": "@every hour @on officeHours @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-01-01 05:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 06:00:00", "2025-01-01 07:00:00", "2025-01-01 08:00:00", "2025-01-02 00:00:00", "2025-01-02 01:00:00", "2025-01-02 02:00:00", "2025-01-02 03:00:00", "2025-01-02 04:00:00"]
+  },
+  {
+    "description": "10.4 @except weekend in New York",
+    "expression": "@every day @at 09:00 @except weekend @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-12 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-12 13:00:00", "2025-06-13 13:00:00", "2025-06-16 13:00:00", "2025-06-17 13:00:00", "2025-06-18 13:00:00"]
+  },
+  {
+    "description": "10.5 @every primeDay in Lisbon",
+    "expression": "@every primeDay @at 23:30 @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-06-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-02 22:30:00", "2025-06-03 22:30:00", "2025-06-05 22:30:00", "2025-06-07 22:30:00", "2025-06-11 22:30:00"]
+  },
+  {
+    "description": "10.6 @on [holiday, 15th] in Sydney",
+    "expression": "@every day @on [holiday, 15th] @at 06:00 @tz Australia/Sydney",
+    "baseTimeUtcStr": "2025-04-14 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-14 20:00:00", "2025-04-17 20:00:00", "2025-04-20 20:00:00", "2025-04-30 20:00:00", "2025-05-14 20:00:00"]
+  },
+  {
+    "description": "10.7 keyword that looks at the time zone: New York market hours, evaluated in UTC",
+    "expression": "@every hour @on nyMarketOpen",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 14:00:00", "2025-06-13 15:00:00", "2025-06-13 16:00:00", "2025-06-13 17:00:00", "2025-06-13 18:00:00", "2025-06-13 19:00:00", "2025-06-16 14:00:00", "2025-06-16 15:00:00"]
+  },
+  {
+    "description": "10.8 New York market hours every 30 minutes, evaluated in UTC",
+    "expression": "@every 30 minutes @on nyMarketOpen",
+    "baseTimeUtcStr": "2025-06-13 19:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 19:30:00", "2025-06-16 14:00:00", "2025-06-16 14:30:00", "2025-06-16 15:00:00", "2025-06-16 15:30:00"]
+  },
+  {
+    "description": "10.9 New York market hours at a fixed UTC time",
+    "expression": "@every day @on nyMarketOpen @at 15:00",
+    "baseTimeUtcStr": "2025-06-12 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-12 15:00:00", "2025-06-13 15:00:00", "2025-06-16 15:00:00", "2025-06-17 15:00:00", "2025-06-18 15:00:00"]
+  },
+  {
+    "description": "10.10 New York market hours, evaluated in Tokyo",
+    "expression": "@every hour @on nyMarketOpen @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 14:00:00", "2025-06-13 15:00:00", "2025-06-13 16:00:00", "2025-06-13 17:00:00", "2025-06-13 18:00:00", "2025-06-13 19:00:00", "2025-06-16 14:00:00", "2025-06-16 15:00:00"]
+  },
+  {
+    "description": "10.11 @except New York market hours, evaluated in UTC",
+    "expression": "@every 2 hours @except nyMarketOpen",
+    "baseTimeUtcStr": "2025-06-13 10:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 12:00:00", "2025-06-13 20:00:00", "2025-06-13 22:00:00", "2025-06-14 00:00:00", "2025-06-14 02:00:00", "2025-06-14 04:00:00"]
+  },
+  {
+    "description": "11.1 keyword in upper case",
+    "expression": "@every day @on HOLIDAY @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-05-01 09:00:00"]
+  },
+  {
+    "description": "11.2 keyword in mixed case",
+    "expression": "@every day @on PrimeDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-05 09:00:00", "2025-01-07 09:00:00"]
+  },
+  {
+    "description": "11.3 keyword in lower case",
+    "expression": "@every day @on firstdayofquarter @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-01 09:00:00", "2025-07-01 09:00:00", "2025-10-01 09:00:00"]
+  },
+  {
+    "description": "11.4 second keyword for the same condition",
+    "expression": "@every day @on holidays @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-05-01 09:00:00"]
+  },
+  {
+    "description": "11.5 second keyword for the same condition in upper case",
+    "expression": "@every HOLIDAYS @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-05-01 09:00:00"]
+  },
+  {
+    "description": "11.6 @except with the second keyword",
+    "expression": "@every day @at 09:00 @except holidays",
+    "baseTimeUtcStr": "2025-04-16 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-16 09:00:00", "2025-04-17 09:00:00", "2025-04-19 09:00:00", "2025-04-20 09:00:00", "2025-04-22 09:00:00"]
+  },
+  {
+    "description": "11.7 keyword with a digit: q2",
+    "expression": "@every day @on q2 @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-01 09:00:00", "2025-04-02 09:00:00", "2025-04-03 09:00:00", "2025-04-04 09:00:00"]
+  },
+  {
+    "description": "11.8 keyword with a digit in upper case: Q3",
+    "expression": "@every day @on Q3 @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 09:00:00", "2025-07-02 09:00:00", "2025-07-03 09:00:00", "2025-07-04 09:00:00"]
+  },
+  {
+    "description": "11.9 keyword with a digit: h2",
+    "expression": "@every hour @on h2",
+    "baseTimeUtcStr": "2025-06-30 21:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 00:00:00", "2025-07-01 01:00:00", "2025-07-01 02:00:00", "2025-07-01 03:00:00", "2025-07-01 04:00:00"]
+  },
+  {
+    "description": "11.10 @except keyword with a digit",
+    "expression": "@every day @at 09:00 @except q4",
+    "baseTimeUtcStr": "2025-09-28 00:00:00",
+    "expectedDateTimeStrs": ["2025-09-28 09:00:00", "2025-09-29 09:00:00", "2025-09-30 09:00:00", "2026-01-01 09:00:00", "2026-01-02 09:00:00"]
+  },
+  {
+    "description": "11.11 list of keywords with digits",
+    "expression": "@every day @on [q1, q4] @at 09:00",
+    "baseTimeUtcStr": "2025-03-30 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-30 09:00:00", "2025-03-31 09:00:00", "2025-10-01 09:00:00", "2025-10-02 09:00:00"]
+  },
+  {
+    "description": "11.12 keyword with digits in the name: fridayThe13th",
+    "expression": "@every fridayThe13th @at 13:13",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 13:13:00", "2026-02-13 13:13:00", "2026-03-13 13:13:00"]
+  },
+  {
+    "description": "11.13 keyword next to a list without spaces",
+    "expression": "@every day @on[holiday,15th] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-01-15 09:00:00", "2025-02-15 09:00:00", "2025-03-15 09:00:00", "2025-04-15 09:00:00"]
+  },
+  {
+    "description": "12.1 @every month with a day keyword: the first holiday of each month",
+    "expression": "@every month @on holiday @at 09:00",
+    "baseTimeUtcStr": "2024-12-01 00:00:00",
+    "expectedDateTimeStrs": ["2024-12-25 09:00:00", "2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-05-01 09:00:00", "2025-12-25 09:00:00", "2026-01-01 09:00:00", "2026-04-03 09:00:00", "2026-05-01 09:00:00"]
+  },
+  {
+    "description": "12.2 @every month with a day keyword keeps the time of the base time",
+    "expression": "@every month @on holiday",
+    "baseTimeUtcStr": "2024-12-01 12:00:00",
+    "expectedDateTimeStrs": ["2024-12-25 12:00:00", "2025-01-01 12:00:00", "2025-04-18 12:00:00", "2025-05-01 12:00:00"]
+  },
+  {
+    "description": "12.3 @every month with a day keyword, base time between two holidays of the same month",
+    "expression": "@every month @on holiday @at 09:00",
+    "baseTimeUtcStr": "2025-04-19 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-21 09:00:00", "2025-05-01 09:00:00", "2025-12-25 09:00:00", "2026-01-01 09:00:00"]
+  },
+  {
+    "description": "12.4 @every year with a day keyword: the first holiday of each year",
+    "expression": "@every year @on holiday @at 09:00",
+    "baseTimeUtcStr": "2024-12-01 00:00:00",
+    "expectedDateTimeStrs": ["2024-12-25 09:00:00", "2025-01-01 09:00:00", "2026-01-01 09:00:00", "2027-01-01 09:00:00"]
+  },
+  {
+    "description": "12.5 @every month with a list: the first match of each month",
+    "expression": "@every month @on [holiday, 15th] @at 09:00",
+    "baseTimeUtcStr": "2024-12-01 00:00:00",
+    "expectedDateTimeStrs": ["2024-12-15 09:00:00", "2025-01-01 09:00:00", "2025-02-15 09:00:00", "2025-03-15 09:00:00", "2025-04-15 09:00:00", "2025-05-01 09:00:00"]
+  },
+  {
+    "description": "12.6 @every month with a week keyword: the first midweek day of each month",
+    "expression": "@every month @on midweek @at 08:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 08:00:00", "2025-02-04 08:00:00", "2025-03-04 08:00:00", "2025-04-01 08:00:00", "2025-05-01 08:00:00"]
+  },
+  {
+    "description": "12.7 @every 2 months with a day keyword",
+    "expression": "@every 2 months @on holiday @at 09:00",
+    "baseTimeUtcStr": "2024-12-01 00:00:00",
+    "expectedDateTimeStrs": ["2024-12-25 09:00:00", "2025-04-18 09:00:00", "2025-12-25 09:00:00", "2026-04-03 09:00:00"]
+  },
+  {
+    "description": "12.8 @every month with a keyword that matches once a month",
+    "expression": "@every month @on lastBusinessDay @at 17:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-31 17:00:00", "2025-02-28 17:00:00", "2025-03-31 17:00:00", "2025-04-30 17:00:00"]
+  },
+  {
+    "description": "12.9 @every month with a rare keyword",
+    "expression": "@every month @on fridayThe13th @at 13:13",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 13:13:00", "2026-02-13 13:13:00", "2026-03-13 13:13:00", "2026-11-13 13:13:00"]
+  },
+  {
+    "description": "12.10 @every year with a day keyword: the first quarter start of each year",
+    "expression": "@every year @on firstDayOfQuarter @at 09:00",
+    "baseTimeUtcStr": "2025-02-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-01 09:00:00", "2026-01-01 09:00:00", "2027-01-01 09:00:00"]
+  },
+  {
+    "description": "12.11 @every day with an hour keyword: the first office hour of each day",
+    "expression": "@every day @on officeHours",
+    "baseTimeUtcStr": "2025-01-01 10:30:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:30:00", "2025-01-03 09:30:00", "2025-01-04 09:30:00"]
+  },
+  {
+    "description": "12.12 @every hour with a minute keyword: the first prime minute of each hour",
+    "expression": "@every hour @on primeMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:02:00", "2025-01-01 01:02:00", "2025-01-01 02:02:00", "2025-01-01 03:02:00"]
+  },
+  {
+    "description": "12.13 @every week counts 7 days from the last occurrence",
+    "expression": "@every week @on holiday @at 09:00",
+    "baseTimeUtcStr": "2025-04-14 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-18 09:00:00", "2025-05-01 09:00:00", "2025-12-25 09:00:00", "2026-01-01 09:00:00"]
+  },
+  {
+    "description": "13.1 two keywords in New York",
+    "expression": "@every 30 minutes @on officeHours @on businessDay @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-13 20:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 20:30:00", "2025-06-13 21:00:00", "2025-06-13 21:30:00", "2025-06-16 13:00:00", "2025-06-16 13:30:00", "2025-06-16 14:00:00", "2025-06-16 14:30:00", "2025-06-16 15:00:00"]
+  },
+  {
+    "description": "13.2 @every keyword with two times and @except in Lisbon",
+    "expression": "@every businessDay @at [09:00, 17:30] @except payday @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-06-12 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-12 08:00:00", "2025-06-12 16:30:00", "2025-06-13 08:00:00", "2025-06-13 16:30:00", "2025-06-16 08:00:00", "2025-06-16 16:30:00", "2025-06-17 08:00:00", "2025-06-17 16:30:00"]
+  },
+  {
+    "description": "13.3 mixed list and @except in Tokyo",
+    "expression": "@every day @on [holiday, 15th] @at 09:00 @except weekend @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-04-14 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-15 00:00:00", "2025-04-18 00:00:00", "2025-04-21 00:00:00", "2025-05-01 00:00:00", "2025-05-15 00:00:00", "2025-07-15 00:00:00"]
+  },
+  {
+    "description": "13.4 keyword, @except keyword and @between weekdays in Sydney",
+    "expression": "@every hour @on officeHours @except lunchtime @between monday and friday @tz Australia/Sydney",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 01:00:00", "2025-06-13 03:00:00", "2025-06-13 04:00:00", "2025-06-13 05:00:00", "2025-06-13 06:00:00", "2025-06-13 07:00:00", "2025-06-15 23:00:00", "2025-06-16 00:00:00", "2025-06-16 01:00:00", "2025-06-16 03:00:00"]
+  },
+  {
+    "description": "13.5 @except keyword keeps the cadence in Tokyo",
+    "expression": "@every 10 minutes @except quarterHour @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 00:10:00", "2025-06-13 00:20:00", "2025-06-13 00:40:00", "2025-06-13 00:50:00", "2025-06-13 01:10:00", "2025-06-13 01:20:00", "2025-06-13 01:40:00", "2025-06-13 01:50:00"]
+  },
+  {
+    "description": "13.6 @every keyword in Los Angeles",
+    "expression": "@every firstDayOfQuarter @at 08:00 @tz America/Los_Angeles",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 15:00:00", "2025-10-01 15:00:00", "2026-01-01 16:00:00", "2026-04-01 15:00:00"]
+  },
+  {
+    "description": "13.7 @on keyword in Chicago",
+    "expression": "@every day @on lastBusinessDay @at 17:00 @tz America/Chicago",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-30 22:00:00", "2025-07-31 22:00:00", "2025-08-29 22:00:00", "2025-09-30 22:00:00", "2025-10-31 22:00:00"]
+  },
+  {
+    "description": "13.8 @every keyword and @except keyword in a half hour zone",
+    "expression": "@every primeDay @at 23:30 @except weekend @tz Asia/Kolkata",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 18:00:00", "2025-06-17 18:00:00", "2025-06-19 18:00:00", "2025-06-23 18:00:00", "2025-07-02 18:00:00", "2025-07-03 18:00:00"]
+  },
+  {
+    "description": "13.9 hour keyword and day keyword in a half hour zone",
+    "expression": "@every hour @on nightShift @on weekend @tz Asia/Kolkata",
+    "baseTimeUtcStr": "2025-06-13 18:30:00",
+    "expectedDateTimeStrs": ["2025-06-13 19:30:00", "2025-06-13 20:30:00", "2025-06-13 21:30:00", "2025-06-13 22:30:00", "2025-06-13 23:30:00", "2025-06-14 16:30:00", "2025-06-14 17:30:00", "2025-06-14 18:30:00", "2025-06-14 19:30:00", "2025-06-14 20:30:00"]
+  },
+  {
+    "description": "13.10 week keyword and month keyword in Lisbon",
+    "expression": "@every day @on midweek @in summer @at 06:45 @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-05-28 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-03 05:45:00", "2025-06-04 05:45:00", "2025-06-05 05:45:00", "2025-06-10 05:45:00", "2025-06-11 05:45:00", "2025-06-12 05:45:00"]
+  },
+  {
+    "description": "13.11 keyword, @between hours and @except keyword in New York",
+    "expression": "@every 2 hours @on businessDay @between 8am and 6pm @except lunchtime @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-12 12:00:00",
+    "expectedDateTimeStrs": ["2025-06-12 14:00:00", "2025-06-12 18:00:00", "2025-06-12 20:00:00", "2025-06-12 22:00:00", "2025-06-13 12:00:00", "2025-06-13 14:00:00", "2025-06-13 18:00:00", "2025-06-13 20:00:00", "2025-06-13 22:00:00", "2025-06-16 12:00:00"]
+  },
+  {
+    "description": "13.12 @every month with a day keyword in Tokyo: the first holiday of each month",
+    "expression": "@every month @on holiday @at 09:00 @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2024-12-01 00:00:00",
+    "expectedDateTimeStrs": ["2024-12-25 00:00:00", "2025-01-01 00:00:00", "2025-04-18 00:00:00", "2025-05-01 00:00:00", "2025-12-25 00:00:00", "2026-01-01 00:00:00"]
+  },
+  {
+    "description": "13.13 @every month keyword with a day in Lisbon",
+    "expression": "@every quarter @on 1st @at 09:00 @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-01-05 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-01 08:00:00", "2025-07-01 08:00:00", "2025-10-01 08:00:00", "2026-01-01 09:00:00"]
+  },
+  {
+    "description": "13.14 @tz written first",
+    "expression": "@tz Asia/Tokyo @every holiday @at 09:00",
+    "baseTimeUtcStr": "2024-12-30 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:00", "2025-04-18 00:00:00", "2025-04-21 00:00:00", "2025-05-01 00:00:00"]
+  },
+  {
+    "description": "13.15 @timezone instead of @tz",
+    "expression": "@every weekend @at 10:00 @timezone America/New_York",
+    "baseTimeUtcStr": "2025-06-12 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-14 14:00:00", "2025-06-15 14:00:00", "2025-06-21 14:00:00", "2025-06-22 14:00:00", "2025-06-28 14:00:00"]
+  },
+  {
+    "description": "13.16 list of keywords, @except list and @upto in Sydney",
+    "expression": "@every day @on [primeDay, twinDay] @at 07:15 @except [weekend, holiday] @upto 20th @tz Australia/Sydney",
+    "baseTimeUtcStr": "2025-06-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-01 21:15:00", "2025-06-02 21:15:00", "2025-06-04 21:15:00", "2025-06-10 21:15:00", "2025-06-12 21:15:00", "2025-06-16 21:15:00", "2025-06-18 21:15:00", "2025-07-01 21:15:00"]
+  },
+  {
+    "description": "13.17 three keywords with different time units in Tokyo",
+    "expression": "@every minute @on primeMinute @on primeHour @on primeDay @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-06-12 15:00:00",
+    "expectedDateTimeStrs": ["2025-06-12 17:02:00", "2025-06-12 17:03:00", "2025-06-12 17:05:00", "2025-06-12 17:07:00", "2025-06-12 17:11:00", "2025-06-12 17:13:00"]
+  },
+  {
+    "description": "13.18 time zone aware keyword with another keyword: market hours on business days",
+    "expression": "@every hour @on nyMarketOpen @on businessDay @except lunchtime @tz America/New_York",
+    "baseTimeUtcStr": "2025-07-03 12:00:00",
+    "expectedDateTimeStrs": ["2025-07-03 14:00:00", "2025-07-03 15:00:00", "2025-07-03 17:00:00", "2025-07-03 18:00:00", "2025-07-03 19:00:00", "2025-07-04 14:00:00", "2025-07-04 15:00:00", "2025-07-04 17:00:00"]
+  },
+  {
+    "description": "14.1 usHoliday in New York",
+    "expression": "@every usHoliday @at 09:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 13:00:00", "2025-11-27 14:00:00", "2025-12-25 14:00:00", "2026-01-01 14:00:00", "2026-07-04 13:00:00"]
+  },
+  {
+    "description": "14.2 usHoliday in Los Angeles: the same days, at the Los Angeles time",
+    "expression": "@every usHoliday @at 09:00 @tz America/Los_Angeles",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 16:00:00", "2025-11-27 17:00:00", "2025-12-25 17:00:00", "2026-01-01 17:00:00", "2026-07-04 16:00:00"]
+  },
+  {
+    "description": "14.3 @except usHoliday in New York skips July 4th",
+    "expression": "@every day @at 09:00 @except usHoliday @tz America/New_York",
+    "baseTimeUtcStr": "2025-07-02 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-02 13:00:00", "2025-07-03 13:00:00", "2025-07-05 13:00:00", "2025-07-06 13:00:00", "2025-07-07 13:00:00"]
+  },
+  {
+    "description": "14.4 @except usHoliday in Tokyo skips nothing: the keyword only applies in the United States",
+    "expression": "@every day @at 09:00 @except usHoliday @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-07-02 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-03 00:00:00", "2025-07-04 00:00:00", "2025-07-05 00:00:00", "2025-07-06 00:00:00", "2025-07-07 00:00:00"]
+  },
+  {
+    "description": "14.5 @except usHoliday without @tz, evaluated in UTC, skips nothing",
+    "expression": "@every day @at 09:00 @except usHoliday",
+    "baseTimeUtcStr": "2025-07-02 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-02 09:00:00", "2025-07-03 09:00:00", "2025-07-04 09:00:00", "2025-07-05 09:00:00", "2025-07-06 09:00:00"]
+  },
+  {
+    "description": "14.6 jpHoliday in Tokyo",
+    "expression": "@every jpHoliday @at 10:00 @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-04-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-05-03 01:00:00", "2025-05-04 01:00:00", "2025-05-05 01:00:00", "2025-11-03 01:00:00", "2026-01-01 01:00:00", "2026-02-11 01:00:00"]
+  },
+  {
+    "description": "14.7 @except jpHoliday in Tokyo skips the three holidays of May",
+    "expression": "@every day @at 09:00 @except jpHoliday @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-05-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-05-02 00:00:00", "2025-05-06 00:00:00", "2025-05-07 00:00:00", "2025-05-08 00:00:00", "2025-05-09 00:00:00"]
+  },
+  {
+    "description": "14.8 list of both keywords in Tokyo: only the Japan holidays",
+    "expression": "@every day @on [usHoliday, jpHoliday] @at 09:00 @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-11-03 00:00:00", "2026-01-01 00:00:00", "2026-02-11 00:00:00", "2026-05-03 00:00:00"]
+  },
+  {
+    "description": "14.9 list of both keywords in New York: only the United States holidays",
+    "expression": "@every day @on [usHoliday, jpHoliday] @at 09:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 13:00:00", "2025-11-27 14:00:00", "2025-12-25 14:00:00", "2026-01-01 14:00:00"]
+  },
+  {
+    "description": "14.10 localHoliday in New York uses the United States holidays",
+    "expression": "@every localHoliday @at 09:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-04-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 13:00:00", "2025-11-27 14:00:00", "2025-12-25 14:00:00", "2026-01-01 14:00:00"]
+  },
+  {
+    "description": "14.11 localHoliday in Tokyo uses the Japan holidays",
+    "expression": "@every localHoliday @at 09:00 @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-04-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-05-03 00:00:00", "2025-05-04 00:00:00", "2025-05-05 00:00:00", "2025-11-03 00:00:00"]
+  },
+  {
+    "description": "14.12 localHoliday in Lisbon uses the Portugal holidays",
+    "expression": "@every localHoliday @at 09:00 @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-04-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-25 08:00:00", "2025-05-01 08:00:00", "2025-06-10 08:00:00", "2025-12-25 09:00:00"]
+  },
+  {
+    "description": "14.13 @except localHoliday without @tz, evaluated in UTC, skips nothing",
+    "expression": "@every day @at 09:00 @except localHoliday",
+    "baseTimeUtcStr": "2025-04-24 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-24 09:00:00", "2025-04-25 09:00:00", "2025-04-26 09:00:00", "2025-04-27 09:00:00"]
+  },
+  {
+    "description": "14.14 localHoliday with a built-in day in Lisbon",
+    "expression": "@every day @on [localHoliday, 1st] @at 08:00 @except weekend @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-04-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-25 07:00:00", "2025-05-01 07:00:00", "2025-06-10 07:00:00", "2025-07-01 07:00:00", "2025-08-01 07:00:00", "2025-09-01 07:00:00"]
+  },
+  {
+    "description": "14.15 usHoliday with @between hours in Chicago",
+    "expression": "@every 4 hours @on usHoliday @between 8am and 8pm @tz America/Chicago",
+    "baseTimeUtcStr": "2025-07-03 13:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 13:00:00", "2025-07-04 17:00:00", "2025-07-04 21:00:00", "2025-07-05 01:00:00", "2025-11-27 14:00:00", "2025-11-27 18:00:00"]
+  },
+  {
+    "description": "14.16 business days but not the United States holidays, in New York",
+    "expression": "@every day @on businessDay @at 09:00 @except usHoliday @tz America/New_York",
+    "baseTimeUtcStr": "2025-07-02 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-02 13:00:00", "2025-07-03 13:00:00", "2025-07-07 13:00:00", "2025-07-08 13:00:00", "2025-07-09 13:00:00", "2025-07-10 13:00:00"]
+  },
+  {
+    "description": "14.17 @every month with usHoliday in New York: the first holiday of each month",
+    "expression": "@every month @on usHoliday @at 09:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 13:00:00", "2025-11-27 14:00:00", "2025-12-25 14:00:00", "2026-01-01 14:00:00", "2026-07-04 13:00:00"]
+  },
+  {
+    "description": "14.18 nyHoliday evaluated in UTC: July 4th in New York is 04:00 to 03:59 UTC",
+    "expression": "@every hour @on nyHoliday",
+    "baseTimeUtcStr": "2025-07-04 01:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 04:00:00", "2025-07-04 05:00:00", "2025-07-04 06:00:00", "2025-07-04 07:00:00", "2025-07-04 08:00:00", "2025-07-04 09:00:00", "2025-07-04 10:00:00", "2025-07-04 11:00:00", "2025-07-04 12:00:00", "2025-07-04 13:00:00", "2025-07-04 14:00:00", "2025-07-04 15:00:00", "2025-07-04 16:00:00", "2025-07-04 17:00:00", "2025-07-04 18:00:00", "2025-07-04 19:00:00", "2025-07-04 20:00:00", "2025-07-04 21:00:00", "2025-07-04 22:00:00", "2025-07-04 23:00:00", "2025-07-05 00:00:00", "2025-07-05 01:00:00", "2025-07-05 02:00:00", "2025-07-05 03:00:00", "2025-11-27 05:00:00", "2025-11-27 06:00:00"]
+  },
+  {
+    "description": "14.19 nyHoliday evaluated in Tokyo: July 4th in New York is 13:00 to 12:59 in Tokyo",
+    "expression": "@every hour @on nyHoliday @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-07-04 01:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 04:00:00", "2025-07-04 05:00:00", "2025-07-04 06:00:00", "2025-07-04 07:00:00", "2025-07-04 08:00:00", "2025-07-04 09:00:00", "2025-07-04 10:00:00", "2025-07-04 11:00:00", "2025-07-04 12:00:00", "2025-07-04 13:00:00", "2025-07-04 14:00:00", "2025-07-04 15:00:00", "2025-07-04 16:00:00", "2025-07-04 17:00:00", "2025-07-04 18:00:00", "2025-07-04 19:00:00", "2025-07-04 20:00:00", "2025-07-04 21:00:00", "2025-07-04 22:00:00", "2025-07-04 23:00:00", "2025-07-05 00:00:00", "2025-07-05 01:00:00", "2025-07-05 02:00:00", "2025-07-05 03:00:00", "2025-11-27 05:00:00", "2025-11-27 06:00:00"]
+  },
+  {
+    "description": "14.20 nyHoliday at a fixed time in Lisbon",
+    "expression": "@every day @on nyHoliday @at 12:00 @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 11:00:00", "2025-11-27 12:00:00", "2025-12-25 12:00:00", "2026-01-01 12:00:00"]
+  },
+  {
+    "description": "14.21 nyHoliday at a Tokyo time that is the day before in New York",
+    "expression": "@every day @on nyHoliday @at 09:00 @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-05 00:00:00", "2025-11-28 00:00:00", "2025-12-26 00:00:00", "2026-01-02 00:00:00"]
+  },
+  {
+    "description": "14.22 @except nyHoliday keeps the cadence, evaluated in UTC",
+    "expression": "@every 6 hours @except nyHoliday",
+    "baseTimeUtcStr": "2025-07-03 12:00:00",
+    "expectedDateTimeStrs": ["2025-07-03 18:00:00", "2025-07-04 00:00:00", "2025-07-05 06:00:00", "2025-07-05 12:00:00", "2025-07-05 18:00:00", "2025-07-06 00:00:00"]
+  },
+  {
+    "description": "14.23 nyHoliday and usHoliday agree in New York",
+    "expression": "@every 6 hours @on nyHoliday @on usHoliday @tz America/New_York",
+    "baseTimeUtcStr": "2025-07-03 04:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 04:00:00", "2025-07-04 10:00:00", "2025-07-04 16:00:00", "2025-07-04 22:00:00", "2025-11-27 05:00:00", "2025-11-27 11:00:00"]
+  },
+  {
+    "description": "99.1 AI generated: Payroll at 09:00 on paydays, unless it is a weekend",
+    "expression": "@every payday @at 09:00 @except weekend",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-15 09:00:00", "2025-01-31 09:00:00", "2025-02-28 09:00:00", "2025-03-31 09:00:00", "2025-04-15 09:00:00", "2025-04-30 09:00:00"]
+  },
+  {
+    "description": "99.2 AI generated: Stand-up reminder at 09:15 on every business day",
+    "expression": "@every businessDay @at 09:15",
+    "baseTimeUtcStr": "2025-04-16 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-16 09:15:00", "2025-04-17 09:15:00", "2025-04-22 09:15:00", "2025-04-23 09:15:00", "2025-04-24 09:15:00", "2025-04-25 09:15:00"]
+  },
+  {
+    "description": "99.3 AI generated: Nightly backup at 02:00 except on holidays",
+    "expression": "@every day @at 02:00 @except holiday",
+    "baseTimeUtcStr": "2025-12-23 00:00:00",
+    "expectedDateTimeStrs": ["2025-12-23 02:00:00", "2025-12-24 02:00:00", "2025-12-27 02:00:00", "2025-12-28 02:00:00", "2025-12-29 02:00:00", "2025-12-30 02:00:00"]
+  },
+  {
+    "description": "99.4 AI generated: Full backup at 03:30 on weekends",
+    "expression": "@every weekend @at 03:30",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 03:30:00", "2025-01-05 03:30:00", "2025-01-11 03:30:00", "2025-01-12 03:30:00", "2025-01-18 03:30:00", "2025-01-19 03:30:00"]
+  },
+  {
+    "description": "99.5 AI generated: Newsletter on the first business day of each month at 08:00",
+    "expression": "@every month @on businessDay @at 08:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 08:00:00", "2025-02-03 08:00:00", "2025-03-03 08:00:00", "2025-04-01 08:00:00", "2025-05-02 08:00:00", "2025-06-02 08:00:00"]
+  },
+  {
+    "description": "99.6 AI generated: Quarterly report at 06:00 on the first day of each quarter",
+    "expression": "@every firstDayOfQuarter @at 06:00",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 06:00:00", "2025-10-01 06:00:00", "2026-01-01 06:00:00", "2026-04-01 06:00:00"]
+  },
+  {
+    "description": "99.7 AI generated: Quarter closing at 23:45 on the last day of each quarter",
+    "expression": "@every lastDayOfQuarter @at 23:45",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-31 23:45:00", "2025-06-30 23:45:00", "2025-09-30 23:45:00", "2025-12-31 23:45:00"]
+  },
+  {
+    "description": "99.8 AI generated: Month-end closing at 18:00 on the last business day",
+    "expression": "@every lastBusinessDay @at 18:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-31 18:00:00", "2025-02-28 18:00:00", "2025-03-31 18:00:00", "2025-04-30 18:00:00", "2025-05-30 18:00:00", "2025-06-30 18:00:00"]
+  },
+  {
+    "description": "99.9 AI generated: Health check every 5 minutes during office hours on business days",
+    "expression": "@every 5 minutes @on officeHours @on businessDay",
+    "baseTimeUtcStr": "2025-04-17 17:40:00",
+    "expectedDateTimeStrs": ["2025-04-17 17:45:00", "2025-04-17 17:50:00", "2025-04-17 17:55:00", "2025-04-22 09:00:00", "2025-04-22 09:05:00", "2025-04-22 09:10:00", "2025-04-22 09:15:00", "2025-04-22 09:20:00"]
+  },
+  {
+    "description": "99.10 AI generated: Night shift ping every 30 minutes",
+    "expression": "@every 30 minutes @on nightShift",
+    "baseTimeUtcStr": "2025-01-01 04:30:00",
+    "expectedDateTimeStrs": ["2025-01-01 05:00:00", "2025-01-01 05:30:00", "2025-01-01 22:00:00", "2025-01-01 22:30:00", "2025-01-01 23:00:00", "2025-01-01 23:30:00", "2025-01-02 00:00:00", "2025-01-02 00:30:00"]
+  },
+  {
+    "description": "99.11 AI generated: Lunch reminder at 12:00 on business days, except on fridays",
+    "expression": "@every businessDay @at 12:00 @except friday",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 12:00:00", "2025-01-06 12:00:00", "2025-01-07 12:00:00", "2025-01-08 12:00:00", "2025-01-09 12:00:00", "2025-01-13 12:00:00"]
+  },
+  {
+    "description": "99.12 AI generated: Timesheet reminder on fridays at 16:00 unless it is a holiday",
+    "expression": "@every friday @at 16:00 @except holiday",
+    "baseTimeUtcStr": "2025-04-10 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-11 16:00:00", "2025-04-25 16:00:00", "2025-05-02 16:00:00", "2025-05-09 16:00:00", "2025-05-16 16:00:00"]
+  },
+  {
+    "description": "99.13 AI generated: On-call handover every monday at 08:00 except on holidays",
+    "expression": "@every week @on monday @at 08:00 @except holiday",
+    "baseTimeUtcStr": "2025-04-14 09:00:00",
+    "expectedDateTimeStrs": ["2025-04-28 08:00:00", "2025-05-05 08:00:00", "2025-05-12 08:00:00", "2025-05-19 08:00:00"]
+  },
+  {
+    "description": "99.14 AI generated: Stand-up from monday to friday at 09:30, except holidays and paydays",
+    "expression": "@every [mon, tue, wed, thu, fri] @at 09:30 @except [holiday, payday]",
+    "baseTimeUtcStr": "2025-04-14 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-14 09:30:00", "2025-04-16 09:30:00", "2025-04-17 09:30:00", "2025-04-22 09:30:00", "2025-04-23 09:30:00", "2025-04-24 09:30:00", "2025-04-25 09:30:00", "2025-04-28 09:30:00"]
+  },
+  {
+    "description": "99.15 AI generated: Business day reports at 09:00 and 17:00 from March to May",
+    "expression": "@every businessDay @at [09:00, 17:00] @between Mar and May",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-03 09:00:00", "2025-03-03 17:00:00", "2025-03-04 09:00:00", "2025-03-04 17:00:00", "2025-03-05 09:00:00", "2025-03-05 17:00:00"]
+  },
+  {
+    "description": "99.16 AI generated: Billing on the 1st and the 15th at 06:00, unless it is a weekend or a holiday",
+    "expression": "@every [1st, 15th] @at 06:00 @except [weekend, holiday]",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-15 06:00:00", "2025-04-01 06:00:00", "2025-04-15 06:00:00", "2025-05-15 06:00:00", "2025-07-01 06:00:00", "2025-07-15 06:00:00", "2025-08-01 06:00:00", "2025-08-15 06:00:00"]
+  },
+  {
+    "description": "99.17 AI generated: Invoices at 10:00 on paydays and holidays",
+    "expression": "@every day @on [payday, holiday] @at 10:00",
+    "baseTimeUtcStr": "2025-04-10 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-15 10:00:00", "2025-04-18 10:00:00", "2025-04-21 10:00:00", "2025-04-30 10:00:00", "2025-05-01 10:00:00", "2025-05-15 10:00:00"]
+  },
+  {
+    "description": "99.18 AI generated: Business days between the 10th and the 20th at 11:00",
+    "expression": "@every day @on businessDay @between 10th and 20th @at 11:00",
+    "baseTimeUtcStr": "2025-04-12 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-14 11:00:00", "2025-04-15 11:00:00", "2025-04-16 11:00:00", "2025-04-17 11:00:00", "2025-05-12 11:00:00", "2025-05-13 11:00:00", "2025-05-14 11:00:00", "2025-05-15 11:00:00"]
+  },
+  {
+    "description": "99.19 AI generated: End of month reminders on business days from the 25th at 16:00",
+    "expression": "@every businessDay @at 16:00 @from 25th",
+    "baseTimeUtcStr": "2025-04-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-25 16:00:00", "2025-04-28 16:00:00", "2025-04-29 16:00:00", "2025-04-30 16:00:00", "2025-05-26 16:00:00", "2025-05-27 16:00:00"]
+  },
+  {
+    "description": "99.20 AI generated: Start of month checks on business days up to the 5th at 08:00",
+    "expression": "@every businessDay @at 08:00 @upto 5th",
+    "baseTimeUtcStr": "2025-04-28 00:00:00",
+    "expectedDateTimeStrs": ["2025-05-02 08:00:00", "2025-05-05 08:00:00", "2025-06-02 08:00:00", "2025-06-03 08:00:00", "2025-06-04 08:00:00", "2025-06-05 08:00:00"]
+  },
+  {
+    "description": "99.21 AI generated: Office hours on business days in the first quarter",
+    "expression": "@every hour @on officeHours @on businessDay @between Jan and Mar",
+    "baseTimeUtcStr": "2025-03-31 15:00:00",
+    "expectedDateTimeStrs": ["2025-03-31 16:00:00", "2025-03-31 17:00:00", "2026-01-02 09:00:00", "2026-01-02 10:00:00", "2026-01-02 11:00:00"]
+  },
+  {
+    "description": "99.22 AI generated: Every 30 minutes in office hours in the middle of the week, but not at lunch",
+    "expression": "@every 30 minutes @on officeHours @except lunchtime @on midweek",
+    "baseTimeUtcStr": "2025-01-02 11:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 11:30:00", "2025-01-02 13:00:00", "2025-01-02 13:30:00", "2025-01-02 14:00:00", "2025-01-02 14:30:00", "2025-01-02 15:00:00", "2025-01-02 15:30:00", "2025-01-02 16:00:00"]
+  },
+  {
+    "description": "99.23 AI generated: Every 3 days when it is a business day",
+    "expression": "@every 3 days @on businessDay",
+    "baseTimeUtcStr": "2025-04-14 09:00:00",
+    "expectedDateTimeStrs": ["2025-04-17 09:00:00", "2025-04-22 09:00:00", "2025-04-25 09:00:00", "2025-04-28 09:00:00", "2025-05-02 09:00:00", "2025-05-05 09:00:00"]
+  },
+  {
+    "description": "99.24 AI generated: Every 2 days but never on a weekend",
+    "expression": "@every 2 days @except weekend",
+    "baseTimeUtcStr": "2025-01-01 07:00:00",
+    "expectedDateTimeStrs": ["2025-01-03 07:00:00", "2025-01-07 07:00:00", "2025-01-09 07:00:00", "2025-01-13 07:00:00", "2025-01-15 07:00:00", "2025-01-17 07:00:00"]
+  },
+  {
+    "description": "99.25 AI generated: Every 5 days but never on a weekend or a holiday",
+    "expression": "@every 5 days @except [weekend, holiday]",
+    "baseTimeUtcStr": "2025-04-01 07:00:00",
+    "expectedDateTimeStrs": ["2025-04-11 07:00:00", "2025-04-16 07:00:00", "2025-05-06 07:00:00", "2025-05-16 07:00:00", "2025-05-21 07:00:00", "2025-05-26 07:00:00"]
+  },
+  {
+    "description": "99.26 AI generated: Every 12 hours except on holidays",
+    "expression": "@every 12 hours @except holiday",
+    "baseTimeUtcStr": "2025-04-17 06:00:00",
+    "expectedDateTimeStrs": ["2025-04-17 18:00:00", "2025-04-19 06:00:00", "2025-04-19 18:00:00", "2025-04-20 06:00:00", "2025-04-20 18:00:00", "2025-04-22 06:00:00"]
+  },
+  {
+    "description": "99.27 AI generated: Every 90 minutes during office hours",
+    "expression": "@every 90 minutes @on officeHours",
+    "baseTimeUtcStr": "2025-01-01 15:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 16:30:00", "2025-01-02 09:00:00", "2025-01-02 10:30:00", "2025-01-02 12:00:00", "2025-01-02 13:30:00", "2025-01-02 15:00:00", "2025-01-02 16:30:00", "2025-01-03 09:00:00"]
+  },
+  {
+    "description": "99.28 AI generated: Friday the 13th at 13:13",
+    "expression": "@every fridayThe13th @at 13:13",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 13:13:00", "2026-02-13 13:13:00", "2026-03-13 13:13:00", "2026-11-13 13:13:00"]
+  },
+  {
+    "description": "99.29 AI generated: Leap day celebration at noon",
+    "expression": "@every leapDay @at 12:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2028-02-29 12:00:00", "2032-02-29 12:00:00", "2036-02-29 12:00:00"]
+  },
+  {
+    "description": "99.30 AI generated: Cleanup at 04:00 on Fibonacci days",
+    "expression": "@every fibonacciDay @at 04:00",
+    "baseTimeUtcStr": "2025-01-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-21 04:00:00", "2025-02-01 04:00:00", "2025-02-02 04:00:00", "2025-02-03 04:00:00", "2025-02-05 04:00:00", "2025-02-08 04:00:00", "2025-02-13 04:00:00", "2025-02-21 04:00:00"]
+  },
+  {
+    "description": "99.31 AI generated: Lottery at noon on prime days, except weekends and holidays",
+    "expression": "@every primeDay @at 12:00 @except [weekend, holiday]",
+    "baseTimeUtcStr": "2025-04-16 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-17 12:00:00", "2025-04-23 12:00:00", "2025-04-29 12:00:00", "2025-05-02 12:00:00", "2025-05-05 12:00:00", "2025-05-07 12:00:00"]
+  },
+  {
+    "description": "99.32 AI generated: Even days at 01:00",
+    "expression": "@every evenDay @at 01:00",
+    "baseTimeUtcStr": "2025-01-29 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-30 01:00:00", "2025-02-02 01:00:00", "2025-02-04 01:00:00", "2025-02-06 01:00:00", "2025-02-08 01:00:00"]
+  },
+  {
+    "description": "99.33 AI generated: Odd days at 01:00, with two odd days in a row at the end of the month",
+    "expression": "@every oddDay @at 01:00",
+    "baseTimeUtcStr": "2025-01-29 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-29 01:00:00", "2025-01-31 01:00:00", "2025-02-01 01:00:00", "2025-02-03 01:00:00", "2025-02-05 01:00:00"]
+  },
+  {
+    "description": "99.34 AI generated: Sale at 10:00 on the 11th and the 22nd",
+    "expression": "@every twinDay @at 10:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-11 10:00:00", "2025-01-22 10:00:00", "2025-02-11 10:00:00", "2025-02-22 10:00:00", "2025-03-11 10:00:00"]
+  },
+  {
+    "description": "99.35 AI generated: Every prime minute of the prime hours",
+    "expression": "@every primeMinute @on primeHour",
+    "baseTimeUtcStr": "2025-01-01 03:55:00",
+    "expectedDateTimeStrs": ["2025-01-01 03:59:00", "2025-01-01 05:02:00", "2025-01-01 05:03:00", "2025-01-01 05:05:00", "2025-01-01 05:07:00", "2025-01-01 05:11:00"]
+  },
+  {
+    "description": "99.36 AI generated: Every even hour of the odd days",
+    "expression": "@every evenHour @on oddDay",
+    "baseTimeUtcStr": "2025-01-01 20:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 22:00:00", "2025-01-03 00:00:00", "2025-01-03 02:00:00", "2025-01-03 04:00:00", "2025-01-03 06:00:00", "2025-01-03 08:00:00"]
+  },
+  {
+    "description": "99.37 AI generated: Every quarter of an hour of the night shift on weekends",
+    "expression": "@every quarterHour @on nightShift @on weekend",
+    "baseTimeUtcStr": "2025-01-03 23:30:00",
+    "expectedDateTimeStrs": ["2025-01-04 00:00:00", "2025-01-04 00:15:00", "2025-01-04 00:30:00", "2025-01-04 00:45:00", "2025-01-04 01:00:00", "2025-01-04 01:15:00"]
+  },
+  {
+    "description": "99.38 AI generated: Every prime second at lunchtime",
+    "expression": "@every primeSecond @on lunchtime",
+    "baseTimeUtcStr": "2025-01-01 12:59:50",
+    "expectedDateTimeStrs": ["2025-01-01 12:59:53", "2025-01-01 12:59:59", "2025-01-02 12:00:02", "2025-01-02 12:00:03", "2025-01-02 12:00:05", "2025-01-02 12:00:07"]
+  },
+  {
+    "description": "99.39 AI generated: Every 20 seconds, skipping the even minutes",
+    "expression": "@every 20 seconds @except evenMinute",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:01:00", "2025-01-01 00:01:20", "2025-01-01 00:01:40", "2025-01-01 00:03:00", "2025-01-01 00:03:20", "2025-01-01 00:03:40", "2025-01-01 00:05:00", "2025-01-01 00:05:20"]
+  },
+  {
+    "description": "99.40 AI generated: Every 45 seconds during the quarters of an hour",
+    "expression": "@every 45 seconds @on quarterHour",
+    "baseTimeUtcStr": "2025-01-01 00:14:30",
+    "expectedDateTimeStrs": ["2025-01-01 00:15:00", "2025-01-01 00:15:45", "2025-01-01 00:30:00", "2025-01-01 00:30:45", "2025-01-01 00:45:00", "2025-01-01 00:45:45"]
+  },
+  {
+    "description": "99.41 AI generated: Every 7 minutes of the prime hours, skipping the prime minutes",
+    "expression": "@every 7 minutes @on primeHour @except primeMinute",
+    "baseTimeUtcStr": "2025-01-01 02:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 02:14:00", "2025-01-01 02:21:00", "2025-01-01 02:28:00", "2025-01-01 02:35:00", "2025-01-01 02:42:00", "2025-01-01 02:49:00", "2025-01-01 02:56:00", "2025-01-01 03:10:00"]
+  },
+  {
+    "description": "99.42 AI generated: Garbage collection every 6 hours on even days",
+    "expression": "@every 6 hours @on evenDay",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 00:00:00", "2025-01-02 06:00:00", "2025-01-02 12:00:00", "2025-01-02 18:00:00", "2025-01-04 00:00:00", "2025-01-04 06:00:00", "2025-01-04 12:00:00", "2025-01-04 18:00:00"]
+  },
+  {
+    "description": "99.43 AI generated: The 15th of the prime months at noon",
+    "expression": "@every primeMonth @on 15th @at 12:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-02-15 12:00:00", "2025-03-15 12:00:00", "2025-05-15 12:00:00", "2025-07-15 12:00:00", "2025-11-15 12:00:00"]
+  },
+  {
+    "description": "99.44 AI generated: Prime days that are also weekends at 10:00",
+    "expression": "@every primeDay @on weekend @at 10:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-05 10:00:00", "2025-01-11 10:00:00", "2025-01-19 10:00:00", "2025-02-02 10:00:00", "2025-02-23 10:00:00", "2025-03-02 10:00:00"]
+  },
+  {
+    "description": "99.45 AI generated: Even days of the second and fourth quarters at 22:00",
+    "expression": "@every evenDay @at 22:00 @on [q2, q4]",
+    "baseTimeUtcStr": "2025-06-27 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-28 22:00:00", "2025-06-30 22:00:00", "2025-10-02 22:00:00", "2025-10-04 22:00:00", "2025-10-06 22:00:00"]
+  },
+  {
+    "description": "99.46 AI generated: Office hours on business days in summer",
+    "expression": "@every hour @on officeHours @on summer @on businessDay",
+    "baseTimeUtcStr": "2025-05-30 15:00:00",
+    "expectedDateTimeStrs": ["2025-06-02 09:00:00", "2025-06-02 10:00:00", "2025-06-02 11:00:00", "2025-06-02 12:00:00", "2025-06-02 13:00:00"]
+  },
+  {
+    "description": "99.47 AI generated: Summer weekends at 08:00 except holidays",
+    "expression": "@every day @on summer @on weekend @at 08:00 @except holiday",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-01 08:00:00", "2025-06-07 08:00:00", "2025-06-08 08:00:00", "2025-06-14 08:00:00", "2025-06-15 08:00:00"]
+  },
+  {
+    "description": "99.48 AI generated: Planning every monday at 10:00 in the first quarter",
+    "expression": "@every week @on monday @at 10:00 @on q1",
+    "baseTimeUtcStr": "2025-03-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-24 10:00:00", "2025-03-31 10:00:00", "2026-01-05 10:00:00", "2026-01-12 10:00:00"]
+  },
+  {
+    "description": "99.49 AI generated: Review on the first monday of the month in the second half of the year",
+    "expression": "@every 1stMonday @at 09:00 @on h2",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-07 09:00:00", "2025-08-04 09:00:00", "2025-09-01 09:00:00", "2025-10-06 09:00:00"]
+  },
+  {
+    "description": "99.50 AI generated: The 1st and the 15th of the third quarter at 09:00",
+    "expression": "@every q3 @on [1st, 15th] @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-01 09:00:00", "2025-07-15 09:00:00", "2025-08-01 09:00:00", "2025-08-15 09:00:00", "2025-09-01 09:00:00", "2025-09-15 09:00:00"]
+  },
+  {
+    "description": "99.51 AI generated: The first day of every month of a leap year",
+    "expression": "@every month @on 1st @at 09:00 @on leapYear",
+    "baseTimeUtcStr": "2027-11-15 00:00:00",
+    "expectedDateTimeStrs": ["2028-01-01 09:00:00", "2028-02-01 09:00:00", "2028-03-01 09:00:00", "2028-04-01 09:00:00"]
+  },
+  {
+    "description": "99.52 AI generated: Mid-week sync at 14:30",
+    "expression": "@every midweek @at 14:30",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 14:30:00", "2025-01-02 14:30:00", "2025-01-07 14:30:00", "2025-01-08 14:30:00", "2025-01-09 14:30:00", "2025-01-14 14:30:00"]
+  },
+  {
+    "description": "99.53 AI generated: Christmas holidays at midnight",
+    "expression": "@every day @on holiday @in december @at 00:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-12-25 00:00:00", "2025-12-26 00:00:00", "2026-12-25 00:00:00"]
+  },
+  {
+    "description": "99.54 AI generated: The first match of each month: a payday or a holiday",
+    "expression": "@every month @on [payday, holiday] @at 09:00",
+    "baseTimeUtcStr": "2025-03-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-31 09:00:00", "2025-04-15 09:00:00", "2025-05-01 09:00:00", "2025-06-15 09:00:00", "2025-07-15 09:00:00"]
+  },
+  {
+    "description": "99.55 AI generated: The first business day every 2 months",
+    "expression": "@every 2 months @on businessDay @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-03-03 09:00:00", "2025-05-02 09:00:00", "2025-07-01 09:00:00"]
+  },
+  {
+    "description": "99.56 AI generated: The first holiday of each year with the yearly shortcut",
+    "expression": "@yearly @on holiday @at 09:00",
+    "baseTimeUtcStr": "2025-02-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-18 09:00:00", "2026-01-01 09:00:00", "2027-01-01 09:00:00"]
+  },
+  {
+    "description": "99.57 AI generated: The first holiday of each month with the monthly shortcut",
+    "expression": "@monthly @on holiday @at 09:00",
+    "baseTimeUtcStr": "2025-04-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-18 09:00:00", "2025-05-01 09:00:00", "2025-12-25 09:00:00", "2026-01-01 09:00:00"]
+  },
+  {
+    "description": "99.58 AI generated: Daily shortcut on business days at 07:00",
+    "expression": "@daily @on businessDay @at 07:00",
+    "baseTimeUtcStr": "2025-04-17 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-17 07:00:00", "2025-04-22 07:00:00", "2025-04-23 07:00:00", "2025-04-24 07:00:00", "2025-04-25 07:00:00"]
+  },
+  {
+    "description": "99.59 AI generated: Hourly shortcut during office hours",
+    "expression": "@hourly @on officeHours",
+    "baseTimeUtcStr": "2025-01-01 15:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 16:00:00", "2025-01-01 17:00:00", "2025-01-02 09:00:00", "2025-01-02 10:00:00", "2025-01-02 11:00:00"]
+  },
+  {
+    "description": "99.60 AI generated: Minutely shortcut on prime minutes",
+    "expression": "@minutely @on primeMinute",
+    "baseTimeUtcStr": "2025-01-01 00:50:00",
+    "expectedDateTimeStrs": ["2025-01-01 00:53:00", "2025-01-01 00:59:00", "2025-01-01 01:02:00", "2025-01-01 01:03:00", "2025-01-01 01:05:00", "2025-01-01 01:07:00"]
+  },
+  {
+    "description": "99.61 AI generated: Secondly shortcut on even seconds",
+    "expression": "@secondly @on evenSecond",
+    "baseTimeUtcStr": "2025-01-01 00:00:55",
+    "expectedDateTimeStrs": ["2025-01-01 00:00:56", "2025-01-01 00:00:58", "2025-01-01 00:01:00", "2025-01-01 00:01:02", "2025-01-01 00:01:04", "2025-01-01 00:01:06"]
+  },
+  {
+    "description": "99.62 AI generated: Upper and mixed case",
+    "expression": "@EVERY BusinessDay @AT 09:00 @EXCEPT PAYDAY",
+    "baseTimeUtcStr": "2025-01-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-13 09:00:00", "2025-01-14 09:00:00", "2025-01-16 09:00:00", "2025-01-17 09:00:00", "2025-01-20 09:00:00"]
+  },
+  {
+    "description": "99.63 AI generated: List without spaces",
+    "expression": "@every day @on[holiday,payday,15th] @at 09:00",
+    "baseTimeUtcStr": "2025-04-10 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-15 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-04-30 09:00:00", "2025-05-01 09:00:00", "2025-05-15 09:00:00"]
+  },
+  {
+    "description": "99.64 AI generated: Rules written in another order",
+    "expression": "@at 09:00 @except weekend @on primeDay @every day",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 09:00:00", "2025-01-03 09:00:00", "2025-01-07 09:00:00", "2025-01-13 09:00:00", "2025-01-17 09:00:00", "2025-01-23 09:00:00"]
+  },
+  {
+    "description": "99.65 AI generated: Time written with pm",
+    "expression": "@every businessDay @at 5:30pm @except payday",
+    "baseTimeUtcStr": "2025-01-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-13 17:30:00", "2025-01-14 17:30:00", "2025-01-16 17:30:00", "2025-01-17 17:30:00", "2025-01-20 17:30:00"]
+  },
+  {
+    "description": "99.66 AI generated: Second keyword for the same days",
+    "expression": "@every holidays @at 09:00 @except weekend",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2025-04-18 09:00:00", "2025-04-21 09:00:00", "2025-05-01 09:00:00", "2025-12-25 09:00:00"]
+  },
+  {
+    "description": "99.67 AI generated: Rare days: friday the 13th or leap day",
+    "expression": "@every day @on [fridayThe13th, leapDay] @at 00:00",
+    "baseTimeUtcStr": "2025-01-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 00:00:00", "2026-02-13 00:00:00", "2026-03-13 00:00:00", "2026-11-13 00:00:00", "2027-08-13 00:00:00"]
+  },
+  {
+    "description": "99.68 AI generated: Quarter starts, quarter ends and paydays at 07:00",
+    "expression": "@every day @on [firstDayOfQuarter, lastDayOfQuarter, payday] @at 07:00",
+    "baseTimeUtcStr": "2025-03-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-31 07:00:00", "2025-04-01 07:00:00", "2025-04-15 07:00:00", "2025-04-30 07:00:00", "2025-05-15 07:00:00", "2025-05-31 07:00:00"]
+  },
+  {
+    "description": "99.69 AI generated: Holidays and weekends at 11:00, with the weekend written as weekdays",
+    "expression": "@every day @on [holiday, saturday, sunday] @at 11:00",
+    "baseTimeUtcStr": "2025-04-17 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-18 11:00:00", "2025-04-19 11:00:00", "2025-04-20 11:00:00", "2025-04-21 11:00:00", "2025-04-26 11:00:00", "2025-04-27 11:00:00"]
+  },
+  {
+    "description": "99.70 AI generated: Weekends, the 1st and the last day of the month at 05:00",
+    "expression": "@every day @on [weekend, 1st, LastDay] @at 05:00",
+    "baseTimeUtcStr": "2025-01-28 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-31 05:00:00", "2025-02-01 05:00:00", "2025-02-02 05:00:00", "2025-02-08 05:00:00", "2025-02-09 05:00:00", "2025-02-15 05:00:00"]
+  },
+  {
+    "description": "99.71 AI generated: Lunchtime or 18:00 sharp",
+    "expression": "@every hour @on [lunchtime, 18:00]",
+    "baseTimeUtcStr": "2025-01-01 10:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 12:00:00", "2025-01-01 18:00:00", "2025-01-02 12:00:00", "2025-01-02 18:00:00", "2025-01-03 12:00:00"]
+  },
+  {
+    "description": "99.72 AI generated: Night shift or weekend, except holidays",
+    "expression": "@every hour @on [nightShift, weekend] @except holiday",
+    "baseTimeUtcStr": "2025-04-17 20:00:00",
+    "expectedDateTimeStrs": ["2025-04-17 22:00:00", "2025-04-17 23:00:00", "2025-04-19 00:00:00", "2025-04-19 01:00:00", "2025-04-19 02:00:00", "2025-04-19 03:00:00", "2025-04-19 04:00:00", "2025-04-19 05:00:00", "2025-04-19 06:00:00", "2025-04-19 07:00:00"]
+  },
+  {
+    "description": "99.73 AI generated: Every 15 minutes at night or on weekends",
+    "expression": "@every 15 minutes @on [nightShift, weekend]",
+    "baseTimeUtcStr": "2025-01-03 05:30:00",
+    "expectedDateTimeStrs": ["2025-01-03 05:45:00", "2025-01-03 22:00:00", "2025-01-03 22:15:00", "2025-01-03 22:30:00", "2025-01-03 22:45:00", "2025-01-03 23:00:00"]
+  },
+  {
+    "description": "99.74 AI generated: Every day at 09:00 except holidays and the first monday of the month",
+    "expression": "@every day @at 09:00 @except [holiday, 1stMonday]",
+    "baseTimeUtcStr": "2025-04-30 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-30 09:00:00", "2025-05-02 09:00:00", "2025-05-03 09:00:00", "2025-05-04 09:00:00", "2025-05-06 09:00:00", "2025-05-07 09:00:00", "2025-05-08 09:00:00"]
+  },
+  {
+    "description": "99.75 AI generated: Every day at 09:00 except weekends and the last day of the month",
+    "expression": "@every day @at 09:00 @except [weekend, LastDay]",
+    "baseTimeUtcStr": "2025-01-29 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-29 09:00:00", "2025-01-30 09:00:00", "2025-02-03 09:00:00", "2025-02-04 09:00:00", "2025-02-05 09:00:00", "2025-02-06 09:00:00"]
+  },
+  {
+    "description": "99.76 AI generated: Every evening except paydays, fridays and saturdays",
+    "expression": "@every day @at 20:00 @except [payday, friday, saturday]",
+    "baseTimeUtcStr": "2025-01-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-13 20:00:00", "2025-01-14 20:00:00", "2025-01-16 20:00:00", "2025-01-19 20:00:00", "2025-01-20 20:00:00", "2025-01-21 20:00:00"]
+  },
+  {
+    "description": "99.77 AI generated: Every hour except the night shift and noon",
+    "expression": "@every hour @except [nightShift, 12:00]",
+    "baseTimeUtcStr": "2025-01-01 03:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 06:00:00", "2025-01-01 07:00:00", "2025-01-01 08:00:00", "2025-01-01 09:00:00", "2025-01-01 10:00:00", "2025-01-01 11:00:00", "2025-01-01 13:00:00", "2025-01-01 14:00:00", "2025-01-01 15:00:00", "2025-01-01 16:00:00"]
+  },
+  {
+    "description": "99.78 AI generated: Every 15 minutes outside office hours and weekends",
+    "expression": "@every 15 minutes @except [officeHours, saturday, sunday]",
+    "baseTimeUtcStr": "2025-01-03 08:30:00",
+    "expectedDateTimeStrs": ["2025-01-03 08:45:00", "2025-01-03 18:00:00", "2025-01-03 18:15:00", "2025-01-03 18:30:00", "2025-01-03 18:45:00", "2025-01-03 19:00:00"]
+  },
+  {
+    "description": "99.79 AI generated: Weekends at 09:00 and 21:00 except holidays",
+    "expression": "@every weekend @at [09:00, 21:00] @except holiday",
+    "baseTimeUtcStr": "2025-04-17 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-19 09:00:00", "2025-04-19 21:00:00", "2025-04-20 09:00:00", "2025-04-20 21:00:00", "2025-04-26 09:00:00", "2025-04-26 21:00:00"]
+  },
+  {
+    "description": "99.80 AI generated: Lunchtime from monday to friday",
+    "expression": "@every hour @on lunchtime @between monday and friday",
+    "baseTimeUtcStr": "2025-01-02 00:00:00",
+    "expectedDateTimeStrs": ["2025-01-02 12:00:00", "2025-01-03 12:00:00", "2025-01-06 12:00:00", "2025-01-07 12:00:00", "2025-01-08 12:00:00"]
+  },
+  {
+    "description": "99.81 AI generated: Every 2 hours on weekends",
+    "expression": "@every 2 hours @on weekend",
+    "baseTimeUtcStr": "2025-01-03 21:00:00",
+    "expectedDateTimeStrs": ["2025-01-04 00:00:00", "2025-01-04 02:00:00", "2025-01-04 04:00:00", "2025-01-04 06:00:00", "2025-01-04 08:00:00", "2025-01-04 10:00:00", "2025-01-04 12:00:00", "2025-01-04 14:00:00"]
+  },
+  {
+    "description": "99.82 AI generated: Every 10 minutes at lunchtime on business days",
+    "expression": "@every 10 minutes @on lunchtime @on businessDay",
+    "baseTimeUtcStr": "2025-04-17 12:30:00",
+    "expectedDateTimeStrs": ["2025-04-17 12:40:00", "2025-04-17 12:50:00", "2025-04-22 12:00:00", "2025-04-22 12:10:00", "2025-04-22 12:20:00", "2025-04-22 12:30:00", "2025-04-22 12:40:00", "2025-04-22 12:50:00"]
+  },
+  {
+    "description": "99.83 AI generated: Opening bell at 14:00 UTC on New York market days",
+    "expression": "@every day @on nyMarketOpen @at 14:00",
+    "baseTimeUtcStr": "2025-06-12 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-12 14:00:00", "2025-06-13 14:00:00", "2025-06-16 14:00:00", "2025-06-17 14:00:00", "2025-06-18 14:00:00"]
+  },
+  {
+    "description": "99.84 AI generated: Market data every 15 minutes while New York is open, in UTC",
+    "expression": "@every 15 minutes @on nyMarketOpen",
+    "baseTimeUtcStr": "2025-06-13 19:00:00",
+    "expectedDateTimeStrs": ["2025-06-13 19:15:00", "2025-06-13 19:30:00", "2025-06-13 19:45:00", "2025-06-16 14:00:00", "2025-06-16 14:15:00", "2025-06-16 14:30:00"]
+  },
+  {
+    "description": "99.85 AI generated: Market data every 30 minutes in New York, closed on United States holidays",
+    "expression": "@every 30 minutes @on nyMarketOpen @except usHoliday @tz America/New_York",
+    "baseTimeUtcStr": "2025-07-03 19:00:00",
+    "expectedDateTimeStrs": ["2025-07-03 19:30:00", "2025-07-07 14:00:00", "2025-07-07 14:30:00", "2025-07-07 15:00:00", "2025-07-07 15:30:00", "2025-07-07 16:00:00"]
+  },
+  {
+    "description": "99.86 AI generated: Every quarter of an hour while the market is open in New York",
+    "expression": "@every quarterHour @on nyMarketOpen @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-13 19:30:00",
+    "expectedDateTimeStrs": ["2025-06-13 19:45:00", "2025-06-16 14:00:00", "2025-06-16 14:15:00", "2025-06-16 14:30:00", "2025-06-16 14:45:00", "2025-06-16 15:00:00"]
+  },
+  {
+    "description": "99.87 AI generated: United States holiday greeting at 08:00 in New York",
+    "expression": "@every usHoliday @at 08:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 12:00:00", "2025-11-27 13:00:00", "2025-12-25 13:00:00", "2026-01-01 13:00:00", "2026-07-04 12:00:00"]
+  },
+  {
+    "description": "99.88 AI generated: Thanksgiving lunch at noon in Chicago",
+    "expression": "@every usHoliday @at 12:00 @in november @tz America/Chicago",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-11-27 18:00:00", "2026-11-26 18:00:00"]
+  },
+  {
+    "description": "99.89 AI generated: Business days at 09:00 in Los Angeles, closed on United States holidays",
+    "expression": "@every businessDay @at 09:00 @except usHoliday @tz America/Los_Angeles",
+    "baseTimeUtcStr": "2025-07-02 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-02 16:00:00", "2025-07-03 16:00:00", "2025-07-07 16:00:00", "2025-07-08 16:00:00", "2025-07-09 16:00:00", "2025-07-10 16:00:00"]
+  },
+  {
+    "description": "99.90 AI generated: Japan holiday notice at 07:00 in Tokyo",
+    "expression": "@every jpHoliday @at 07:00 @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-04-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-05-02 22:00:00", "2025-05-03 22:00:00", "2025-05-04 22:00:00", "2025-11-02 22:00:00", "2025-12-31 22:00:00", "2026-02-10 22:00:00"]
+  },
+  {
+    "description": "99.91 AI generated: Prime days at 06:00 in Tokyo, except Japan holidays",
+    "expression": "@every primeDay @at 06:00 @except jpHoliday @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-05-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-05-01 21:00:00", "2025-05-06 21:00:00", "2025-05-10 21:00:00", "2025-05-12 21:00:00", "2025-05-16 21:00:00", "2025-05-18 21:00:00"]
+  },
+  {
+    "description": "99.92 AI generated: Japan holidays and the 1st of the month in Tokyo",
+    "expression": "@every day @on [jpHoliday, 1st] @at 09:00 @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-04-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-05-01 00:00:00", "2025-05-03 00:00:00", "2025-05-04 00:00:00", "2025-05-05 00:00:00", "2025-06-01 00:00:00", "2025-07-01 00:00:00"]
+  },
+  {
+    "description": "99.93 AI generated: Holiday banner at midnight in Lisbon",
+    "expression": "@every localHoliday @at 00:00 @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-04-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-24 23:00:00", "2025-04-30 23:00:00", "2025-06-09 23:00:00", "2025-12-25 00:00:00"]
+  },
+  {
+    "description": "99.94 AI generated: Every day at 09:00 in Lisbon except local holidays and weekends",
+    "expression": "@every day @at 09:00 @except localHoliday @except weekend @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-04-23 00:00:00",
+    "expectedDateTimeStrs": ["2025-04-23 08:00:00", "2025-04-24 08:00:00", "2025-04-28 08:00:00", "2025-04-29 08:00:00", "2025-04-30 08:00:00", "2025-05-02 08:00:00"]
+  },
+  {
+    "description": "99.95 AI generated: Every 4 hours on local holidays in Tokyo",
+    "expression": "@every 4 hours @on localHoliday @tz Asia/Tokyo",
+    "baseTimeUtcStr": "2025-05-02 15:00:00",
+    "expectedDateTimeStrs": ["2025-05-02 19:00:00", "2025-05-02 23:00:00", "2025-05-03 03:00:00", "2025-05-03 07:00:00", "2025-05-03 11:00:00", "2025-05-03 15:00:00", "2025-05-03 19:00:00", "2025-05-03 23:00:00"]
+  },
+  {
+    "description": "99.96 AI generated: Office hours of a New York holiday, in UTC",
+    "expression": "@every hour @on nyHoliday @on officeHours",
+    "baseTimeUtcStr": "2025-07-03 12:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 09:00:00", "2025-07-04 10:00:00", "2025-07-04 11:00:00", "2025-07-04 12:00:00", "2025-07-04 13:00:00", "2025-07-04 14:00:00", "2025-07-04 15:00:00", "2025-07-04 16:00:00"]
+  },
+  {
+    "description": "99.97 AI generated: New York holiday seen from Sydney at 18:00",
+    "expression": "@every day @on nyHoliday @at 18:00 @tz Australia/Sydney",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 08:00:00", "2025-11-27 07:00:00", "2025-12-25 07:00:00", "2026-01-01 07:00:00"]
+  },
+  {
+    "description": "99.98 AI generated: Every 2 hours in office hours on business days in a half hour zone",
+    "expression": "@every 2 hours @on officeHours @on businessDay @tz Asia/Kolkata",
+    "baseTimeUtcStr": "2025-06-13 09:30:00",
+    "expectedDateTimeStrs": ["2025-06-13 11:30:00", "2025-06-16 03:30:00", "2025-06-16 05:30:00", "2025-06-16 07:30:00", "2025-06-16 09:30:00", "2025-06-16 11:30:00", "2025-06-17 03:30:00", "2025-06-17 05:30:00"]
+  },
+  {
+    "description": "99.99 AI generated: Weekends at 23:59 in Sydney",
+    "expression": "@every weekend @at 23:59 @tz Australia/Sydney",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-14 13:59:00", "2025-06-15 13:59:00", "2025-06-21 13:59:00", "2025-06-22 13:59:00", "2025-06-28 13:59:00"]
+  },
+  {
+    "description": "99.100 AI generated: Last business day at 17:30 in Lisbon",
+    "expression": "@every lastBusinessDay @at 17:30 @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-30 16:30:00", "2025-07-31 16:30:00", "2025-08-29 16:30:00", "2025-09-30 16:30:00", "2025-10-31 17:30:00"]
+  },
+  {
+    "description": "99.101 AI generated: Payroll in New York: paydays at 09:00 except weekends and United States holidays",
+    "expression": "@every payday @at 09:00 @except [weekend, usHoliday] @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-06-30 13:00:00", "2025-07-15 13:00:00", "2025-07-31 13:00:00", "2025-08-15 13:00:00", "2025-09-15 13:00:00", "2025-09-30 13:00:00"]
+  },
+  {
+    "description": "99.102 AI generated: First holiday of each month in New York, using the local calendar",
+    "expression": "@every month @on localHoliday @at 10:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-13 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 14:00:00", "2025-11-27 15:00:00", "2025-12-25 15:00:00", "2026-01-01 15:00:00", "2026-07-04 14:00:00"]
+  }
+]
