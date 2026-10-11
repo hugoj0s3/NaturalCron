@@ -9,8 +9,9 @@ namespace NaturalCron.CustomRules;
 /// <remarks>
 /// <see cref="Match"/> is called on every step of the occurrence search (potentially many times per
 /// GetNextOccurrence call). Avoid a database or HTTP round trip on every call: keep the data in memory and let Match
-/// read from it. Loading the data now and then is fine, e.g. all the holidays at once, or one year the first time
-/// it is needed, refreshed periodically.
+/// read from it. Loading the data now and then is fine, e.g. load all the holidays once and refresh them periodically,
+/// or cache the holidays per year: the database is only reached the first time a date of a new year is checked,
+/// every other call for that year is answered from memory.
 /// The instance is created once per parsed expression and reused for every match.
 /// </remarks>
 public interface INaturalCronMatchableCustomKeyword
