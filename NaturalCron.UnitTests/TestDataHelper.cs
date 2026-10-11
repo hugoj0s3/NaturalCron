@@ -13,11 +13,14 @@ public static class TestDataHelper
     /// Loads test cases from the embedded JSON resource and returns them with both @ and without @ variations
     /// </summary>
     /// <param name="filterExpression">Optional filter to apply to expressions (e.g., x => x.Expression.Contains("@tz"))</param>
+    /// <param name="fileName">The embedded JSON file with the test cases</param>
     /// <returns>Enumerable of test case object arrays for xUnit Theory tests</returns>
-    public static IEnumerable<object[]> LoadNextOccurrenceTestCases(Func<NextOccurrenceTestCase, bool>? filterExpression = null)
+    public static IEnumerable<object[]> LoadNextOccurrenceTestCases(
+        Func<NextOccurrenceTestCase, bool>? filterExpression = null,
+        string fileName = "GetNextOcurrencesTestCases.json")
     {
         var assembly = Assembly.GetExecutingAssembly();
-        var resourceName = "NaturalCron.UnitTests.GetNextOcurrencesTestCases.json";
+        var resourceName = "NaturalCron.UnitTests." + fileName;
         using var stream = assembly.GetManifestResourceStream(resourceName);
         if (stream == null)
         {

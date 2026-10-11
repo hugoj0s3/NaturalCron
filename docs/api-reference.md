@@ -13,6 +13,7 @@ var compiledExpr = NaturalCronExpr.Parse("daily at 14:30");
 - [Local Time Occurrence Methods](#local-time-occurrence-methods)
 - [UTC Occurrence Methods](#utc-occurrence-methods)
 - [IANA Timezone Occurrence Methods](#iana-timezone-occurrence-methods)
+- [Thread Safety](#thread-safety)
 - [Timezone Behavior](#timezone-behavior)
 - [Usage Examples](#usage-examples)
 - [Rule Filter Methods](#rule-filter-methods)
@@ -248,6 +249,11 @@ Gets the next occurrences in a specified IANA timezone. Throws an exception if f
 - `ArgumentException` when the IANA timezone ID is invalid or not recognized
 - `InvalidOperationException` when fewer than the requested number of occurrences are found
 
+
+## Thread Safety
+A `NaturalCronExpr` instance is **not thread-safe**: it caches the last checked time while it searches for an occurrence.
+Do not call the occurrence methods of the same instance from several threads at the same time, the results can be wrong.
+Use one instance per thread, or parse the expression again. Different instances can be used in parallel.
 
 ## Timezone Behavior
 Understanding how timezones work in NaturalCron is crucial for correct usage:

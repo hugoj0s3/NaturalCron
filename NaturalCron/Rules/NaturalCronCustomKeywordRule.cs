@@ -33,6 +33,11 @@ public class NaturalCronCustomKeywordRule : NaturalCronMatchableRule
         return true;
     }
 
+    protected override (int timeToAdvance, NaturalCronTimeUnit timeUnit) DoGetTimeToAdvanceToNextOccurence(DateTime dateTime)
+    {
+        return GetOneUnitTimeToAdvance(dateTime);
+    }
+
     protected override bool DoMatch(DateTime dateTime)
     {
         foreach (var instance in Instances)

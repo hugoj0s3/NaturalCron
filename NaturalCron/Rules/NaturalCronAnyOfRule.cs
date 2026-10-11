@@ -17,6 +17,11 @@ public class NaturalCronAnyOfRule : NaturalCronMatchableRule
     /// </summary>
     public IReadOnlyList<NaturalCronMatchableRule> Rules { get; internal set; } = Array.Empty<NaturalCronMatchableRule>();
 
+    protected override (int timeToAdvance, NaturalCronTimeUnit timeUnit) DoGetTimeToAdvanceToNextOccurence(DateTime dateTime)
+    {
+        return GetOneUnitTimeToAdvance(dateTime);
+    }
+
     protected override bool DoMatch(DateTime dateTime)
     {
         foreach (var rule in Rules)

@@ -25,6 +25,7 @@ The interval must be a positive integer, and the time unit must be one of the su
 
 **Syntax:**
 - `every <number> <time-unit>`
+- `every <value>` — shorthand, see [Every + Value](#every--value)
 
 
 **Examples:**
@@ -264,11 +265,15 @@ Keywords must be configured once at startup, see [Custom Keywords in the API Ref
 - `on <keyword>` (or `at`/`in`) — matches when the keyword matches
 - `on [<keyword>, <keyword>]` — matches when **any** keyword matches
 - `on [<keyword>, <value>]` — a list can mix keywords and built-in values; it matches when **any** entry matches
+- `every <keyword>` or `every [<keyword>, <keyword>]` — shorthand for `every <the keyword's time unit> on …`,
+  e.g. `every holiday` is `every day on holiday` (see [Every + Value](#every--value))
 - `except <keyword>` — skips occurrences where the keyword matches (see [Exclusions](#except-or-except--exclusions))
 - `except [<keyword>, <keyword>]` — skips occurrences where **any** of the keywords match
 
 **Examples:**
 - `every day on holiday at 09:00` — at 09:00 on holidays only
+- `every holiday at 09:00` — the same, with the [`every` shorthand](#every--value)
+- `every [holiday, payday] at 09:00` — at 09:00 on holidays or paydays, with the shorthand
 - `every day at 09:00 except holiday` — at 09:00 every day, skipping holidays
 - `every day on [holiday, payday] at 09:00` — at 09:00 on holidays or paydays
 - `every day on [holiday, 15th] at 09:00` — at 09:00 on holidays or on the 15th
@@ -280,6 +285,22 @@ Keywords must be configured once at startup, see [Custom Keywords in the API Ref
 - Keywords cannot reuse a built-in word (e.g. `mon`, `day`, `last`, `except`, `UTC`).
 - Custom keywords work with `on`, `at`, `in` and `except`. They cannot be used as a boundary of `between`, `upto` or `from`:
   `between holiday and payday` ❌
+- To get every match of a keyword, use an `every` unit that is not larger than the keyword's own time unit: for a day
+  keyword such as `holiday`, write `every holiday` or `every day on holiday`.
+- With a larger `every` unit the keyword matches **once per period, at its first match**. The first occurrence is the
+  first match after the base time; from then on it is the first match of each new period.
+
+  Example: the base time is **Dec 24, 2024** and the holidays of every year are Jan 1, Apr 18, Apr 21, May 1 and Dec 25.
+
+  | Expression | Occurrences | Why |
+  |---|---|---|
+  | `every day on holiday` (or `every holiday`) | Dec 25, Jan 1, Apr 18, Apr 21, May 1, Dec 25, … | every holiday |
+  | `every month on holiday` | Dec 25, Jan 1, Apr 18, May 1, Dec 25, Jan 1, … | the first holiday of each month; Apr 21 is the second holiday of April |
+  | `every year on holiday` | Dec 25, 2024, then Jan 1, 2025, Jan 1, 2026, … | Dec 25 is the first holiday after the base time; after that it is always the first holiday of the year, Jan 1 |
+  | `every week on holiday` | Dec 25, Jan 1, Apr 18, May 1, Dec 25, … | a week is 7 days counted from the last occurrence, not a calendar week, so Apr 21 (3 days after Apr 18) is skipped |
+
+  The same applies to the smaller units: `every day on officeHours` from 10:30 returns 09:30 on the following days,
+  the first office hour of each day.
 - Keywords and built-in values can only be combined inside brackets, one per entry:
   `on [holiday, 15th]` ✅, `on holiday 15th` ❌, `on [holiday 15th]` ❌
 - In a mixed list the built-in values follow the usual list rules (every built-in entry sets the same time units).

@@ -51,6 +51,18 @@ public abstract class NaturalCronMatchableRule : NaturalCronRule
         return GetMinSafeTimeToAdvance(dateTime);
     }
     
+    // For rules that only say whether a time matches (custom keywords): advance one unit of the rule at a time.
+    // It keeps the smaller units of the time being checked, e.g. "every day on holiday" continues at the same time of the day.
+    internal (int, NaturalCronTimeUnit) GetOneUnitTimeToAdvance(DateTime dateTime)
+    {
+        if (this.TimeUnit == NaturalCronTimeUnit.Month || this.TimeUnit == NaturalCronTimeUnit.Year)
+        {
+            return GetMinSafeTimeToAdvance(dateTime);
+        }
+
+        return (1, this.TimeUnit);
+    }
+
     internal (int, NaturalCronTimeUnit) GetMinSafeTimeToAdvance(DateTime dateTime)
     {
         if (this.TimeUnit == NaturalCronTimeUnit.Second)

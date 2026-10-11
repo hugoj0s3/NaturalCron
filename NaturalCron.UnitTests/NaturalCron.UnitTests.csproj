@@ -29,6 +29,7 @@
 
     <ItemGroup>
         <EmbeddedResource Include="GetNextOcurrencesTestCases.json" />
+        <EmbeddedResource Include="GetNextOcurrencesCustomKeywordsTestCases.json" />
     </ItemGroup>
 
 </Project>

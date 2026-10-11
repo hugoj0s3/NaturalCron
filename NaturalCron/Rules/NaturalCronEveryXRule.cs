@@ -100,6 +100,7 @@ public class NaturalCronEveryXRule : NaturalCronRule
             .Where(x => x < this.TimeUnit)
             .Where(x => HasTimeUnitRule(matchableRules, x))
             .Select(x => x == NaturalCronTimeUnit.Week ? NaturalCronTimeUnit.Day : x)
+            .Concat(GetTimeUnitsToRestartForKeywords(matchableRules))
             .Distinct()
             .ToList();
 
@@ -119,6 +120,33 @@ public class NaturalCronEveryXRule : NaturalCronRule
         return localNextOccurrence;
     }
     
+    // A custom keyword with a smaller time unit than the every unit matches once per period, at its first match:
+    // e.g. "every month on holiday" is the first holiday of each month. To find it, the new period starts at its beginning:
+    // the units from the keyword unit up to the every unit are reset.
+    // Weeks are not aligned with the other calendar units, so "every week" keeps counting 7 days from the last occurrence.
+    private IEnumerable<NaturalCronTimeUnit> GetTimeUnitsToRestartForKeywords(IList<NaturalCronMatchableRule> rules)
+    {
+        if (this.TimeUnit == NaturalCronTimeUnit.Week)
+        {
+            return Array.Empty<NaturalCronTimeUnit>();
+        }
+
+        var keywordTimeUnits = rules
+            .Where(x => x is NaturalCronCustomKeywordRule || x is NaturalCronAnyOfRule)
+            .Select(x => x.TimeUnit == NaturalCronTimeUnit.Week ? NaturalCronTimeUnit.Day : x.TimeUnit)
+            .Where(x => x < this.TimeUnit)
+            .ToList();
+
+        if (!keywordTimeUnits.Any())
+        {
+            return Array.Empty<NaturalCronTimeUnit>();
+        }
+
+        var smallestKeywordTimeUnit = keywordTimeUnits.Min();
+        return TimeUnitsWithoutTimezone
+            .Where(x => x != NaturalCronTimeUnit.Week && x >= smallestKeywordTimeUnit && x < this.TimeUnit);
+    }
+
     private static bool HasTimeUnitRule(IList<NaturalCronMatchableRule> rules, NaturalCronTimeUnit timeUnit)
     {
         foreach (var matchableRule in rules)
