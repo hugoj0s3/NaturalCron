@@ -235,6 +235,56 @@ public class NaturalCronCustomKeywordTests : IDisposable
         next.Should().Be(Utc(2025, 1, 15, 9));
     }
 
+    // ── every <keyword> ───────────────────────────────────────────────────────
+
+    [Theory]
+    // The every unit is the keyword's time unit: holiday is a day, window an hour, quarter a month.
+    [InlineData("every holiday at 09:00", "every day on holiday at 09:00")]
+    [InlineData("every HOLIDAY at 09:00", "every day on holiday at 09:00")]
+    [InlineData("@every holiday @at 09:00 @tz Asia/Tokyo", "@every day @on holiday @at 09:00 @tz Asia/Tokyo")]
+    [InlineData("every [holiday, payday2] at 09:00", "every day on [holiday, payday2] at 09:00")]
+    [InlineData("every [holiday, 15th] at 09:00", "every day on [holiday, 15th] at 09:00")]
+    [InlineData("every [holiday, friday] at 09:00", "every day on [holiday, friday] at 09:00")]
+    [InlineData("every holiday at 09:00 except friday", "every day on holiday at 09:00 except friday")]
+    [InlineData("every window", "every hour on window")]
+    [InlineData("every quarter on 1st at 09:00", "every month on quarter on 1st at 09:00")]
+    public void EveryKeyword_IsTheSameAsEveryUnitOnKeyword(string shorthand, string explicitExpression)
+    {
+        ConfigureDefaults(cfg => cfg
+            .AddMatchable("window", dt => dt.Hour == 14, NaturalCronTimeUnit.Hour)
+            .AddMatchable("quarter", dt => dt.Month is 1 or 4 or 7 or 10, NaturalCronTimeUnit.Month));
+
+        var shorthandExpr = NaturalCronExpr.Parse(shorthand);
+        var explicitExpr = NaturalCronExpr.Parse(explicitExpression);
+
+        foreach (var baseTime in new[] { Utc(2024, 12, 20), new DateTime(2024, 12, 24, 13, 37, 11, DateTimeKind.Utc) })
+        {
+            var expected = explicitExpr.TryGetNextOccurrencesInUtc(baseTime, 2);
+
+            expected.Should().HaveCount(2);
+            shorthandExpr.TryGetNextOccurrencesInUtc(baseTime, 2).Should().Equal(expected);
+        }
+    }
+
+    [Fact]
+    public void EveryKeyword_ReturnsEveryMatchingDay()
+    {
+        ConfigureDefaults();
+
+        var occurrences = NaturalCronExpr.Parse("every holiday at 09:00").GetNextOccurrencesInUtc(Utc(2024, 12, 20), 2);
+
+        occurrences.Should().Equal(Utc(2024, 12, 25, 9), Utc(2025, 1, 1, 9));
+    }
+
+    [Fact]
+    public void EveryKeyword_NotConfigured_IsInvalidToken()
+    {
+        var (expr, errors) = NaturalCronExpr.TryParse("every holiday at 09:00");
+
+        expr.Should().BeNull();
+        errors.Should().Contain(x => x.Contains("Invalid token"));
+    }
+
     // ── Several keywords for the same implementation ──────────────────────────
 
     [Theory]

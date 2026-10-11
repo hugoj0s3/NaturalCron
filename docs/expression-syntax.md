@@ -35,6 +35,33 @@ The interval must be a positive integer, and the time unit must be one of the su
 
 ---
 
+### Every + Value
+`every` can also be followed directly by a value. It is a shorthand for `every <period> on <value>`, where the period
+is the one that contains the value once.
+
+| You write | It means |
+|---|---|
+| `every 9am`, `every 09:30`, `every [09:00, 18:00]` | `every day at …` |
+| `every 15th`, `every 1stMonday`, `every LastDay`, `every ClosestWeekdayTo 15`, `every [1st, 15th]` | `every month on …` |
+| `every monday`, `every [monday, friday]` | `every week on …` |
+| `every january`, `every [jan, jul]`, `every 1st jan` | `every year on …` |
+| `every holiday` ([custom keyword](#custom-keywords)) | `every <the keyword's time unit> on …`, e.g. `every day on holiday` |
+
+**Examples:**
+- `every 15th at 18:00` — the 15th of every month at 18:00
+- `every 1stMonday at 9am` — the first Monday of every month at 09:00
+- `every january on 1st at 00:00` — every January 1st at midnight
+- `every 9am` — every day at 09:00
+- `every holiday at 09:00` — every holiday at 09:00
+
+**Notes:**
+- A number followed by a time unit is still an interval: `every 15 days` is every 15 days, `every 15th` is the 15th of every month.
+- Without a time (`at …`), the time of the base time is kept, like for the other `every` expressions. Add `at …` to fix it.
+- A date with a year happens only once, so it is not accepted: `every 2025-12-25` ❌, use `on 2025-12-25`.
+- A list mixing custom keywords and built-in values follows the keyword: `every [holiday, 15th]` is `every day on [holiday, 15th]`.
+
+---
+
 ### Anchored Recurrences
 The `AnchoredOn` keyword lets you **fix the schedule to a specific anchor point**, useful for fiscal or seasonal rules.
 

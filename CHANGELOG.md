@@ -6,9 +6,11 @@
   - `every second at 9am` from 08:59:57 returned 09:59:57; it now returns 09:00:00.
   - `every hour on wednesday` from Tuesday 10:30 returned Wednesday 10:30; it now returns Wednesday 00:30.
   - `every day in january` from December 23rd 10:30 now returns January 1st at 10:30.
+- `every 15th` (a number with an ordinal suffix) was parsed as `every 15 days`. It now means the 15th of every month.
 
 ## [Unreleased]
 ### Added
+- `every <value>` shorthand for `every <period> on <value>`: `every 9am` (every day), `every 15th` / `every 1stMonday` / `every LastDay` (every month), `every [monday, friday]` (every week), `every january` (every year) and `every holiday` for a custom keyword (every unit of the keyword, e.g. every day).
 - Custom keywords: user-defined rules usable in expressions, e.g. `every day on holiday at 09:00`, `every day on [holiday, payday] at 09:00`.
   - Configured once via `NaturalCronCustomKeywords.Configure(cfg => cfg.AddMatchable(...))` with a match function, an `INaturalCronMatchableCustomKeyword` class (parameterless constructor), or a factory (e.g. to resolve the keyword from IoC).
   - Several keywords can share one implementation, e.g. `cfg.AddMatchable(new[] { "holiday", "holidays" }, ...)`.
