@@ -251,7 +251,7 @@ Gets the next occurrences in a specified IANA timezone. Throws an exception if f
 
 
 ## Thread Safety
-A `NaturalCronExpr` instance is **not thread-safe**: it caches the last checked time while it searches for an occurrence.
+A `NaturalCronExpr` instance is **not thread-safe**.
 Do not call the occurrence methods of the same instance from several threads at the same time, the results can be wrong.
 Use one instance per thread, or parse the expression again. Different instances can be used in parallel.
 
