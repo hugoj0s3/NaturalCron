@@ -461,7 +461,7 @@ A matchable keyword says whether a time matches. It is registered with `AddMatch
 and `except`. It cannot be used as a boundary of `between`, `upto` or `from`.
 
 - `TimeUnit` is the keyword granularity (e.g. `Day` for holidays, `Hour` for an hourly window). It controls how far the engine
-  safely advances when the keyword doesn't match. `TimeZone` is not allowed.
+  safely advances when the keyword doesn't match.
 - `Match` receives the wall-clock time (`Kind = Unspecified`) and the time zone it is in:
 
   | Method | Expression without `tz` | Expression with `tz X` |
@@ -474,8 +474,9 @@ and `except`. It cannot be used as a boundary of `between`, `upto` or `from`.
   A factory must work wherever expressions are parsed (including Quartz triggers).
 
 > ⚠️ **Performance:** `Match` is called on every step of the occurrence search, potentially many times per
-> `GetNextOccurrence` call. Keep it fast and non-blocking: load or cache your data up front (e.g. a `HashSet` of holiday
-> dates refreshed periodically, or an injected singleton cache) instead of querying a database or HTTP endpoint inside `Match`.
+> `GetNextOccurrence` call. Avoid a database or HTTP round trip on every call: keep the data in memory and let `Match`
+> read from it. Loading the data now and then is fine, for example all the holidays at once, or one year the first
+> time it is needed, refreshed periodically.
 
 ```csharp
 public class HolidayKeyword : INaturalCronMatchableCustomKeyword

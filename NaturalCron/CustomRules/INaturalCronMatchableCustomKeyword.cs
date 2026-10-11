@@ -8,8 +8,9 @@ namespace NaturalCron.CustomRules;
 /// </summary>
 /// <remarks>
 /// <see cref="Match"/> is called on every step of the occurrence search (potentially many times per
-/// GetNextOccurrence call), so it must be fast and non-blocking. Load or cache any external data up front
-/// (e.g. a HashSet of holiday dates refreshed periodically) instead of querying a database or HTTP endpoint inside Match.
+/// GetNextOccurrence call). Avoid a database or HTTP round trip on every call: keep the data in memory and let Match
+/// read from it. Loading the data now and then is fine, e.g. all the holidays at once, or one year the first time
+/// it is needed, refreshed periodically.
 /// The instance is created once per parsed expression and reused for every match.
 /// </remarks>
 public interface INaturalCronMatchableCustomKeyword
