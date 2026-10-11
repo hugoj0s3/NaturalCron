@@ -493,9 +493,9 @@ public class HolidayKeyword : INaturalCronMatchableCustomKeyword
 }
 ```
 
-### NaturalCronCustomKeywordRule, NaturalCronAnyOfRule and NaturalCronExceptRule
+### NaturalCronCustomKeywordRule, NaturalCronAnyOfMatchableRule and NaturalCronExceptRule
 Parsed custom keyword rules appear in `Rules` as `NaturalCronCustomKeywordRule` (`Spec == NaturalCronRuleSpec.Custom`),
-exposing `Keywords`. A list mixing keywords and built-in values (`on [holiday, 15th]`) appears as `NaturalCronAnyOfRule`
+exposing `Keywords`. A list mixing keywords and built-in values (`on [holiday, 15th]`) appears as `NaturalCronAnyOfMatchableRule`
 (`Spec == NaturalCronRuleSpec.AtInOn`), whose `Rules` holds the keyword rule and the built-in rule.
 Exclusions (`except`) appear as `NaturalCronExceptRule` (`Spec == NaturalCronRuleSpec.Except`),
 whose `Rules` holds the excluded rules, e.g. a `NaturalCronCustomKeywordRule` or `NaturalCronAtInOnRule`.

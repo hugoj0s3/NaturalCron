@@ -132,7 +132,7 @@ public class NaturalCronEveryXRule : NaturalCronRule
         }
 
         var keywordTimeUnits = rules
-            .Where(x => x is NaturalCronCustomKeywordRule || x is NaturalCronAnyOfRule)
+            .Where(x => x is NaturalCronCustomKeywordRule || x is NaturalCronAnyOfMatchableRule)
             .Select(x => x.TimeUnit == NaturalCronTimeUnit.Week ? NaturalCronTimeUnit.Day : x.TimeUnit)
             .Where(x => x < this.TimeUnit)
             .ToList();
@@ -153,7 +153,7 @@ public class NaturalCronEveryXRule : NaturalCronRule
         {
             // Filter-only rules (except, custom keywords, mixed lists) have no target value to reset to.
             if (matchableRule is NaturalCronExceptRule || matchableRule is NaturalCronCustomKeywordRule ||
-                matchableRule is NaturalCronAnyOfRule)
+                matchableRule is NaturalCronAnyOfMatchableRule)
             {
                 continue;
             }

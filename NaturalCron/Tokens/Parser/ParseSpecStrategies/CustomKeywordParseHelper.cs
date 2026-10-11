@@ -130,7 +130,7 @@ internal static class CustomKeywordParseHelper
             .OfType<NaturalCronMatchableRule>()
             .ToList();
 
-        NaturalCronRule anyOfRule = new NaturalCronAnyOfRule
+        NaturalCronRule anyOfRule = new NaturalCronAnyOfMatchableRule
         {
             Rules = anyOfRules,
             TimeUnit = anyOfRules.Min(GetMinTimeUnit),

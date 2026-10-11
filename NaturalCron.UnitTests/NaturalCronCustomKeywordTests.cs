@@ -619,7 +619,7 @@ public class NaturalCronCustomKeywordTests : IDisposable
 
         var expr = NaturalCronExpr.Parse("every day on [holiday, 20th] at 09:00");
 
-        var anyOfRule = expr.Rules.OfType<NaturalCronAnyOfRule>().Should().ContainSingle().Subject;
+        var anyOfRule = expr.Rules.OfType<NaturalCronAnyOfMatchableRule>().Should().ContainSingle().Subject;
         anyOfRule.Rules.Should().HaveCount(2);
         anyOfRule.Rules.OfType<NaturalCronCustomKeywordRule>().Should().ContainSingle()
             .Which.Keywords.Should().Equal("holiday");

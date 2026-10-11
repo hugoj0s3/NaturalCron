@@ -926,7 +926,7 @@ public class NaturalCronExpr
     // The except and any-of rules, at any depth.
     private static IEnumerable<NaturalCronMatchableRule> GetWrapperRules(NaturalCronRule rule)
     {
-        var innerRules = (rule as NaturalCronExceptRule)?.Rules ?? (rule as NaturalCronAnyOfRule)?.Rules;
+        var innerRules = (rule as NaturalCronExceptRule)?.Rules ?? (rule as NaturalCronAnyOfMatchableRule)?.Rules;
         if (innerRules == null)
         {
             return Array.Empty<NaturalCronMatchableRule>();
@@ -942,7 +942,7 @@ public class NaturalCronExpr
             return exceptRule.Rules.SelectMany(Unwrap);
         }
 
-        if (rule is NaturalCronAnyOfRule anyOfRule)
+        if (rule is NaturalCronAnyOfMatchableRule anyOfRule)
         {
             return anyOfRule.Rules.SelectMany(Unwrap);
         }

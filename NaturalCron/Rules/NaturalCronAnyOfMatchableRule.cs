@@ -4,9 +4,9 @@ namespace NaturalCron.Rules;
 /// A bracket list mixing custom keywords and built-in values, e.g. <c>on [holiday, 15th]</c>.
 /// It matches when any of its rules matches.
 /// </summary>
-public class NaturalCronAnyOfRule : NaturalCronMatchableRule
+public class NaturalCronAnyOfMatchableRule : NaturalCronMatchableRule
 {
-    internal NaturalCronAnyOfRule()
+    internal NaturalCronAnyOfMatchableRule()
     {
     }
 

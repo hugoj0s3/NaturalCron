@@ -138,7 +138,7 @@ internal class EveryXParseRuleSpecStrategy : ParseRuleSpecStrategy
     {
         // Custom keywords and lists with custom keywords only say whether a time matches: every unit of theirs is checked,
         // e.g. every holiday => every day on holiday.
-        var filterRules = valueRules.Where(x => x is NaturalCronCustomKeywordRule || x is NaturalCronAnyOfRule).ToList();
+        var filterRules = valueRules.Where(x => x is NaturalCronCustomKeywordRule || x is NaturalCronAnyOfMatchableRule).ToList();
         if (filterRules.Any())
         {
             return filterRules.Min(x => x.TimeUnit);
