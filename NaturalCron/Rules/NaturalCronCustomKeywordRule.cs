@@ -40,6 +40,13 @@ public class NaturalCronCustomKeywordRule : NaturalCronMatchableRule
 
     protected override bool DoMatch(DateTime dateTime)
     {
+        // On the night the clocks go forward some wall-clock times do not exist in the zone.
+        // They cannot be an occurrence, and a keyword that converts the time to another zone would throw.
+        if (EffectiveTimeZone.SupportsDaylightSavingTime && EffectiveTimeZone.IsInvalidTime(dateTime))
+        {
+            return false;
+        }
+
         foreach (var instance in Instances)
         {
             if (instance.Match(dateTime, EffectiveTimeZone))

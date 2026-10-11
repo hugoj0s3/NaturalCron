@@ -33,6 +33,9 @@ public class NaturalCronEveryValueTests
     [InlineData("every FirstWeekday at 08:00", "every month on FirstWeekday at 08:00")]
     [InlineData("every ClosestWeekdayTo 15 at 09:00", "every month on ClosestWeekdayTo 15 at 09:00")]
     // Weekdays => every week
+    [InlineData("every monday", "every week on monday")]
+    [InlineData("every monday at 08:00", "every week on monday at 08:00")]
+    [InlineData("every friday at 17:00 in [jun, jul]", "every week on friday at 17:00 in [jun, jul]")]
     [InlineData("every [monday, friday] at 09:00", "every week on [monday, friday] at 09:00")]
     [InlineData("every monday 9am", "every week on monday 9am")]
     // Months => every year
@@ -70,6 +73,26 @@ public class NaturalCronEveryValueTests
             new DateTime(2025, 3, 15, 18, 0, 0, DateTimeKind.Utc));
     }
 
+    // 2025-04-13 is a Sunday, 2025-04-14 a Monday.
+    [Theory]
+    // "every monday at 08:00" used to return the next day at 08:00 when the base time was later than 08:00.
+    [InlineData("every monday at 08:00", "2025-04-13 09:00:00", "2025-04-14 08:00:00", "2025-04-21 08:00:00")]
+    [InlineData("every monday at 08:00", "2025-04-14 09:00:00", "2025-04-21 08:00:00", "2025-04-28 08:00:00")]
+    [InlineData("every monday at 08:00", "2025-04-14 07:00:00", "2025-04-14 08:00:00", "2025-04-21 08:00:00")]
+    [InlineData("every monday at 08:00", "2025-04-14 08:00:00", "2025-04-21 08:00:00", "2025-04-28 08:00:00")]
+    [InlineData("every monday at 08:00", "2025-04-15 23:59:00", "2025-04-21 08:00:00", "2025-04-28 08:00:00")]
+    // It used to return a day that is not a monday when the other rules skipped some weeks.
+    [InlineData("every monday at 10:00 in [jan, feb, mar]", "2025-03-25 00:00:00", "2025-03-31 10:00:00", "2026-01-05 10:00:00")]
+    public void EveryWeekday_OnlyReturnsThatWeekday(string expression, string baseTime, string first, string second)
+    {
+        var occurrences = NaturalCronExpr.Parse(expression)
+            .GetNextOccurrencesInUtc(DateTime.SpecifyKind(DateTime.Parse(baseTime), DateTimeKind.Utc), 2);
+
+        occurrences.Should().Equal(
+            DateTime.SpecifyKind(DateTime.Parse(first), DateTimeKind.Utc),
+            DateTime.SpecifyKind(DateTime.Parse(second), DateTimeKind.Utc));
+    }
+
     [Fact]
     public void EveryNthWeekday_WhenTheDayOfTheMonthGoesDown()
     {
@@ -86,6 +109,7 @@ public class NaturalCronEveryValueTests
     [Theory]
     [InlineData("every 9am", NaturalCronTimeUnit.Day)]
     [InlineData("every 15th", NaturalCronTimeUnit.Month)]
+    [InlineData("every monday", NaturalCronTimeUnit.Week)]
     [InlineData("every [monday, friday]", NaturalCronTimeUnit.Week)]
     [InlineData("every january", NaturalCronTimeUnit.Year)]
     public void EveryValue_ProducesAnEveryRuleAndTheValueRules(string expression, NaturalCronTimeUnit expectedEveryTimeUnit)
@@ -106,7 +130,6 @@ public class NaturalCronEveryValueTests
     [InlineData("every 15 seconds", NaturalCronTimeUnit.Second, 15, null)]
     [InlineData("every week AnchoredOn Friday", NaturalCronTimeUnit.Week, 1, "FRIDAY")]
     [InlineData("every 2 months AnchoredOn Nov", NaturalCronTimeUnit.Month, 2, "NOV")]
-    [InlineData("every monday", NaturalCronTimeUnit.Week, 1, "MONDAY")]
     public void Intervals_AreUnchanged(string expression, NaturalCronTimeUnit timeUnit, int value, string? anchoredValue)
     {
         var expr = NaturalCronExpr.Parse(expression);

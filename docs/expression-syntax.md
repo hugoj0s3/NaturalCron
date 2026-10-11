@@ -266,7 +266,8 @@ Keywords must be configured once at startup, see [Custom Keywords in the API Ref
 - `on [<keyword>, <keyword>]` — matches when **any** keyword matches
 - `on [<keyword>, <value>]` — a list can mix keywords and built-in values; it matches when **any** entry matches
 - `every <keyword>` or `every [<keyword>, <keyword>]` — shorthand for `every <the keyword's time unit> on …`,
-  e.g. `every holiday` is `every day on holiday` (see [Every + Value](#every--value))
+  e.g. `every holiday` is `every day on holiday` (see [Every + Value](#every--value)).
+  A keyword about days of the week (time unit `Week`) is also checked every day.
 - `except <keyword>` — skips occurrences where the keyword matches (see [Exclusions](#except-or-except--exclusions))
 - `except [<keyword>, <keyword>]` — skips occurrences where **any** of the keywords match
 

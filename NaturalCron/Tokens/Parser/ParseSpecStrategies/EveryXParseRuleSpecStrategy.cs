@@ -27,19 +27,6 @@ internal class EveryXParseRuleSpecStrategy : ParseRuleSpecStrategy
 
         if (everyTimeUnit == null)
         {
-            var containsWeekdayWord = KeywordsConstants.WeekdayWords.ToUpper().Contains(tokens[1].Value.ToUpper());
-            if (containsWeekdayWord)
-            {
-                var naturalCronEveryXRule = new NaturalCronEveryXRule()
-                {
-                    Value = 1,
-                    AnchoredValue = tokens[1].Value.ToUpper(),
-                    TimeUnit =  NaturalCronTimeUnit.Week,
-                    FullExpression = TokenParserUtil.JoinTokens(tokens, " ", NaturalCronTokenType.WhiteSpace).NormalizeExpression()
-                };
-                return (naturalCronEveryXRule.AsList<NaturalCronRule>(), new List<string>());
-            }
-
             return (new List<NaturalCronRule>(), "Invalid every expression".AsList());
         }
 
@@ -65,8 +52,9 @@ internal class EveryXParseRuleSpecStrategy : ParseRuleSpecStrategy
         return (everyXExpression.AsList<NaturalCronRule>(), new List<string>());
     }
 
-    // "every <value>" is a shorthand for "every <period> on <value>", e.g. every january, every 15th, every 9am, every holiday.
-    // It is everything that is not an interval (every day, every 2 days) nor a single weekday (every monday).
+    // "every <value>" is a shorthand for "every <period> on <value>", e.g. every monday, every 15th, every 9am, every holiday.
+    // It is everything that is not an interval (every day, every 2 days).
+    // "every monday" is "every week on monday": the weekday is a rule that every occurrence must satisfy.
     private static bool IsEveryValue(IList<NaturalCronToken> tokens)
     {
         var valueTokens = tokens.Skip(1).Where(x => x.Type != NaturalCronTokenType.EndOfExpression).ToList();
@@ -87,9 +75,7 @@ internal class EveryXParseRuleSpecStrategy : ParseRuleSpecStrategy
             return false;
         }
 
-        var isSingleWeekday = valueTokens.Count == 1 &&
-                              KeywordsConstants.WeekdayWords.ToUpper().Contains(first.Value.ToUpper());
-        return !isSingleWeekday;
+        return true;
     }
 
     private static bool IsIntervalTimeUnit(NaturalCronToken token) =>
@@ -141,7 +127,8 @@ internal class EveryXParseRuleSpecStrategy : ParseRuleSpecStrategy
         var filterRules = valueRules.Where(x => x is NaturalCronCustomKeywordRule || x is NaturalCronAnyOfMatchableRule).ToList();
         if (filterRules.Any())
         {
-            return filterRules.Min(x => x.TimeUnit);
+            // A week keyword is about days of the week, so it is checked every day.
+            return filterRules.Min(x => x.TimeUnit == NaturalCronTimeUnit.Week ? NaturalCronTimeUnit.Day : x.TimeUnit);
         }
 
         var timeUnits = valueRules

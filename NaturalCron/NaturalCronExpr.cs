@@ -166,8 +166,12 @@ public class NaturalCronExpr
     {
         if (this.TimeZoneRule() == null)
         {
-            return InternalTryGetNextOccurrenceInTz(baseTime, maxLookahead ?? DateTime.MaxValue,
+            var nextOccurrence = InternalTryGetNextOccurrenceInTz(baseTime, maxLookahead ?? DateTime.MaxValue,
                 baseTime.Kind == DateTimeKind.Utc ? TimeZoneInfo.Utc : TimeZoneInfo.Local);
+
+            // The occurrence is in the same zone as the base time. Keeping its kind makes the next call
+            // (e.g. TryGetNextOccurrences) evaluate the custom keywords in that same zone.
+            return nextOccurrence.HasValue ? DateTime.SpecifyKind(nextOccurrence.Value, baseTime.Kind) : null;
         }
 
         // Convert local time to UTC and call the UTC method

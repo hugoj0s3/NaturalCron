@@ -65,8 +65,63 @@ internal static class CustomKeywordsForJsonTests
         return !IsWeekend(newYork) && newYork.Hour is >= 10 and < 16;
     }
 
+    // ── Keywords that depend on the time zone the expression is evaluated in ──
+
+    private static readonly HashSet<string> UnitedStatesTimeZoneIds = new[]
+        {
+            "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles",
+        }
+        .Select(x => TZConvert.GetTimeZoneInfo(x).Id)
+        .ToHashSet();
+
+    private static readonly string TokyoTimeZoneId = TZConvert.GetTimeZoneInfo("Asia/Tokyo").Id;
+    private static readonly string LisbonTimeZoneId = TZConvert.GetTimeZoneInfo("Europe/Lisbon").Id;
+
+    // New Year, Independence Day, Thanksgiving (4th Thursday of November) and Christmas.
+    public static bool IsUnitedStatesHolidayDate(DateTime d) =>
+        (d.Month, d.Day) is (1, 1) or (7, 4) or (12, 25) ||
+        (d.Month == 11 && d.DayOfWeek == DayOfWeek.Thursday && d.Day is >= 22 and <= 28);
+
+    public static bool IsJapanHolidayDate(DateTime d) =>
+        (d.Month, d.Day) is (1, 1) or (2, 11) or (5, 3) or (5, 4) or (5, 5) or (11, 3);
+
+    public static bool IsPortugalHolidayDate(DateTime d) =>
+        (d.Month, d.Day) is (1, 1) or (4, 25) or (5, 1) or (6, 10) or (12, 25);
+
+    // United States holidays, only when the expression is evaluated in a United States time zone.
+    public static bool IsUsHoliday(DateTime dateTimeInTz, TimeZoneInfo timeZone) =>
+        UnitedStatesTimeZoneIds.Contains(timeZone.Id) && IsUnitedStatesHolidayDate(dateTimeInTz);
+
+    // Japan holidays, only when the expression is evaluated in Tokyo.
+    public static bool IsJpHoliday(DateTime dateTimeInTz, TimeZoneInfo timeZone) =>
+        timeZone.Id == TokyoTimeZoneId && IsJapanHolidayDate(dateTimeInTz);
+
+    // The holidays of the country of the time zone: United States, Japan or Portugal. No holidays in any other zone.
+    public static bool IsLocalHoliday(DateTime dateTimeInTz, TimeZoneInfo timeZone)
+    {
+        if (UnitedStatesTimeZoneIds.Contains(timeZone.Id))
+        {
+            return IsUnitedStatesHolidayDate(dateTimeInTz);
+        }
+
+        if (timeZone.Id == TokyoTimeZoneId)
+        {
+            return IsJapanHolidayDate(dateTimeInTz);
+        }
+
+        return timeZone.Id == LisbonTimeZoneId && IsPortugalHolidayDate(dateTimeInTz);
+    }
+
+    // A United States holiday on the New York calendar, whatever zone the expression is evaluated in.
+    // In another zone the New York day starts and ends in the middle of the local day, so it is an hour keyword.
+    public static bool IsNewYorkHoliday(DateTime dateTimeInTz, TimeZoneInfo timeZone)
+    {
+        var newYork = TimeZoneInfo.ConvertTime(dateTimeInTz, timeZone, TZConvert.GetTimeZoneInfo("America/New_York"));
+        return IsUnitedStatesHolidayDate(newYork);
+    }
+
     /// <summary>
-    /// Keyword name => (time unit, condition). The time zone aware keyword nyMarketOpen is registered separately.
+    /// Keyword name => (time unit, condition). The time zone aware keywords are registered separately.
     /// </summary>
     public static readonly IReadOnlyDictionary<string, (NaturalCronTimeUnit TimeUnit, Func<DateTime, bool> Matches)> Keywords =
         new Dictionary<string, (NaturalCronTimeUnit, Func<DateTime, bool>)>(StringComparer.OrdinalIgnoreCase)
@@ -148,6 +203,10 @@ internal static class CustomKeywordsForJsonTests
         }
 
         cfg.AddMatchable("nyMarketOpen", IsNewYorkMarketOpen, NaturalCronTimeUnit.Hour);
+        cfg.AddMatchable("usHoliday", IsUsHoliday);
+        cfg.AddMatchable("jpHoliday", IsJpHoliday);
+        cfg.AddMatchable("localHoliday", IsLocalHoliday);
+        cfg.AddMatchable("nyHoliday", IsNewYorkHoliday, NaturalCronTimeUnit.Hour);
     }
 
     private sealed class PrimeDayKeyword : INaturalCronMatchableCustomKeyword

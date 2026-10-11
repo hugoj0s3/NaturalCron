@@ -13,6 +13,7 @@
 - `NaturalCronCustomKeywordRule`, `NaturalCronAnyOfMatchableRule`, `NaturalCronExceptRule`, `NaturalCronRuleSpec.Custom` and `NaturalCronRuleSpec.Except`.
 
 ### Changed
+- The local occurrence methods (e.g. `GetNextOccurrence()`) return a `DateTime` with the same `Kind` as the base time when the expression has no timezone rule. Previously the result was always `DateTimeKind.Unspecified`.
 - `NaturalCron.CronConverter` treats custom keyword, mixed-list and `except` rules as not supported: `Convert` throws `CronConversionException` (default), `TryConvert` returns the error, and `Omit` mode drops the rule.
 
 ### Fixed
@@ -22,6 +23,11 @@
   - `every day in january` from December 23rd 10:30 now returns January 1st at 10:30.
 - `every 15th` (a number with an ordinal suffix) was parsed as `every 15 days`. It now means the 15th of every month.
 - `every monday 9am` ignored the time and was parsed as `every monday`. It now means every Monday at 9am.
+- `every <weekday>` combined with other rules could return a day that is not that weekday. `every monday` is now exactly `every week on monday`:
+  - `every monday at 08:00` from a Sunday at 09:00 returned Tuesday 08:00; it now returns Monday 08:00.
+  - `every monday at 08:00` from a Monday at 09:00 returned Tuesday 08:00; it now returns the next Monday at 08:00.
+  - `every monday at 10:00 in [jan, feb, mar]` returned Thursday, January 1st when the months started again; it now returns the first Monday of January.
+  - `Rules` now has an `every week` rule and an `on monday` rule for it, instead of one `every week` rule with `AnchoredValue = "MONDAY"`.
 
 ## [1.0.2]
 ### Fixed

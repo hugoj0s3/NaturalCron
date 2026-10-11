@@ -2040,6 +2040,96 @@
     "expectedDateTimeStrs": ["2025-04-29 20:00:00", "2025-05-30 20:00:00", "2025-06-29 20:00:00", "2025-07-30 20:00:00"]
   },
   {
+    "description": "41.1 @every weekday with a time, base time on the day before and later than the time",
+    "expression": "@every monday @at 08:00",
+    "baseTimeUtcStr": "2025-04-13 09:00:00",
+    "expectedDateTimeStrs": ["2025-04-14 08:00:00", "2025-04-21 08:00:00", "2025-04-28 08:00:00"]
+  },
+  {
+    "description": "41.2 @every weekday with a time, base time on that weekday after the time",
+    "expression": "@every monday @at 08:00",
+    "baseTimeUtcStr": "2025-04-14 09:00:00",
+    "expectedDateTimeStrs": ["2025-04-21 08:00:00", "2025-04-28 08:00:00", "2025-05-05 08:00:00"]
+  },
+  {
+    "description": "41.3 @every weekday with a time, base time on that weekday before the time",
+    "expression": "@every monday @at 08:00",
+    "baseTimeUtcStr": "2025-04-14 07:00:00",
+    "expectedDateTimeStrs": ["2025-04-14 08:00:00", "2025-04-21 08:00:00", "2025-04-28 08:00:00"]
+  },
+  {
+    "description": "41.4 @every weekday with a time, base time exactly on an occurrence",
+    "expression": "@every monday @at 08:00",
+    "baseTimeUtcStr": "2025-04-14 08:00:00",
+    "expectedDateTimeStrs": ["2025-04-21 08:00:00", "2025-04-28 08:00:00", "2025-05-05 08:00:00"]
+  },
+  {
+    "description": "41.5 @every weekday with two times, base time between them",
+    "expression": "@every monday @at [08:00, 18:00]",
+    "baseTimeUtcStr": "2025-04-14 09:00:00",
+    "expectedDateTimeStrs": ["2025-04-14 18:00:00", "2025-04-21 08:00:00", "2025-04-21 18:00:00"]
+  },
+  {
+    "description": "41.6 @every weekday in some months only returns that weekday when the months start again",
+    "expression": "@every monday @at 10:00 @in [jan, feb, mar]",
+    "baseTimeUtcStr": "2025-03-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-24 10:00:00", "2025-03-31 10:00:00", "2026-01-05 10:00:00", "2026-01-12 10:00:00"]
+  },
+  {
+    "description": "41.7 @every weekday with @between months",
+    "expression": "@every friday @at 17:00 @between Jun and Aug",
+    "baseTimeUtcStr": "2025-08-20 00:00:00",
+    "expectedDateTimeStrs": ["2025-08-22 17:00:00", "2025-08-29 17:00:00", "2026-06-05 17:00:00", "2026-06-12 17:00:00"]
+  },
+  {
+    "description": "41.8 @every weekday without a time keeps the time of the base time",
+    "expression": "@every monday",
+    "baseTimeUtcStr": "2025-04-14 09:00:00",
+    "expectedDateTimeStrs": ["2025-04-21 09:00:00", "2025-04-28 09:00:00", "2025-05-05 09:00:00"]
+  },
+  {
+    "description": "41.9 @every weekday late in the evening, base time after the time",
+    "expression": "@every sunday @at 23:30",
+    "baseTimeUtcStr": "2025-04-13 23:45:00",
+    "expectedDateTimeStrs": ["2025-04-20 23:30:00", "2025-04-27 23:30:00"]
+  },
+  {
+    "description": "41.10 @every weekday with a time zone, base time on the day before",
+    "expression": "@every monday @at 08:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-06-15 20:00:00",
+    "expectedDateTimeStrs": ["2025-06-16 12:00:00", "2025-06-23 12:00:00", "2025-06-30 12:00:00"]
+  },
+  {
+    "description": "41.11 @every weekday with @except a date",
+    "expression": "@every saturday @at 10:00 @except 2025-04-19",
+    "baseTimeUtcStr": "2025-04-18 12:00:00",
+    "expectedDateTimeStrs": ["2025-04-26 10:00:00", "2025-05-03 10:00:00"]
+  },
+  {
+    "description": "41.12 @every weekday with @between days: the first monday of the month",
+    "expression": "@every monday @at 08:00 @between 1st and 7th",
+    "baseTimeUtcStr": "2025-04-08 09:00:00",
+    "expectedDateTimeStrs": ["2025-05-05 08:00:00", "2025-06-02 08:00:00", "2025-07-07 08:00:00"]
+  },
+  {
+    "description": "41.13 @every weekday with a time with seconds: the seconds of the base time are not kept",
+    "expression": "@every monday @at 08:00:00",
+    "baseTimeUtcStr": "2025-04-13 09:00:37",
+    "expectedDateTimeStrs": ["2025-04-14 08:00:00", "2025-04-21 08:00:00", "2025-04-28 08:00:00"]
+  },
+  {
+    "description": "41.14 @every weekday with a time with seconds, base time on that weekday after the time",
+    "expression": "@every monday @at 08:00:00",
+    "baseTimeUtcStr": "2025-04-14 08:00:37",
+    "expectedDateTimeStrs": ["2025-04-21 08:00:00", "2025-04-28 08:00:00", "2025-05-05 08:00:00"]
+  },
+  {
+    "description": "41.15 @every weekday with a time without seconds: the seconds of the base time are kept",
+    "expression": "@every monday @at 08:00",
+    "baseTimeUtcStr": "2025-04-13 09:00:37",
+    "expectedDateTimeStrs": ["2025-04-14 08:00:37", "2025-04-21 08:00:37", "2025-04-28 08:00:37"]
+  },
+  {
     "description": "99.1 AI generated: Every 2 hours starting at noon",
     "expression": "@every 2 hours",
     "baseTimeUtcStr": "2023-05-10 12:00:00",
