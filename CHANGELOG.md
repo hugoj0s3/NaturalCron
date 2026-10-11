@@ -1,14 +1,6 @@
 # Changelog
 
-## [Unreleased]
-### Fixed
-- Occurrences were skipped when `every` used a smaller unit than another rule and the base time did not satisfy that rule. The next occurrence was a whole unit of that rule after the base time instead of the beginning of the next matching period. `every` now restarts at the beginning of that period, keeping the units below the `every` unit:
-  - `every second at 9am` from 08:59:57 returned 09:59:57; it now returns 09:00:00.
-  - `every hour on wednesday` from Tuesday 10:30 returned Wednesday 10:30; it now returns Wednesday 00:30.
-  - `every day in january` from December 23rd 10:30 now returns January 1st at 10:30.
-- `every 15th` (a number with an ordinal suffix) was parsed as `every 15 days`. It now means the 15th of every month.
-
-## [Unreleased]
+## [1.1.0]
 ### Added
 - `every <value>` shorthand for `every <period> on <value>`: `every 9am` (every day), `every 15th` / `every 1stMonday` / `every LastDay` (every month), `every [monday, friday]` (every week), `every january` (every year) and `every holiday` for a custom keyword (every unit of the keyword, e.g. every day).
 - Custom keywords: user-defined rules usable in expressions, e.g. `every day on holiday at 09:00`, `every day on [holiday, payday] at 09:00`.
@@ -22,6 +14,14 @@
 
 ### Changed
 - `NaturalCron.CronConverter` treats custom keyword, mixed-list and `except` rules as not supported: `Convert` throws `CronConversionException` (default), `TryConvert` returns the error, and `Omit` mode drops the rule.
+
+### Fixed
+- Occurrences were skipped when `every` used a smaller unit than another rule and the base time did not satisfy that rule. The next occurrence was a whole unit of that rule after the base time instead of the beginning of the next matching period. `every` now restarts at the beginning of that period, keeping the units below the `every` unit:
+  - `every second at 9am` from 08:59:57 returned 09:59:57; it now returns 09:00:00.
+  - `every hour on wednesday` from Tuesday 10:30 returned Wednesday 10:30; it now returns Wednesday 00:30.
+  - `every day in january` from December 23rd 10:30 now returns January 1st at 10:30.
+- `every 15th` (a number with an ordinal suffix) was parsed as `every 15 days`. It now means the 15th of every month.
+- `every monday 9am` ignored the time and was parsed as `every monday`. It now means every Monday at 9am.
 
 ## [1.0.2]
 ### Fixed
