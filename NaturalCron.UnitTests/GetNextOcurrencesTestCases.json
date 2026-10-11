@@ -2040,6 +2040,42 @@
     "expectedDateTimeStrs": ["2025-04-29 20:00:00", "2025-05-30 20:00:00", "2025-06-29 20:00:00", "2025-07-30 20:00:00"]
   },
   {
+    "description": "40.50 @every ordinal day and month with a time: once a year",
+    "expression": "@every 1st jan @at 00:00",
+    "baseTimeUtcStr": "2025-03-10 14:20:00",
+    "expectedDateTimeStrs": ["2026-01-01 00:00:00", "2027-01-01 00:00:00", "2028-01-01 00:00:00"]
+  },
+  {
+    "description": "40.51 @every ordinal day and month without a time keeps the time of the base time",
+    "expression": "@every 1st jan",
+    "baseTimeUtcStr": "2025-03-10 14:20:00",
+    "expectedDateTimeStrs": ["2026-01-01 14:20:00", "2027-01-01 14:20:00", "2028-01-01 14:20:00"]
+  },
+  {
+    "description": "40.52 @every ordinal day and month, base time on that day before the time",
+    "expression": "@every 1st jan @at 09:00",
+    "baseTimeUtcStr": "2025-01-01 08:00:00",
+    "expectedDateTimeStrs": ["2025-01-01 09:00:00", "2026-01-01 09:00:00", "2027-01-01 09:00:00"]
+  },
+  {
+    "description": "40.53 @every list of ordinal days with months, with a time",
+    "expression": "@every [1st jan, 2nd mar] @at 09:00",
+    "baseTimeUtcStr": "2025-01-15 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-02 09:00:00", "2026-01-01 09:00:00", "2026-03-02 09:00:00", "2027-01-01 09:00:00"]
+  },
+  {
+    "description": "40.54 @every list of ordinal days with months without a time: a list of dates starts at midnight",
+    "expression": "@every [1st jan, 2nd mar]",
+    "baseTimeUtcStr": "2025-01-15 14:20:00",
+    "expectedDateTimeStrs": ["2025-03-02 00:00:00", "2026-01-01 00:00:00", "2026-03-02 00:00:00", "2027-01-01 00:00:00"]
+  },
+  {
+    "description": "40.55 @every list of three dates, written in another order than the calendar",
+    "expression": "@every [25th dec, 1st jan, 4th jul] @at 12:00",
+    "baseTimeUtcStr": "2025-01-15 00:00:00",
+    "expectedDateTimeStrs": ["2025-07-04 12:00:00", "2025-12-25 12:00:00", "2026-01-01 12:00:00", "2026-07-04 12:00:00"]
+  },
+  {
     "description": "41.1 @every weekday with a time, base time on the day before and later than the time",
     "expression": "@every monday @at 08:00",
     "baseTimeUtcStr": "2025-04-13 09:00:00",
