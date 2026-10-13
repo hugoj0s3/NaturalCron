@@ -1,5 +1,6 @@
 # NaturalCron
 [![NuGet](https://img.shields.io/nuget/v/NaturalCron.svg)](https://www.nuget.org/packages/NaturalCron)
+[![.NET Tests](https://github.com/hugoj0s3/NaturalCron/actions/workflows/dotnet.yml/badge.svg?branch=develop)](https://github.com/hugoj0s3/NaturalCron/actions/workflows/dotnet.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/quozd/awesome-dotnet)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-red?logo=github)](https://github.com/sponsors/hugoj0s3)
@@ -16,6 +17,7 @@ NaturalCron is a **human-readable scheduling library for .NET (C#)**: a natural-
 - **Readable syntax**: `every 30 minutes in [jan, jun] between 09:00 and 18:00`
 - **Fluent Builder API**: Strongly typed for .NET developers.
 - **No online generators needed**.
+- **Well tested**: more than 3,600 automated tests run on every commit.
 - **Features**:
   - Ranges
   - Weekday list
