@@ -1,10 +1,10 @@
 # NaturalCron
 [![NuGet](https://img.shields.io/nuget/v/NaturalCron.svg)](https://www.nuget.org/packages/NaturalCron)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
+[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/quozd/awesome-dotnet)
 [![Sponsor](https://img.shields.io/badge/Sponsor-%E2%9D%A4-red?logo=github)](https://github.com/sponsors/hugoj0s3)
 
-NaturalCron is a **human-readable scheduling engine for .NET**. It lets you write schedules in a clear and intuitive way instead of memorizing cryptic cron strings.
+NaturalCron is a **human-readable scheduling library for .NET (C#)**: a natural-language alternative to cron expressions. It lets you write schedules in a clear and intuitive way instead of memorizing cryptic cron strings.
 
 **Why?** Because memorizing `0 18 * * 1-5` is harder than understanding `every day between monday and friday at 6:00pm`.
 
@@ -59,6 +59,43 @@ Console.WriteLine($"Next occurrence in UTC: {next}");
 ```
 
 ⚡ **Try it online:** [Run on .NET Fiddle](https://dotnetfiddle.net/NfEBM8)
+
+### **Running a Job on a Schedule**
+NaturalCron tells you **when** the next run is; you decide how to run it. In an ASP.NET Core or Worker app, a `BackgroundService` is enough:
+```csharp
+using Microsoft.Extensions.Hosting;
+using NaturalCron;
+
+public class DailyReportJob : BackgroundService
+{
+    private readonly NaturalCronExpr schedule = NaturalCronExpr.Parse(
+        "every day at 09:00:00 except [saturday, sunday] tz America/New_York");
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            DateTime? next = schedule.TryGetNextOccurrenceInUtc(DateTime.UtcNow);
+            if (next == null)
+            {
+                break; // no more occurrences
+            }
+
+            TimeSpan delay = next.Value - DateTime.UtcNow;
+            if (delay > TimeSpan.Zero)
+            {
+                await Task.Delay(delay, stoppingToken);
+            }
+
+            await SendReportAsync(stoppingToken); // your job
+        }
+    }
+}
+```
+```csharp
+builder.Services.AddHostedService<DailyReportJob>();
+```
+Need persistence, retries or a dashboard? See [JobMaster](#-jobmaster-integration-alpha), or convert the expression to a cron string for Hangfire, Quartz.NET or NCrontab with the [Cron Converter](docs/cron-converter.md).
 
 
 ## 🆚 Cron vs NaturalCron
