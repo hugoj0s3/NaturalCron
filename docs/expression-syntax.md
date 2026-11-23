@@ -260,7 +260,22 @@ This ensures that all date and time calculations are made in the specified IANA 
 
 ## Custom Keywords
 You can define your own keywords (e.g. `holiday`, `payday`) backed by your own match logic, and use them in expressions.
-Keywords must be configured once at startup, see [Custom Keywords in the API Reference](api-reference.md#custom-keywords).
+Configure them once at startup, before any expression using them is parsed:
+
+```csharp
+using NaturalCron.CustomRules;
+
+NaturalCronCustomKeywords.Configure(cfg =>
+{
+    cfg.AddMatchable("payday", dt => dt.Day == 15);
+    cfg.AddMatchable("holiday", dt => myHolidays.Contains(dt.Date)); // e.g. a HashSet<DateTime> kept in memory
+});
+
+var expr = NaturalCronExpr.Parse("every day at 09:00 except holiday");
+```
+
+Other ways to register a keyword (hour or month keywords, a class, a factory from your IoC container, several names for
+one keyword) and the rules of `Configure` are in [Custom Keywords in the API Reference](api-reference.md#custom-keywords).
 
 **Syntax:**
 - `on <keyword>` (or `at`/`in`) — matches when the keyword matches
