@@ -762,13 +762,92 @@ public class NaturalCronExpr
             return null;
         }
 
+        if (ReferenceEquals(computeTz, TimeZoneInfo.Utc)) 
+            return DateTime.SpecifyKind(ConvertTime(resultInComputeTz.Value, computeTz, resultTz), resultKind);
+        
+        // On a spring-forward night, sub-day interval schedules (every second/minute/hour) advance past the
+        // skipped gap to preserve their cadence (e.g. every hour from 00:30 -> 01:30 -> 03:30);
+        // fixed/daily+ schedules move forward to the first valid moment after the gap (e.g. 02:30 -> 03:00).
+        if (IsSubDayEveryRule())
+        {
+            while (resultInComputeTz.HasValue &&
+                   computeTz.IsInvalidTime(DateTime.SpecifyKind(resultInComputeTz.Value, DateTimeKind.Unspecified)))
+            {
+                resultInComputeTz = InternalTryGetNextOccurrenceInTz(resultInComputeTz.Value, maxLookaheadInComputeTz, computeTz);
+            }
+
+            if (resultInComputeTz == null)
+            {
+                return null;
+            }
+        }
+        else
+        {
+            var validResult = MoveToFirstValidTime(resultInComputeTz.Value, computeTz);
+            if (validResult >= maxLookaheadInComputeTz)
+            {
+                return null;
+            }
+
+            resultInComputeTz = validResult;
+        }
+
         // 3. Result to the zone and the kind the caller wants
         return DateTime.SpecifyKind(ConvertTime(resultInComputeTz.Value, computeTz, resultTz), resultKind);
     }
 
-    // Converts a time from one zone to another through UTC. A time already in the zone is returned as is.
+    private bool IsSubDayEveryRule()
+    {
+        var everyRule = Rules.OfType<NaturalCronEveryXRule>().FirstOrDefault();
+        return everyRule != null && everyRule.TimeUnit <= NaturalCronTimeUnit.Hour;
+    }
+
+    // Finds the first valid second after a spring-forward gap (e.g. 02:30 -> 03:00 in New York, 02:15 -> 02:30 in Lord Howe).
+    private static DateTime MoveToFirstValidTime(DateTime dateTime, TimeZoneInfo timeZone)
+    {
+        if (ReferenceEquals(timeZone, TimeZoneInfo.Utc))
+        {
+            return dateTime;
+        }
+
+        var unspecified = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
+        if (!timeZone.IsInvalidTime(unspecified))
+        {
+            return dateTime;
+        }
+
+        var lo = new DateTime(unspecified.Year, unspecified.Month, unspecified.Day,
+            unspecified.Hour, unspecified.Minute, unspecified.Second);
+        var gap = timeZone.GetUtcOffset(lo.AddDays(1)) - timeZone.GetUtcOffset(lo.AddDays(-1));
+        var hi = gap > TimeSpan.Zero ? lo + gap : lo.AddHours(1);
+        while (timeZone.IsInvalidTime(hi))
+        {
+            hi = hi.AddHours(1);
+        }
+
+        // Binary search to the exact second the gap ends (~12 iterations for a 1-hour gap).
+        while ((hi - lo).Ticks > TimeSpan.TicksPerSecond)
+        {
+            var midSeconds = (hi - lo).Ticks / TimeSpan.TicksPerSecond / 2;
+            var mid = lo.AddSeconds(midSeconds);
+            if (timeZone.IsInvalidTime(mid))
+            {
+                lo = mid;
+            }
+            else
+            {
+                hi = mid;
+            }
+        }
+
+        return hi;
+    }
+
+    // Converts a time from one zone to another through UTC. A valid time already in the zone is returned as is.
     private static DateTime ConvertTime(DateTime dateTime, TimeZoneInfo fromTz, TimeZoneInfo toTz)
     {
+        dateTime = MoveToFirstValidTime(dateTime, fromTz);
+
         if (ReferenceEquals(fromTz, toTz))
         {
             return dateTime;
