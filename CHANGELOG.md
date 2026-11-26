@@ -1,16 +1,24 @@
 # Changelog
 
 ## [1.1.1]
+### Fixed
+- Daylight saving time (DST) transitions are now handled across all occurrence methods (`*InUtc`, `*InTz`, and local) ([#10](https://github.com/hugoj0s3/NaturalCron/issues/10)):
+  - **Clocks go forward (spring-forward gap):** fixed and daily+ schedules landing in a skipped wall-clock hour no longer throw `ArgumentException`; they move forward to the first valid moment after the gap (e.g. `every day at 02:30 tz America/New_York` runs at `03:00 EDT` on 2025-03-09, and `02:15` runs at `02:30` in 30-minute DST zones like `Australia/Lord_Howe`). Sub-day intervals (`every 30 minutes`, `every hour`) advance past the gap while keeping their real cadence.
+  - **Clocks go back (fall-back repeated hour):** fixed and daily+ schedules in a repeated hour run once, in the first pass (e.g. `every day at 01:30 tz America/New_York` runs at `01:30 EDT` / `05:30 UTC`), and do not run again when queried from the second pass (`01:15 EST`). Pure sub-day intervals (`every 30 minutes`, `every hour`, `every 15 minutes`) keep their real cadence across both passes without skipping occurrences.
+
 ### Changed
-- The UTC, local and `…InTz` occurrence methods now share a single internal flow: the base time is converted to the zone the expression is evaluated in (its `tz` rule, otherwise the zone of the method), the next occurrence is searched there, and the result is converted to the zone and `Kind` of the method. Apart from the `Kind` changes below, the results are unchanged, except with a `tz` rule and no max lookahead: the local methods search up to `DateTime.MaxValue`. Previously they stopped a few hours before it, on 9999-12-31.
+- The UTC, local and `…InTz` occurrence methods now share a single internal flow: the base time is converted to the zone the expression is evaluated in (its `tz` rule, otherwise the zone of the method), the next occurrence is searched there, and the result is converted to the zone and `Kind` of the method. Apart from the `Kind` validation below, the results are unchanged, except with a `tz` rule and no max lookahead: the local methods search up to `DateTime.MaxValue`. Previously they stopped a few hours before it, on 9999-12-31.
 - The `Kind` of the base time is now read, and the `Kind` of the result chosen, the same way whether the expression has a `tz` rule or not. Adding or removing `tz …` from an expression no longer changes how `Kind` is handled. The changes are listed below.
-- **Breaking:** the UTC methods (`TryGetNextOccurrenceInUtc()`, `GetNextOccurrenceInUtc()`, `TryGetNextOccurrencesInUtc()`, `GetNextOccurrencesInUtc()`) now throw `ArgumentException` when the base time or the max lookahead is `DateTimeKind.Local`, e.g. `DateTime.Now`. Pass a UTC time instead, e.g. `DateTime.UtcNow` or `DateTime.Now.ToUniversalTime()`.
+- **Stricter validation:** the UTC methods (`TryGetNextOccurrenceInUtc()`, `GetNextOccurrenceInUtc()`, `TryGetNextOccurrencesInUtc()`, `GetNextOccurrencesInUtc()`) now throw `ArgumentException` when the base time or the max lookahead is `DateTimeKind.Local`, e.g. `DateTime.Now`. Pass a UTC time instead, e.g. `DateTime.UtcNow` or `DateTime.Now.ToUniversalTime()`.
   - Previously a local time was silently read as if it were UTC when the expression had no `tz` rule, giving occurrences shifted by the machine's offset, and threw when it had one.
   - `DateTimeKind.Unspecified` is still treated as UTC.
-- **Breaking:** the `…InTz` methods (`TryGetNextOccurrenceInTz()`, `GetNextOccurrenceInTz()`, `TryGetNextOccurrencesInTz()`, `GetNextOccurrencesInTz()`) now throw `ArgumentException` when the `Kind` of the base time or of the max lookahead does not match the zone passed: a `DateTimeKind.Utc` time requires a UTC zone (e.g. `UTC`, `Etc/UTC`) and a `DateTimeKind.Local` time the zone of the machine. Pass a `DateTimeKind.Unspecified` time to give a wall-clock time in the zone, e.g. `DateTime.SpecifyKind(value, DateTimeKind.Unspecified)`.
+- **Stricter validation:** the `…InTz` methods (`TryGetNextOccurrenceInTz()`, `GetNextOccurrenceInTz()`, `TryGetNextOccurrencesInTz()`, `GetNextOccurrencesInTz()`) now throw `ArgumentException` when the `Kind` of the base time or of the max lookahead does not match the zone passed: a `DateTimeKind.Utc` time requires a UTC zone (e.g. `UTC`, `Etc/UTC`) and a `DateTimeKind.Local` time the zone of the machine. Pass a `DateTimeKind.Unspecified` time to give a wall-clock time in the zone, e.g. `DateTime.SpecifyKind(value, DateTimeKind.Unspecified)`.
   - Previously, without a `tz` rule, the `Kind` was ignored: e.g. `DateTime.UtcNow` with `America/New_York` was read as a New York time, giving occurrences shifted by the offset. With a `tz` rule it threw, even when the zones matched.
   - When the zones match, the result keeps the `Kind` of the base time: `DateTimeKind.Utc` or `DateTimeKind.Local`. A `DateTimeKind.Unspecified` base time gives an unspecified result, as before.
 - The local methods (e.g. `GetNextOccurrence()`) return the `Kind` of the base time, also with a `tz` rule: a `DateTimeKind.Utc` base time gives a UTC result and a `DateTimeKind.Unspecified` one an unspecified result. Previously the result was always `DateTimeKind.Local` with a `tz` rule.
+
+### Deprecated
+- `NaturalCronIanaTimeZoneRule.ConvertFromUtc()` and `NaturalCronIanaTimeZoneRule.ConvertToUtc()` marked `[Obsolete]` — no longer used internally and will be removed in 2.0.
 
 ## [1.1.0]
 ### Added

@@ -137,6 +137,8 @@ Tries to get the next occurrence in UTC. Returns null if no occurrence is found 
 
 **Returns:** The next occurrence in UTC, or null if no occurrence is found
 
+**Throws:** `ArgumentException` when `utcBaseTime` or `utcMaxLookahead` has `DateTimeKind.Local`
+
 ### GetNextOccurrenceInUtc()
 ```csharp
 public DateTime GetNextOccurrenceInUtc(DateTime utcBaseTime, DateTime? utcMaxLookahead = null)
@@ -149,7 +151,9 @@ Gets the next occurrence in UTC. Throws an exception if no occurrence is found w
 
 **Returns:** The next occurrence in UTC
 
-**Throws:** `InvalidOperationException` when no next occurrence is found
+**Throws:**
+- `ArgumentException` when `utcBaseTime` or `utcMaxLookahead` has `DateTimeKind.Local`
+- `InvalidOperationException` when no next occurrence is found
 
 ### TryGetNextOccurrencesInUtc()
 ```csharp
@@ -196,7 +200,7 @@ Tries to get the next occurrence in a specified IANA timezone. Returns null if n
 
 **Returns:** The next occurrence in the specified timezone, or null if no occurrence is found
 
-**Throws:** `ArgumentException` when the IANA timezone ID is invalid or not recognized
+**Throws:** `ArgumentException` when the IANA timezone ID is invalid, or when `baseTimeInTz` / `maxLookaheadInTz` has `DateTimeKind.Utc` or `DateTimeKind.Local` and does not match the specified timezone
 
 ### GetNextOccurrenceInTz()
 ```csharp
@@ -212,7 +216,7 @@ Gets the next occurrence in a specified IANA timezone. Throws an exception if no
 **Returns:** The next occurrence in the specified timezone
 
 **Throws:** 
-- `ArgumentException` when the IANA timezone ID is invalid or not recognized
+- `ArgumentException` when the IANA timezone ID is invalid, or when `baseTimeInTz` / `maxLookaheadInTz` has a `DateTimeKind` (`Utc`/`Local`) that does not match the specified timezone
 - `InvalidOperationException` when no next occurrence is found
 
 ### TryGetNextOccurrencesInTz()
@@ -281,6 +285,18 @@ For expression `"daily at 09:00 tz Asia/Tokyo"`:
 
 The `tz` keyword affects the **calculation** timezone, not the **return** timezone.
 
+### Daylight Saving Time (DST)
+
+When evaluating a schedule in a timezone that observes daylight saving time:
+
+- **Clocks go forward (spring-forward gap, e.g. 02:00 → 03:00 in `America/New_York`):**
+  - Fixed and daily+ schedules landing in the missing hour run **once** at the first valid moment after the gap (e.g. `every day at 02:30 tz America/New_York` runs at `03:00 EDT`; in 30-minute zones like `Australia/Lord_Howe`, `02:15` runs at `02:30`). Multiple fixed times inside the same gap collapse into a single run at that first valid moment.
+  - Sub-day interval schedules (`every 30 minutes`, `every hour`) advance past the gap while preserving their real cadence.
+- **Clocks go back (fall-back repeated hour, e.g. 02:00 EDT → 01:00 EST in `America/New_York`):**
+  - Fixed and daily+ schedules in the repeated hour run **once**, in the first pass (daylight time, e.g. `01:30 EDT` / `05:30 UTC`), and do not run again in the second pass.
+  - Pure sub-day interval schedules (`every 30 minutes`, `every hour`, `every 15 minutes`) keep their real cadence across **both** passes without skipping occurrences.
+  - When passing an ambiguous wall-clock `baseTime` with `DateTimeKind.Unspecified` to `*InTz` methods (e.g. `2025-11-02 01:15` in `America/New_York`, which occurs twice), NaturalCron defaults it to the **first pass** (earlier instant) so a scheduled run is never silently skipped. Use the `*InUtc` methods when you need to distinguish the first pass (`05:15 UTC`) from the second pass (`06:15 UTC`) unambiguously.
+
 
 ## Usage Examples
 
@@ -343,11 +359,13 @@ var nextInTokyo = expr.GetNextOccurrenceInTz(tokyoTime, "Asia/Tokyo");
 var londonTime = new DateTime(2024, 1, 1, 10, 0, 0);
 var occurrencesInLondon = expr.GetNextOccurrencesInTz(londonTime, 5, "Europe/London");
 
-// Case-insensitive timezone ID
-var nextInNY = expr.GetNextOccurrenceInTz(DateTime.Now, "america/new_york");
+// Case-insensitive timezone ID (use DateTimeKind.Unspecified for a wall-clock time in another zone)
+var nyTime = new DateTime(2024, 1, 1, 10, 0, 0);
+var nextInNY = expr.GetNextOccurrenceInTz(nyTime, "america/new_york");
 
 // Safe usage with Try methods
-var result = expr.TryGetNextOccurrenceInTz(DateTime.Now, "America/Los_Angeles");
+var laTime = new DateTime(2024, 1, 1, 10, 0, 0);
+var result = expr.TryGetNextOccurrenceInTz(laTime, "America/Los_Angeles");
 if (result.HasValue)
 {
     Console.WriteLine($"Next occurrence: {result.Value}");

@@ -29,10 +29,13 @@ internal static class AllOccurrenceMethodsAssert
     /// so that the test gives the same result on every machine.
     /// </param>
     internal static void ShouldReturn(string expression, DateTime baseTimeUtc, IReadOnlyList<DateTime> expectedUtc,
-        bool dependsOnTheZoneOfTheMethod, bool hasCustomKeywords, string description)
+        bool dependsOnTheZoneOfTheMethod, bool hasCustomKeywords, string description,
+        IReadOnlyList<DateTime>? fallbackOnAmbiguousBaseTimeExpectedUtc = null)
     {
         baseTimeUtc = DateTime.SpecifyKind(baseTimeUtc, DateTimeKind.Utc);
         expectedUtc = expectedUtc.Select(x => DateTime.SpecifyKind(x, DateTimeKind.Utc)).ToList();
+        fallbackOnAmbiguousBaseTimeExpectedUtc = fallbackOnAmbiguousBaseTimeExpectedUtc?
+            .Select(x => DateTime.SpecifyKind(x, DateTimeKind.Utc)).ToList();
         var count = expectedUtc.Count;
         var naturalCronExpr = NaturalCronExpr.Parse(expression);
 
@@ -42,7 +45,8 @@ internal static class AllOccurrenceMethodsAssert
         var timeZoneRule = TimeZoneRuleRegex.Match(expression);
         if (timeZoneRule.Success)
         {
-            ShouldReturnWithTimeZoneRule(naturalCronExpr, expression, timeZoneRule, baseTimeUtc, expectedUtc, description);
+            ShouldReturnWithTimeZoneRule(naturalCronExpr, expression, timeZoneRule, baseTimeUtc, expectedUtc,
+                fallbackOnAmbiguousBaseTimeExpectedUtc, description);
         }
         else
         {
@@ -52,25 +56,36 @@ internal static class AllOccurrenceMethodsAssert
 
     // The expression has a tz rule: it always wins, whatever method is called.
     private static void ShouldReturnWithTimeZoneRule(NaturalCronExpr naturalCronExpr, string expression, Match timeZoneRule,
-        DateTime baseTimeUtc, IReadOnlyList<DateTime> expectedUtc, string description)
+        DateTime baseTimeUtc, IReadOnlyList<DateTime> expectedUtc,
+        IReadOnlyList<DateTime>? fallbackOnAmbiguousBaseTimeExpectedUtc, string description)
     {
         var count = expectedUtc.Count;
         var ruleZoneId = timeZoneRule.Groups["zone"].Value;
         var ruleZone = TZConvert.GetTimeZoneInfo(ruleZoneId);
 
         // 2. *InTz methods with the zone of the rule, and with other zones: the results come back in the zone of the method.
+        // Compare in the method's zone rather than round-tripping back through ConvertTimeToUtc, because an Unspecified
+        // wall-clock time in a repeated fall-back hour cannot carry which pass it came from (the non-DST OtherZones still verify the exact UTC instant).
         foreach (var zoneId in new[] { ruleZoneId }.Concat(OtherZones))
         {
             var zone = TZConvert.GetTimeZoneInfo(zoneId);
-            var occurrences = naturalCronExpr.TryGetNextOccurrencesInTz(ToZone(baseTimeUtc, zone), count, zoneId);
-            ToUtc(occurrences, zone).Should().Equal(expectedUtc, $"InTz methods with {zoneId}: {description}");
+            var baseInZone = ToZone(baseTimeUtc, zone);
+            var expectedForZone = zone.IsAmbiguousTime(baseInZone) && fallbackOnAmbiguousBaseTimeExpectedUtc != null
+                ? fallbackOnAmbiguousBaseTimeExpectedUtc
+                : expectedUtc;
+            var occurrences = naturalCronExpr.TryGetNextOccurrencesInTz(baseInZone, count, zoneId);
+            occurrences.Should().Equal(expectedForZone.Select(x => ToZone(x, zone)), $"InTz methods with {zoneId}: {description}");
         }
 
         // 3. *InTz methods without the rule: the zone of the method is the zone the expression is evaluated in.
         var withoutTimeZoneRule = NaturalCronExpr.Parse(expression.Remove(timeZoneRule.Index, timeZoneRule.Length));
         withoutTimeZoneRule.TimeZoneRule().Should().BeNull();
-        var occurrencesInRuleZone = withoutTimeZoneRule.TryGetNextOccurrencesInTz(ToZone(baseTimeUtc, ruleZone), count, ruleZoneId);
-        ToUtc(occurrencesInRuleZone, ruleZone).Should().Equal(expectedUtc, $"InTz methods without the tz rule: {description}");
+        var baseInRuleZone = ToZone(baseTimeUtc, ruleZone);
+        var expectedForRuleZone = ruleZone.IsAmbiguousTime(baseInRuleZone) && fallbackOnAmbiguousBaseTimeExpectedUtc != null
+            ? fallbackOnAmbiguousBaseTimeExpectedUtc
+            : expectedUtc;
+        var occurrencesInRuleZone = withoutTimeZoneRule.TryGetNextOccurrencesInTz(baseInRuleZone, count, ruleZoneId);
+        occurrencesInRuleZone.Should().Equal(expectedForRuleZone.Select(x => ToZone(x, ruleZone)), $"InTz methods without the tz rule: {description}");
 
         // 4. Local methods: the results come back in the zone of the machine.
         var baseTimeLocal = TimeZoneInfo.ConvertTimeFromUtc(baseTimeUtc, TimeZoneInfo.Local);
@@ -107,9 +122,4 @@ internal static class AllOccurrenceMethodsAssert
 
     private static DateTime ToZone(DateTime utc, TimeZoneInfo zone) =>
         DateTime.SpecifyKind(TimeZoneInfo.ConvertTimeFromUtc(utc, zone), DateTimeKind.Unspecified);
-
-    private static List<DateTime> ToUtc(IEnumerable<DateTime> occurrencesInZone, TimeZoneInfo zone) =>
-        occurrencesInZone
-            .Select(x => TimeZoneInfo.ConvertTimeToUtc(DateTime.SpecifyKind(x, DateTimeKind.Unspecified), zone))
-            .ToList();
 }
