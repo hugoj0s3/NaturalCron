@@ -71,43 +71,76 @@ public class NaturalCronExpr
     /// <returns>The next occurrence in UTC, or null if no occurrence is found</returns>
     public DateTime? TryGetNextOccurrenceInUtc(DateTime utcBaseTime, DateTime? utcMaxLookahead = null)
     {
-        // 1. Convert to the expression time zone (UTC when there is none)
-        var baseTimeInTz = TimeZoneRule()?.ConvertFromUtc(utcBaseTime) ?? utcBaseTime;
-        DateTime maxLookaheadInTz;
-        if (utcMaxLookahead.HasValue)
-        {
-            maxLookaheadInTz = TimeZoneRule()?.ConvertFromUtc(utcMaxLookahead.Value) ?? utcMaxLookahead.Value;
-        }
-        else
-        {
-            maxLookaheadInTz = DateTime.MaxValue;
-        }
+        var methodTz = TimeZoneInfo.Utc;
+        var computeTz = GetComputeTz(methodTz);
+        var resultTz = TimeZoneInfo.Utc;
+        var resultKind = DateTimeKind.Utc;
 
-        // 2. Get the next occurrence in that time zone
-        var resultInTz = InternalTryGetNextOccurrenceInTz(baseTimeInTz, maxLookaheadInTz,
-            TimeZoneRule()?.TimeZoneInfo ?? TimeZoneInfo.Utc);
-
-        // 3. Convert back to UTC
-        return !resultInTz.HasValue ? null : TimeZoneRule()?.ConvertToUtc(resultInTz.Value)
-            ?? DateTime.SpecifyKind(resultInTz.Value, DateTimeKind.Utc);
+        // Computed in the zone of the tz rule, or in UTC without one. Always returned in UTC.
+        return InternalTryGetNextOccurrence(
+            utcBaseTime,
+            utcMaxLookahead,
+            methodTz,
+            computeTz,
+            resultTz,
+            resultKind);
     }
 
     /// <summary>
-    /// Gets the next occurrence in UTC. Throws an exception if no occurrence is found within the specified lookahead period.
+    /// Tries to get the next occurrence using the current thread's timezone. Returns null if no occurrence is found within the specified lookahead period.
     /// </summary>
-    /// <param name="utcBaseTime">The base time in UTC from which to find the next occurrence</param>
-    /// <param name="utcMaxLookahead">Maximum lookahead time in UTC. If null, defaults to DateTime.MaxValue</param>
-    /// <returns>The next occurrence in UTC</returns>
-    /// <exception cref="InvalidOperationException">Thrown when no next occurrence is found</exception>
-    public DateTime GetNextOccurrenceInUtc(DateTime utcBaseTime, DateTime? utcMaxLookahead = null)
+    /// <param name="baseTime">The base time in the current thread's timezone from which to find the next occurrence</param>
+    /// <param name="maxLookahead">Maximum lookahead time in the current thread's timezone. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>The next occurrence in the current thread's timezone, or null if no occurrence is found</returns>
+    public DateTime? TryGetNextOccurrence(DateTime baseTime, DateTime? maxLookahead = null)
     {
-        var nextOccurrence = TryGetNextOccurrenceInUtc(utcBaseTime, utcMaxLookahead);
-        if (nextOccurrence == null)
+        // A UTC base time is in UTC, any other in the zone of the machine.
+        var methodTz = baseTime.Kind == DateTimeKind.Utc ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
+        var computeTz = GetComputeTz(methodTz);
+        var hasTimeZoneRule = TimeZoneRule() != null;
+        var resultTz = hasTimeZoneRule ? TimeZoneInfo.Local : methodTz;
+        var resultKind = hasTimeZoneRule ? DateTimeKind.Local : baseTime.Kind;
+
+        // With a tz rule the result is local. Without, it keeps the zone and the kind of the base time,
+        // which makes the next call (e.g. TryGetNextOccurrences) evaluate the custom keywords in that same zone.
+        return InternalTryGetNextOccurrence(
+            baseTime,
+            maxLookahead,
+            methodTz,
+            computeTz,
+            resultTz,
+            resultKind);
+    }
+
+    /// <summary>
+    /// Tries to get the next occurrence in a specified IANA timezone. Returns null if no occurrence is found within the specified lookahead period.
+    /// </summary>
+    /// <param name="baseTimeInTz">The base time interpreted in the specified IANA timezone from which to find the next occurrence</param>
+    /// <param name="ianaTzId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
+    /// <param name="maxLookaheadInTz">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>The next occurrence in the specified timezone, or null if no occurrence is found</returns>
+    public DateTime? TryGetNextOccurrenceInTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz = null)
+    {
+        // Case-insensitive validation
+        if (!TZConvert.KnownIanaTimeZoneNames
+                .Contains(ianaTzId, StringComparer.OrdinalIgnoreCase))
         {
-            throw new InvalidOperationException("No next occurrence found");
+            throw new ArgumentException($"Invalid IANA time zone ID: {ianaTzId}");
         }
 
-        return nextOccurrence.Value;
+        var methodTz = TZConvert.GetTimeZoneInfo(ianaTzId);
+        var computeTz = GetComputeTz(methodTz);
+        var resultTz = methodTz;
+        var resultKind = DateTimeKind.Unspecified;
+
+        // Interpret the input in the specified timezone, not Local, and return in the same timezone.
+        return InternalTryGetNextOccurrence(
+            baseTimeInTz,
+            maxLookaheadInTz,
+            methodTz,
+            computeTz,
+            resultTz,
+            resultKind);
     }
 
     /// <summary>
@@ -137,72 +170,6 @@ public class NaturalCronExpr
     }
 
     /// <summary>
-    /// Gets the next occurrences in UTC. Throws an exception if fewer occurrences than requested are found.
-    /// Use TryGetNextOccurrencesInUtc if you are not sure there are enough occurrences available.
-    /// </summary>
-    /// <param name="utcBaseTime">The base time in UTC from which to find the next occurrences</param>
-    /// <param name="count">The number of occurrences to retrieve</param>
-    /// <param name="utcMaxLookahead">Maximum lookahead time in UTC. If null, defaults to DateTime.MaxValue</param>
-    /// <returns>A list of occurrences in UTC</returns>
-    /// <exception cref="InvalidOperationException">Thrown when fewer than the requested number of occurrences are found</exception>
-    public IList<DateTime> GetNextOccurrencesInUtc(DateTime utcBaseTime, int count, DateTime? utcMaxLookahead = null)
-    {
-        var result = TryGetNextOccurrencesInUtc(utcBaseTime, count, utcMaxLookahead);
-        if (result.Count < count)
-        {
-            throw new InvalidOperationException("Not enough occurrences found");
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// Tries to get the next occurrence using the current thread's timezone. Returns null if no occurrence is found within the specified lookahead period.
-    /// </summary>
-    /// <param name="baseTime">The base time in the current thread's timezone from which to find the next occurrence</param>
-    /// <param name="maxLookahead">Maximum lookahead time in the current thread's timezone. If null, defaults to DateTime.MaxValue</param>
-    /// <returns>The next occurrence in the current thread's timezone, or null if no occurrence is found</returns>
-    public DateTime? TryGetNextOccurrence(DateTime baseTime, DateTime? maxLookahead = null)
-    {
-        if (this.TimeZoneRule() == null)
-        {
-            var nextOccurrence = InternalTryGetNextOccurrenceInTz(baseTime, maxLookahead ?? DateTime.MaxValue,
-                baseTime.Kind == DateTimeKind.Utc ? TimeZoneInfo.Utc : TimeZoneInfo.Local);
-
-            // The occurrence is in the same zone as the base time. Keeping its kind makes the next call
-            // (e.g. TryGetNextOccurrences) evaluate the custom keywords in that same zone.
-            return nextOccurrence.HasValue ? DateTime.SpecifyKind(nextOccurrence.Value, baseTime.Kind) : null;
-        }
-
-        // Convert local time to UTC and call the UTC method
-        var utcBaseTime = TimeZoneInfo.ConvertTimeToUtc(baseTime);
-        var utcMaxLookahead = maxLookahead.HasValue ? TimeZoneInfo.ConvertTimeToUtc(maxLookahead.Value) : DateTime.MaxValue;
-
-        var result = TryGetNextOccurrenceInUtc(utcBaseTime, utcMaxLookahead);
-
-        // Convert UTC to local time
-        return result == null ? null : TimeZoneInfo.ConvertTimeFromUtc(result.Value, TimeZoneInfo.Local);
-    }
-
-    /// <summary>
-    /// Gets the next occurrence using the current thread's timezone. Throws an exception if no occurrence is found within the specified lookahead period.
-    /// </summary>
-    /// <param name="baseTime">The base time in the current thread's timezone from which to find the next occurrence</param>
-    /// <param name="maxLookahead">Maximum lookahead time in the current thread's timezone. If null, defaults to DateTime.MaxValue</param>
-    /// <returns>The next occurrence in the current thread's timezone</returns>
-    /// <exception cref="InvalidOperationException">Thrown when no next occurrence is found</exception>
-    public DateTime GetNextOccurrence(DateTime baseTime, DateTime? maxLookahead = null)
-    {
-        var nextOccurrence = TryGetNextOccurrence(baseTime, maxLookahead);
-        if (nextOccurrence == null)
-        {
-            throw new InvalidOperationException("No next occurrence found");
-        }
-
-        return nextOccurrence.Value;
-    }
-
-    /// <summary>
     /// Tries to get the next occurrences using the current thread's timezone. Returns as many occurrences as found, up to the specified count.
     /// Stops when no more occurrences are found or the count is reached.
     /// </summary>
@@ -229,59 +196,66 @@ public class NaturalCronExpr
     }
 
     /// <summary>
-    /// Gets the next occurrences using the current thread's timezone. Throws an exception if fewer occurrences than requested are found.
-    /// Use TryGetNextOccurrences if you are not sure there are enough occurrences available.
+    /// Tries to get the next occurrences in a specified IANA timezone. Returns as many occurrences as found, up to the specified count.
+    /// Stops when no more occurrences are found or the count is reached.
     /// </summary>
-    /// <param name="baseTime">The base time in the current thread's timezone from which to find the next occurrences</param>
+    /// <param name="baseTimeInTz">The base time interpreted in the specified IANA timezone from which to find the next occurrences</param>
     /// <param name="count">The number of occurrences to retrieve</param>
-    /// <param name="maxLookahead">Maximum lookahead time in the current thread's timezone. If null, defaults to DateTime.MaxValue</param>
-    /// <returns>A list of occurrences in the current thread's timezone</returns>
-    /// <exception cref="InvalidOperationException">Thrown when fewer than the requested number of occurrences are found</exception>
-    public IList<DateTime> GetNextOccurrences(DateTime baseTime, int count, DateTime? maxLookahead = null)
+    /// <param name="ianaTzId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
+    /// <param name="maxLookaheadInTz">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>A list of occurrences in the specified timezone (may contain fewer than the requested count)</returns>
+    public IList<DateTime> TryGetNextOccurrencesInTz(DateTime baseTimeInTz, int count, string ianaTzId, DateTime? maxLookaheadInTz = null)
     {
-        var result = TryGetNextOccurrences(baseTime, count, maxLookahead);
-        if (result.Count < count)
+        var result = new List<DateTime>();
+        for (var i = 0; i < count; i++)
         {
-            throw new InvalidOperationException("Not enough occurrences found");
+            var nextOccurrence = TryGetNextOccurrenceInTz(baseTimeInTz, ianaTzId, maxLookaheadInTz);
+            if (nextOccurrence == null)
+            {
+                break;
+            }
+
+            result.Add(nextOccurrence.Value);
+            baseTimeInTz = nextOccurrence.Value;
         }
 
         return result;
     }
-    
+
     /// <summary>
-    /// Tries to get the next occurrence in a specified IANA timezone. Returns null if no occurrence is found within the specified lookahead period.
+    /// Gets the next occurrence in UTC. Throws an exception if no occurrence is found within the specified lookahead period.
     /// </summary>
-    /// <param name="baseTimeInTz">The base time interpreted in the specified IANA timezone from which to find the next occurrence</param>
-    /// <param name="ianaTzId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
-    /// <param name="maxLookaheadInTz">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
-    /// <returns>The next occurrence in the specified timezone, or null if no occurrence is found</returns>
-    public DateTime? TryGetNextOccurrenceInTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz = null)
+    /// <param name="utcBaseTime">The base time in UTC from which to find the next occurrence</param>
+    /// <param name="utcMaxLookahead">Maximum lookahead time in UTC. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>The next occurrence in UTC</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no next occurrence is found</exception>
+    public DateTime GetNextOccurrenceInUtc(DateTime utcBaseTime, DateTime? utcMaxLookahead = null)
     {
-        // Case-insensitive validation
-        if (!TZConvert.KnownIanaTimeZoneNames
-                .Contains(ianaTzId, StringComparer.OrdinalIgnoreCase))
+        var nextOccurrence = TryGetNextOccurrenceInUtc(utcBaseTime, utcMaxLookahead);
+        if (nextOccurrence == null)
         {
-            throw new ArgumentException($"Invalid IANA time zone ID: {ianaTzId}");
+            throw new InvalidOperationException("No next occurrence found");
         }
 
-        var tz = TZConvert.GetTimeZoneInfo(ianaTzId);
+        return nextOccurrence.Value;
+    }
 
-        if (this.TimeZoneRule() == null)
+    /// <summary>
+    /// Gets the next occurrence using the current thread's timezone. Throws an exception if no occurrence is found within the specified lookahead period.
+    /// </summary>
+    /// <param name="baseTime">The base time in the current thread's timezone from which to find the next occurrence</param>
+    /// <param name="maxLookahead">Maximum lookahead time in the current thread's timezone. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>The next occurrence in the current thread's timezone</returns>
+    /// <exception cref="InvalidOperationException">Thrown when no next occurrence is found</exception>
+    public DateTime GetNextOccurrence(DateTime baseTime, DateTime? maxLookahead = null)
+    {
+        var nextOccurrence = TryGetNextOccurrence(baseTime, maxLookahead);
+        if (nextOccurrence == null)
         {
-            // No tz rule: evaluate the rules directly on the provided wall-clock time (baseTimeInTz) in that zone.
-            return InternalTryGetNextOccurrenceInTz(baseTimeInTz, maxLookaheadInTz ?? DateTime.MaxValue, tz);
+            throw new InvalidOperationException("No next occurrence found");
         }
 
-        // Interpret the input in the specified timezone, not Local
-        var utcBaseTime = TimeZoneInfo.ConvertTimeToUtc(baseTimeInTz, tz);
-        DateTime? utcMaxLookahead = maxLookaheadInTz.HasValue
-            ? TimeZoneInfo.ConvertTimeToUtc(maxLookaheadInTz.Value, tz)
-            : null; // let the UTC method apply its own default
-
-        var resultUtc = TryGetNextOccurrenceInUtc(utcBaseTime, utcMaxLookahead);
-
-        // Return in the same specified timezone
-        return resultUtc == null ? null : TimeZoneInfo.ConvertTimeFromUtc(resultUtc.Value, tz);
+        return nextOccurrence.Value;
     }
 
     /// <summary>
@@ -304,27 +278,40 @@ public class NaturalCronExpr
     }
 
     /// <summary>
-    /// Tries to get the next occurrences in a specified IANA timezone. Returns as many occurrences as found, up to the specified count.
-    /// Stops when no more occurrences are found or the count is reached.
+    /// Gets the next occurrences in UTC. Throws an exception if fewer occurrences than requested are found.
+    /// Use TryGetNextOccurrencesInUtc if you are not sure there are enough occurrences available.
     /// </summary>
-    /// <param name="baseTimeInTz">The base time interpreted in the specified IANA timezone from which to find the next occurrences</param>
+    /// <param name="utcBaseTime">The base time in UTC from which to find the next occurrences</param>
     /// <param name="count">The number of occurrences to retrieve</param>
-    /// <param name="ianaTzId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
-    /// <param name="maxLookaheadInTz">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
-    /// <returns>A list of occurrences in the specified timezone (may contain fewer than the requested count)</returns>
-    public IList<DateTime> TryGetNextOccurrencesInTz(DateTime baseTimeInTz, int count, string ianaTzId, DateTime? maxLookaheadInTz = null)
+    /// <param name="utcMaxLookahead">Maximum lookahead time in UTC. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>A list of occurrences in UTC</returns>
+    /// <exception cref="InvalidOperationException">Thrown when fewer than the requested number of occurrences are found</exception>
+    public IList<DateTime> GetNextOccurrencesInUtc(DateTime utcBaseTime, int count, DateTime? utcMaxLookahead = null)
     {
-        var result = new List<DateTime>();
-        for (var i = 0; i < count; i++)
+        var result = TryGetNextOccurrencesInUtc(utcBaseTime, count, utcMaxLookahead);
+        if (result.Count < count)
         {
-            var nextOccurrence = TryGetNextOccurrenceInTz(baseTimeInTz, ianaTzId, maxLookaheadInTz);
-            if (nextOccurrence == null)
-            {
-                break;
-            }
+            throw new InvalidOperationException("Not enough occurrences found");
+        }
 
-            result.Add(nextOccurrence.Value);
-            baseTimeInTz = nextOccurrence.Value;
+        return result;
+    }
+
+    /// <summary>
+    /// Gets the next occurrences using the current thread's timezone. Throws an exception if fewer occurrences than requested are found.
+    /// Use TryGetNextOccurrences if you are not sure there are enough occurrences available.
+    /// </summary>
+    /// <param name="baseTime">The base time in the current thread's timezone from which to find the next occurrences</param>
+    /// <param name="count">The number of occurrences to retrieve</param>
+    /// <param name="maxLookahead">Maximum lookahead time in the current thread's timezone. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>A list of occurrences in the current thread's timezone</returns>
+    /// <exception cref="InvalidOperationException">Thrown when fewer than the requested number of occurrences are found</exception>
+    public IList<DateTime> GetNextOccurrences(DateTime baseTime, int count, DateTime? maxLookahead = null)
+    {
+        var result = TryGetNextOccurrences(baseTime, count, maxLookahead);
+        if (result.Count < count)
+        {
+            throw new InvalidOperationException("Not enough occurrences found");
         }
 
         return result;
@@ -700,6 +687,55 @@ public class NaturalCronExpr
         }
 
         return errors;
+    }
+
+    // A tz rule always wins over the zone of the method.
+    private TimeZoneInfo GetComputeTz(TimeZoneInfo methodTz) => TimeZoneRule()?.TimeZoneInfo ?? methodTz;
+
+    /// <summary>
+    /// The single flow of all the next occurrence methods.
+    /// </summary>
+    /// <param name="baseTime">The base time, in <paramref name="inputTz"/>.</param>
+    /// <param name="maxLookahead">The max lookahead, in <paramref name="inputTz"/>. Null means no limit.</param>
+    /// <param name="inputTz">The zone the base time and the max lookahead are in.</param>
+    /// <param name="computeTz">The zone the expression is evaluated in.</param>
+    /// <param name="resultTz">The zone the caller wants the result in.</param>
+    /// <param name="resultKind">The kind the caller wants the result with.</param>
+    private DateTime? InternalTryGetNextOccurrence(DateTime baseTime, DateTime? maxLookahead, TimeZoneInfo inputTz,
+        TimeZoneInfo computeTz, TimeZoneInfo resultTz, DateTimeKind resultKind)
+    {
+        // 1. Input to the wall-clock time of the compute zone
+        var baseTimeInComputeTz = ConvertTime(baseTime, inputTz, computeTz);
+        var maxLookaheadInComputeTz = maxLookahead.HasValue
+            ? ConvertTime(maxLookahead.Value, inputTz, computeTz)
+            : DateTime.MaxValue;
+
+        // 2. Search in the compute zone
+        var resultInComputeTz = InternalTryGetNextOccurrenceInTz(baseTimeInComputeTz, maxLookaheadInComputeTz, computeTz);
+        if (resultInComputeTz == null)
+        {
+            return null;
+        }
+
+        // 3. Result to the zone and the kind the caller wants
+        return DateTime.SpecifyKind(ConvertTime(resultInComputeTz.Value, computeTz, resultTz), resultKind);
+    }
+
+    // Converts a time from one zone to another through UTC. A time already in the zone is returned as is.
+    private static DateTime ConvertTime(DateTime dateTime, TimeZoneInfo fromTz, TimeZoneInfo toTz)
+    {
+        if (ReferenceEquals(fromTz, toTz))
+        {
+            return dateTime;
+        }
+
+        var utcDateTime = ReferenceEquals(fromTz, TimeZoneInfo.Utc)
+            ? dateTime
+            : TimeZoneInfo.ConvertTimeToUtc(dateTime, fromTz);
+
+        return ReferenceEquals(toTz, TimeZoneInfo.Utc)
+            ? utcDateTime
+            : TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, toTz);
     }
 
     private DateTime? InternalTryGetNextOccurrenceInTz(DateTime baseTimeInTz, DateTime maxLookaheadInTz, TimeZoneInfo timeZone)
