@@ -66,11 +66,23 @@ public class NaturalCronExpr
     /// <summary>
     /// Tries to get the next occurrence in UTC. Returns null if no occurrence is found within the specified lookahead period.
     /// </summary>
-    /// <param name="utcBaseTime">The base time in UTC from which to find the next occurrence</param>
+    /// <param name="utcBaseTime">The base time in UTC from which to find the next occurrence. A DateTimeKind.Unspecified value is treated as UTC</param>
     /// <param name="utcMaxLookahead">Maximum lookahead time in UTC. If null, defaults to DateTime.MaxValue</param>
     /// <returns>The next occurrence in UTC, or null if no occurrence is found</returns>
+    /// <exception cref="ArgumentException">Thrown when the base time or the max lookahead is DateTimeKind.Local</exception>
     public DateTime? TryGetNextOccurrenceInUtc(DateTime utcBaseTime, DateTime? utcMaxLookahead = null)
     {
+        // A local time is not a UTC time. Unspecified is trusted to be UTC.
+        if (utcBaseTime.Kind == DateTimeKind.Local)
+        {
+            throw new ArgumentException("The base time must be in UTC, but its Kind is Local.", nameof(utcBaseTime));
+        }
+
+        if (utcMaxLookahead?.Kind == DateTimeKind.Local)
+        {
+            throw new ArgumentException("The max lookahead must be in UTC, but its Kind is Local.", nameof(utcMaxLookahead));
+        }
+
         var methodTz = TimeZoneInfo.Utc;
         var computeTz = GetComputeTz(methodTz);
         var resultTz = TimeZoneInfo.Utc;
@@ -89,20 +101,19 @@ public class NaturalCronExpr
     /// <summary>
     /// Tries to get the next occurrence using the current thread's timezone. Returns null if no occurrence is found within the specified lookahead period.
     /// </summary>
-    /// <param name="baseTime">The base time in the current thread's timezone from which to find the next occurrence</param>
-    /// <param name="maxLookahead">Maximum lookahead time in the current thread's timezone. If null, defaults to DateTime.MaxValue</param>
-    /// <returns>The next occurrence in the current thread's timezone, or null if no occurrence is found</returns>
+    /// <param name="baseTime">The base time in the current thread's timezone from which to find the next occurrence. A DateTimeKind.Utc value is in UTC</param>
+    /// <param name="maxLookahead">Maximum lookahead time, in the same timezone as the base time. If null, defaults to DateTime.MaxValue</param>
+    /// <returns>The next occurrence in the timezone and with the Kind of the base time, or null if no occurrence is found</returns>
     public DateTime? TryGetNextOccurrence(DateTime baseTime, DateTime? maxLookahead = null)
     {
         // A UTC base time is in UTC, any other in the zone of the machine.
         var methodTz = baseTime.Kind == DateTimeKind.Utc ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
         var computeTz = GetComputeTz(methodTz);
-        var hasTimeZoneRule = TimeZoneRule() != null;
-        var resultTz = hasTimeZoneRule ? TimeZoneInfo.Local : methodTz;
-        var resultKind = hasTimeZoneRule ? DateTimeKind.Local : baseTime.Kind;
+        var resultTz = methodTz;
+        var resultKind = baseTime.Kind;
 
-        // With a tz rule the result is local. Without, it keeps the zone and the kind of the base time,
-        // which makes the next call (e.g. TryGetNextOccurrences) evaluate the custom keywords in that same zone.
+        // The result keeps the zone and the kind of the base time, with or without a tz rule.
+        // Without a tz rule, it also makes the next call (e.g. TryGetNextOccurrences) evaluate the custom keywords in that same zone.
         return InternalTryGetNextOccurrence(
             baseTime,
             maxLookahead,
@@ -115,10 +126,13 @@ public class NaturalCronExpr
     /// <summary>
     /// Tries to get the next occurrence in a specified IANA timezone. Returns null if no occurrence is found within the specified lookahead period.
     /// </summary>
-    /// <param name="baseTimeInTz">The base time interpreted in the specified IANA timezone from which to find the next occurrence</param>
+    /// <param name="baseTimeInTz">The base time interpreted in the specified IANA timezone from which to find the next occurrence.
+    /// A DateTimeKind.Utc value requires a UTC timezone and a DateTimeKind.Local value the timezone of the machine</param>
     /// <param name="ianaTzId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
     /// <param name="maxLookaheadInTz">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
-    /// <returns>The next occurrence in the specified timezone, or null if no occurrence is found</returns>
+    /// <returns>The next occurrence in the specified timezone, with the Kind of the base time, or null if no occurrence is found</returns>
+    /// <exception cref="ArgumentException">Thrown when the timezone ID is not valid, or when the Kind of the base time
+    /// or of the max lookahead is Utc or Local and does not match the timezone</exception>
     public DateTime? TryGetNextOccurrenceInTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz = null)
     {
         // Case-insensitive validation
@@ -128,12 +142,25 @@ public class NaturalCronExpr
             throw new ArgumentException($"Invalid IANA time zone ID: {ianaTzId}");
         }
 
-        var methodTz = TZConvert.GetTimeZoneInfo(ianaTzId);
+        var tz = TZConvert.GetTimeZoneInfo(ianaTzId);
+        EnsureKindMatchesTz(baseTimeInTz, tz, ianaTzId, nameof(baseTimeInTz));
+        if (maxLookaheadInTz.HasValue)
+        {
+            EnsureKindMatchesTz(maxLookaheadInTz.Value, tz, ianaTzId, nameof(maxLookaheadInTz));
+        }
+
+        // A UTC or a local base time is in the same zone as tz (checked above).
+        var methodTz = baseTimeInTz.Kind switch
+        {
+            DateTimeKind.Utc => TimeZoneInfo.Utc,
+            DateTimeKind.Local => TimeZoneInfo.Local,
+            _ => tz
+        };
         var computeTz = GetComputeTz(methodTz);
         var resultTz = methodTz;
-        var resultKind = DateTimeKind.Unspecified;
+        var resultKind = baseTimeInTz.Kind;
 
-        // Interpret the input in the specified timezone, not Local, and return in the same timezone.
+        // Interpret the input in the specified timezone, not Local, and return in the same timezone and kind.
         return InternalTryGetNextOccurrence(
             baseTimeInTz,
             maxLookaheadInTz,
@@ -687,6 +714,24 @@ public class NaturalCronExpr
         }
 
         return errors;
+    }
+
+    // A UTC time must be in a UTC zone and a local time in the zone of the machine. Aliases count as the same zone.
+    private static void EnsureKindMatchesTz(DateTime dateTime, TimeZoneInfo tz, string ianaTzId, string paramName)
+    {
+        var (kindTz, kindName) = dateTime.Kind switch
+        {
+            DateTimeKind.Utc => (TimeZoneInfo.Utc, "UTC"),
+            DateTimeKind.Local => (TimeZoneInfo.Local, "the local time zone of the machine"),
+            _ => ((TimeZoneInfo?)null, string.Empty)
+        };
+
+        if (kindTz != null && tz.Id != kindTz.Id && !tz.HasSameRules(kindTz))
+        {
+            throw new ArgumentException(
+                $"The Kind of the time is {dateTime.Kind}, so the time zone must be {kindName}, but it is '{ianaTzId}'. " +
+                "Pass a DateTimeKind.Unspecified time to give a wall-clock time in that time zone.", paramName);
+        }
     }
 
     // A tz rule always wins over the zone of the method.

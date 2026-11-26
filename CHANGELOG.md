@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.1]
+### Changed
+- The UTC, local and `…InTz` occurrence methods now share a single internal flow: the base time is converted to the zone the expression is evaluated in (its `tz` rule, otherwise the zone of the method), the next occurrence is searched there, and the result is converted to the zone and `Kind` of the method. Apart from the `Kind` changes below, the results are unchanged, except with a `tz` rule and no max lookahead: the local methods search up to `DateTime.MaxValue`. Previously they stopped a few hours before it, on 9999-12-31.
+- The `Kind` of the base time is now read, and the `Kind` of the result chosen, the same way whether the expression has a `tz` rule or not. Adding or removing `tz …` from an expression no longer changes how `Kind` is handled. The changes are listed below.
+- **Breaking:** the UTC methods (`TryGetNextOccurrenceInUtc()`, `GetNextOccurrenceInUtc()`, `TryGetNextOccurrencesInUtc()`, `GetNextOccurrencesInUtc()`) now throw `ArgumentException` when the base time or the max lookahead is `DateTimeKind.Local`, e.g. `DateTime.Now`. Pass a UTC time instead, e.g. `DateTime.UtcNow` or `DateTime.Now.ToUniversalTime()`.
+  - Previously a local time was silently read as if it were UTC when the expression had no `tz` rule, giving occurrences shifted by the machine's offset, and threw when it had one.
+  - `DateTimeKind.Unspecified` is still treated as UTC.
+- **Breaking:** the `…InTz` methods (`TryGetNextOccurrenceInTz()`, `GetNextOccurrenceInTz()`, `TryGetNextOccurrencesInTz()`, `GetNextOccurrencesInTz()`) now throw `ArgumentException` when the `Kind` of the base time or of the max lookahead does not match the zone passed: a `DateTimeKind.Utc` time requires a UTC zone (e.g. `UTC`, `Etc/UTC`) and a `DateTimeKind.Local` time the zone of the machine. Pass a `DateTimeKind.Unspecified` time to give a wall-clock time in the zone, e.g. `DateTime.SpecifyKind(value, DateTimeKind.Unspecified)`.
+  - Previously, without a `tz` rule, the `Kind` was ignored: e.g. `DateTime.UtcNow` with `America/New_York` was read as a New York time, giving occurrences shifted by the offset. With a `tz` rule it threw, even when the zones matched.
+  - When the zones match, the result keeps the `Kind` of the base time: `DateTimeKind.Utc` or `DateTimeKind.Local`. A `DateTimeKind.Unspecified` base time gives an unspecified result, as before.
+- The local methods (e.g. `GetNextOccurrence()`) return the `Kind` of the base time, also with a `tz` rule: a `DateTimeKind.Utc` base time gives a UTC result and a `DateTimeKind.Unspecified` one an unspecified result. Previously the result was always `DateTimeKind.Local` with a `tz` rule.
+
 ## [1.1.0]
 ### Added
 - `every <value>` shorthand for `every <period> on <value>`: `every 9am` (every day), `every 15th` / `every 1stMonday` / `every LastDay` (every month), `every [monday, friday]` (every week), `every january` (every year) and `every holiday` for a custom keyword (every unit of the keyword, e.g. every day).
