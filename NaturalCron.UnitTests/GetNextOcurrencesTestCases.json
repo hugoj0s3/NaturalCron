@@ -2226,6 +2226,18 @@
     "expectedDateTimeStrs": ["2025-10-03 15:45:00", "2025-10-04 15:30:00", "2025-10-05 15:15:00"]
   },
   {
+    "description": "42.11 DST New York, clocks go forward with multiple times in the gap: [02:15, 02:45] collapses into a single 03:00 EDT run on 2025-03-09",
+    "expression": "@every day @at [02:15, 02:45] @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-08 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 07:00:00", "2025-03-10 06:15:00", "2025-03-10 06:45:00"]
+  },
+  {
+    "description": "42.12 DST New York, clocks go forward with multiple times spanning the gap: [02:15, 02:45, 03:30] runs at 03:00 EDT and 03:30 EDT on 2025-03-09",
+    "expression": "@every day @at [02:15, 02:45, 03:30] @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-08 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 07:00:00", "2025-03-09 07:30:00", "2025-03-10 06:15:00", "2025-03-10 06:45:00", "2025-03-10 07:30:00"]
+  },
+  {
     "description": "99.1 AI generated: Every 2 hours starting at noon",
     "expression": "@every 2 hours",
     "baseTimeUtcStr": "2023-05-10 12:00:00",
