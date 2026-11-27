@@ -28,8 +28,11 @@
         <None Include="NaturalCron.CronConverter.NuGet.README.md" Pack="true" PackagePath="" />
     </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="NaturalCron" Version="1.1.1" />
+    <ItemGroup Condition="'$(UseProjectRefs)' == 'true'">
+        <ProjectReference Include="..\NaturalCron\NaturalCron.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(UseProjectRefs)' != 'true'">
+        <PackageReference Include="NaturalCron" Version="$(NaturalCronPackageVersion)" />
     </ItemGroup>
 
 </Project>

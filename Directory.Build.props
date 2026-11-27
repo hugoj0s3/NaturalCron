@@ -1,0 +1,10 @@
+<Project>
+  <PropertyGroup>
+    <!-- Version of the NaturalCron package, also used by the PackageReference entries below -->
+    <NaturalCronPackageVersion>1.1.1</NaturalCronPackageVersion>
+
+    <!-- true  = ProjectReference (development, CI, IDE rename/refactor works) -->
+    <!-- false = PackageReference (pack against the NaturalCron package published on NuGet) -->
+    <UseProjectRefs Condition="'$(UseProjectRefs)' == ''">true</UseProjectRefs>
+  </PropertyGroup>
+</Project>
