@@ -754,8 +754,13 @@ public class NaturalCronExpr
     /// <summary>
     /// The single flow of all the next occurrence methods.
     /// </summary>
-    private DateTime? InternalTryGetNextOccurrence(DateTime baseTime, DateTime? maxLookahead, TimeZoneInfo inputTz,
-        TimeZoneInfo computeTz, TimeZoneInfo resultTz, DateTimeKind resultKind)
+    private DateTime? InternalTryGetNextOccurrence(
+        DateTime baseTime, 
+        DateTime? maxLookahead, 
+        TimeZoneInfo inputTz,
+        TimeZoneInfo computeTz, 
+        TimeZoneInfo resultTz, 
+        DateTimeKind resultKind)
     {
         // 1. Input to exact DateTimeOffset in the compute zone
         var baseTimeInComputeTz = ToOffsetInZone(baseTime, inputTz, computeTz);
@@ -883,13 +888,15 @@ public class NaturalCronExpr
         return new DateTimeOffset(unspecified, tz.GetUtcOffset(unspecified));
     }
 
-    private static DateTime ToResultDateTime(DateTimeOffset value, TimeZoneInfo resultTz, DateTimeKind resultKind) =>
-        resultKind switch
+    private static DateTime ToResultDateTime(DateTimeOffset value, TimeZoneInfo resultTz, DateTimeKind resultKind)
+    {
+        return resultKind switch
         {
             DateTimeKind.Utc => value.UtcDateTime,
             DateTimeKind.Local => value.LocalDateTime,
             _ => TimeZoneInfo.ConvertTime(value, resultTz).DateTime
         };
+    }
 
     private static DateTime AddHoursClamped(DateTime dateTime, int hours)
     {

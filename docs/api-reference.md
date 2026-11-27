@@ -18,6 +18,7 @@ var compiledExpr = NaturalCronExpr.Parse("daily at 14:30");
 - [Usage Examples](#usage-examples)
 - [Rule Filter Methods](#rule-filter-methods)
 - [Custom Keywords](#custom-keywords)
+- [Troubleshooting](#troubleshooting)
 
 
 ## Parse Methods
@@ -285,18 +286,7 @@ For expression `"daily at 09:00 tz Asia/Tokyo"`:
 
 The `tz` keyword affects the **calculation** timezone, not the **return** timezone.
 
-### Daylight Saving Time (DST)
-
-When evaluating a schedule in a timezone that observes daylight saving time:
-
-- **Clocks go forward (spring-forward gap, e.g. 02:00 → 03:00 in `America/New_York`):**
-  - Fixed and daily+ schedules landing in the missing hour run **once** at the first valid moment after the gap (e.g. `every day at 02:30 tz America/New_York` runs at `03:00 EDT`; in 30-minute zones like `Australia/Lord_Howe`, `02:15` runs at `02:30`). Multiple fixed times inside the same gap collapse into a single run at that first valid moment.
-  - Sub-day interval schedules (`every 30 minutes`, `every hour`) advance past the gap while preserving their real cadence.
-- **Clocks go back (fall-back repeated hour, e.g. 02:00 EDT → 01:00 EST in `America/New_York`):**
-  - Fixed and daily+ schedules in the repeated hour run **once**, in the first pass (daylight time, e.g. `01:30 EDT` / `05:30 UTC`), and do not run again in the second pass.
-  - Pure sub-day interval schedules (`every 30 minutes`, `every hour`, `every 15 minutes`) keep their real cadence across **both** passes without skipping occurrences.
-  - When calling `*InTz` with `DateTimeKind.Unspecified` across a repeated fall-back hour in that zone, ambiguous inputs default to the **first pass** (earlier instant) and returned wall-clock times always strictly advance (never repeating the same wall-clock hour in a loop). Use `*InUtc` (or `Local` with `DateTime.Now`) when you need both passes of the repeated hour as distinct instants.
-
+For what happens on the nights the clocks change, see [Troubleshooting: Daylight Saving Time (DST)](#daylight-saving-time-dst).
 
 ## Usage Examples
 
@@ -534,5 +524,31 @@ exposing `Keywords`. A list mixing keywords and built-in values (`on [holiday, 1
 (`Spec == NaturalCronRuleSpec.AtInOn`), whose `Rules` holds the keyword rule and the built-in rule.
 Exclusions (`except`) appear as `NaturalCronExceptRule` (`Spec == NaturalCronRuleSpec.Except`),
 whose `Rules` holds the excluded rules, e.g. a `NaturalCronCustomKeywordRule` or `NaturalCronAtInOnRule`.
+
+## Troubleshooting
+
+### Daylight Saving Time (DST)
+
+When evaluating a schedule in a timezone that observes daylight saving time:
+
+- **Clocks go forward (spring-forward gap, e.g. 02:00 → 03:00 in `America/New_York`):**
+  - Fixed and daily+ schedules landing in the missing hour run **once** at the first valid moment after the gap (e.g. `every day at 02:30 tz America/New_York` runs at `03:00 EDT`; in 30-minute zones like `Australia/Lord_Howe`, `02:15` runs at `02:30`). Multiple fixed times inside the same gap collapse into a single run at that first valid moment.
+  - Sub-day interval schedules (`every 30 minutes`, `every hour`) advance past the gap while preserving their real cadence.
+- **Clocks go back (fall-back repeated hour, e.g. 02:00 EDT → 01:00 EST in `America/New_York`):**
+  - Fixed and daily+ schedules in the repeated hour run **once**, in the first pass (daylight time, e.g. `01:30 EDT` / `05:30 UTC`), and do not run again in the second pass.
+  - Pure sub-day interval schedules (`every 30 minutes`, `every hour`, `every 15 minutes`, with or without `tz`) keep their real cadence across **both** passes without skipping occurrences.
+  - Sub-day intervals combined with additional rules (`every 30 minutes on sunday`, `every 30 minutes between 00:00 and 03:00`, `anchoredAt`, `except`) are evaluated on wall-clock time and run only in the **first pass** of the repeated hour (leaving a gap across the repeated hour before resuming at the next non-ambiguous wall-clock time). This only affects the repeated hour on the night the clocks go back; every other hour and day keeps its normal cadence.
+
+  For example, on 2025-11-02 in `America/New_York` (the Sunday the clocks go back), from `00:30 EDT` with `*InUtc`:
+
+  | New York | UTC | `every 30 minutes tz America/New_York` | `every 30 minutes on sunday tz America/New_York` |
+  |---|---|---|---|
+  | 01:00 EDT (1st pass) | 05:00 | ✅ | ✅ |
+  | 01:30 EDT (1st pass) | 05:30 | ✅ | ✅ |
+  | 01:00 EST (2nd pass) | 06:00 | ✅ | ❌ skipped |
+  | 01:30 EST (2nd pass) | 06:30 | ✅ | ❌ skipped |
+  | 02:00 EST | 07:00 | ✅ | ✅ |
+
+  - When calling `*InTz` with `DateTimeKind.Unspecified` across a repeated fall-back hour in that zone, ambiguous inputs default to the **first pass** (earlier instant) and returned wall-clock times always strictly advance (never repeating the same wall-clock hour in a loop). Use `*InUtc` (or `Local` with `DateTime.Now`) when you need both passes of the repeated hour as distinct instants.
 
 ✅ [Back to Main README](../README.md)
