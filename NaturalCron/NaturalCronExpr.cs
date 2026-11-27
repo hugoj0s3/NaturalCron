@@ -833,7 +833,7 @@ public class NaturalCronExpr
         }
 
         var unspecified = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
-        if (!timeZone.IsInvalidTime(unspecified))
+        if (!TimeZoneUtil.IsInvalidTime(timeZone, unspecified))
         {
             return dateTime;
         }
@@ -842,7 +842,7 @@ public class NaturalCronExpr
             unspecified.Hour, unspecified.Minute, unspecified.Second);
         var gap = timeZone.GetUtcOffset(lo.AddDays(1)) - timeZone.GetUtcOffset(lo.AddDays(-1));
         var hi = gap > TimeSpan.Zero ? lo + gap : lo.AddHours(1);
-        while (timeZone.IsInvalidTime(hi))
+        while (TimeZoneUtil.IsInvalidTime(timeZone, hi))
         {
             hi = hi.AddHours(1);
         }
@@ -852,7 +852,7 @@ public class NaturalCronExpr
         {
             var midSeconds = (hi - lo).Ticks / TimeSpan.TicksPerSecond / 2;
             var mid = lo.AddSeconds(midSeconds);
-            if (timeZone.IsInvalidTime(mid))
+            if (TimeZoneUtil.IsInvalidTime(timeZone, mid))
             {
                 lo = mid;
             }
@@ -997,7 +997,7 @@ public class NaturalCronExpr
 
             // Spring-forward gap: sub-day intervals advance past the gap to keep their cadence;
             // fixed / daily+ schedules move forward to the first valid moment after the gap (e.g. 02:30 -> 03:00).
-            if (timeZone.IsInvalidTime(wall))
+            if (TimeZoneUtil.IsInvalidTime(timeZone, wall))
             {
                 if (HasSubDayEveryRule())
                 {
