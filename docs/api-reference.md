@@ -539,15 +539,15 @@ When evaluating a schedule in a timezone that observes daylight saving time:
   - Pure sub-day interval schedules (`every 30 minutes`, `every hour`, `every 15 minutes`, with or without `tz`) keep their real cadence across **both** passes without skipping occurrences.
   - Sub-day intervals combined with additional rules (`every 30 minutes on sunday`, `every 30 minutes between 00:00 and 03:00`, `anchoredAt`, `except`) are evaluated on wall-clock time and run only in the **first pass** of the repeated hour (leaving a gap across the repeated hour before resuming at the next non-ambiguous wall-clock time). This only affects the repeated hour on the night the clocks go back; every other hour and day keeps its normal cadence.
 
-  For example, on 2025-11-02 in `America/New_York` (the Sunday the clocks go back), from `00:30 EDT` with `*InUtc`:
+    For example, on 2025-11-02 in `America/New_York` (the Sunday the clocks go back), from `00:30 EDT` with `*InUtc`:
 
-  | New York | UTC | `every 30 minutes tz America/New_York` | `every 30 minutes on sunday tz America/New_York` |
-  |---|---|---|---|
-  | 01:00 EDT (1st pass) | 05:00 | ✅ | ✅ |
-  | 01:30 EDT (1st pass) | 05:30 | ✅ | ✅ |
-  | 01:00 EST (2nd pass) | 06:00 | ✅ | ❌ skipped |
-  | 01:30 EST (2nd pass) | 06:30 | ✅ | ❌ skipped |
-  | 02:00 EST | 07:00 | ✅ | ✅ |
+    | New York | UTC | `every 30 minutes tz America/New_York` | `every 30 minutes on sunday tz America/New_York` |
+    |---|---|---|---|
+    | 01:00 EDT (1st pass) | 05:00 | ✅ | ✅ |
+    | 01:30 EDT (1st pass) | 05:30 | ✅ | ✅ |
+    | 01:00 EST (2nd pass) | 06:00 | ✅ | ❌ skipped |
+    | 01:30 EST (2nd pass) | 06:30 | ✅ | ❌ skipped |
+    | 02:00 EST | 07:00 | ✅ | ✅ |
 
   - When calling `*InTz` with `DateTimeKind.Unspecified` across a repeated fall-back hour in that zone, ambiguous inputs default to the **first pass** (earlier instant) and returned wall-clock times always strictly advance (never repeating the same wall-clock hour in a loop). Use `*InUtc` (or `Local` with `DateTime.Now`) when you need both passes of the repeated hour as distinct instants.
 
