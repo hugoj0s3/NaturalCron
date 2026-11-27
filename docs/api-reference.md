@@ -500,7 +500,7 @@ and `except`. It cannot be used as a boundary of `between`, `upto` or `from`.
   | `GetNextOccurrenceInTz(dt, id)` | `id` | X (the expression's tz always wins) |
 
 - A keyword instance is created **once per parsed expression** (at parse time) and reused for all its matches.
-  A factory must work wherever expressions are parsed (including Quartz triggers).
+  A factory must work wherever expressions are parsed.
 
 > ⚠️ **Performance:** `Match` is called on every step of the occurrence search, potentially many times per
 > `GetNextOccurrence` call. Avoid a database or HTTP round trip on every call: keep the data in memory and let `Match`
