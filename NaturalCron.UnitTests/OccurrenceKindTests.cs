@@ -153,6 +153,24 @@ public class OccurrenceKindTests
             .Should().Throw<ArgumentException>().WithParameterName("baseTimeInTz");
     }
 
+    [Theory]
+    [MemberData(nameof(Expressions))]
+    public void PluralMethods_WithZeroCountAndInvalidInput_StillThrow(string expression)
+    {
+        var naturalCronExpr = NaturalCronExpr.Parse(expression);
+        var local = BaseTimeUtc.ToLocalTime();
+
+        naturalCronExpr.Invoking(x => x.TryGetNextOccurrencesInUtc(local, 0))
+            .Should().Throw<ArgumentException>().WithParameterName("utcBaseTime");
+        naturalCronExpr.Invoking(x => x.TryGetNextOccurrencesInUtc(BaseTimeUtc, 0, local.AddDays(10)))
+            .Should().Throw<ArgumentException>().WithParameterName("utcMaxLookahead");
+
+        naturalCronExpr.Invoking(x => x.TryGetNextOccurrencesInTz(BaseTimeUtc, 0, "America/New_York"))
+            .Should().Throw<ArgumentException>().WithParameterName("baseTimeInTz");
+        naturalCronExpr.Invoking(x => x.TryGetNextOccurrencesInTz(DateTime.SpecifyKind(BaseTimeUtc, DateTimeKind.Unspecified), 0, "Invalid/Zone"))
+            .Should().Throw<ArgumentException>();
+    }
+
     private static string MachineIanaZoneId() =>
         TZConvert.TryWindowsToIana(TimeZoneInfo.Local.Id, out var ianaId) ? ianaId : TimeZoneInfo.Local.Id;
 

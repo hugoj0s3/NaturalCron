@@ -169,6 +169,8 @@ Tries to get the next occurrences in UTC. Returns as many occurrences as found, 
 
 **Returns:** A list of occurrences in UTC (may contain fewer than the requested count)
 
+**Throws:** `ArgumentException` when `utcBaseTime` or `utcMaxLookahead` has `DateTimeKind.Local`
+
 ### GetNextOccurrencesInUtc()
 ```csharp
 public IList<DateTime> GetNextOccurrencesInUtc(DateTime utcBaseTime, int count, DateTime? utcMaxLookahead = null)
@@ -182,7 +184,9 @@ Gets the next occurrences in UTC. Throws an exception if fewer occurrences than 
 
 **Returns:** A list of occurrences in UTC
 
-**Throws:** `InvalidOperationException` when fewer than the requested number of occurrences are found
+**Throws:**
+- `ArgumentException` when `utcBaseTime` or `utcMaxLookahead` has `DateTimeKind.Local`
+- `InvalidOperationException` when fewer than the requested number of occurrences are found
 
 
 ## IANA Timezone Occurrence Methods
@@ -234,7 +238,7 @@ Tries to get the next occurrences in a specified IANA timezone. Returns as many 
 
 **Returns:** A list of occurrences in the specified timezone (may contain fewer than the requested count)
 
-**Throws:** `ArgumentException` when the IANA timezone ID is invalid or not recognized
+**Throws:** `ArgumentException` when the IANA timezone ID is invalid, or when `baseTimeInTz` / `maxLookaheadInTz` has `DateTimeKind.Utc` or `DateTimeKind.Local` and does not match the specified timezone
 
 ### GetNextOccurrencesInTz()
 ```csharp
@@ -251,7 +255,7 @@ Gets the next occurrences in a specified IANA timezone. Throws an exception if f
 **Returns:** A list of occurrences in the specified timezone
 
 **Throws:** 
-- `ArgumentException` when the IANA timezone ID is invalid or not recognized
+- `ArgumentException` when the IANA timezone ID is invalid, or when `baseTimeInTz` / `maxLookaheadInTz` has a `DateTimeKind` (`Utc`/`Local`) that does not match the specified timezone
 - `InvalidOperationException` when fewer than the requested number of occurrences are found
 
 

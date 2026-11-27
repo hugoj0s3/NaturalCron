@@ -19,6 +19,7 @@
   - Previously, without a `tz` rule, the `Kind` was ignored: e.g. `DateTime.UtcNow` with `America/New_York` was read as a New York time, giving occurrences shifted by the offset. With a `tz` rule it threw, even when the zones matched.
   - When the zones match, the result keeps the `Kind` of the base time: `DateTimeKind.Utc` or `DateTimeKind.Local`. A `DateTimeKind.Unspecified` base time gives an unspecified result, as before.
 - The local methods (e.g. `GetNextOccurrence()`) return the `Kind` of the base time, also with a `tz` rule: a `DateTimeKind.Utc` base time gives a UTC result and a `DateTimeKind.Unspecified` one an unspecified result. Previously the result was always `DateTimeKind.Local` with a `tz` rule.
+- `NaturalCron.CronConverter` 1.0.3 now depends on `NaturalCron` 1.1.1. No other changes.
 
 ### Deprecated
 - `NaturalCronIanaTimeZoneRule.ConvertFromUtc()` and `NaturalCronIanaTimeZoneRule.ConvertToUtc()` marked `[Obsolete]` — no longer used internally and will be removed in 2.0.

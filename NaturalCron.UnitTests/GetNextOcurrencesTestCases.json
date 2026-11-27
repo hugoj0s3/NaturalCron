@@ -2374,6 +2374,12 @@
     "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-11-02 05:45:00", "2025-11-02 07:15:00", "2025-11-02 07:45:00"]
   },
   {
+    "description": "43.15 DST New York, clocks go back: sub-day interval with extra rule (every 30 minutes on sunday) runs in the first pass only and resumes at 02:00 EST",
+    "expression": "@every 30 minutes @on sunday @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-02 04:30:00",
+    "expectedDateTimeStrs": ["2025-11-02 05:00:00", "2025-11-02 05:30:00", "2025-11-02 07:00:00", "2025-11-02 07:30:00"]
+  },
+  {
     "description": "99.1 AI generated: Every 2 hours starting at noon",
     "expression": "@every 2 hours",
     "baseTimeUtcStr": "2023-05-10 12:00:00",

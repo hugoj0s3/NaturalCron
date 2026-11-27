@@ -72,16 +72,7 @@ public class NaturalCronExpr
     /// <exception cref="ArgumentException">Thrown when the base time or the max lookahead is DateTimeKind.Local</exception>
     public DateTime? TryGetNextOccurrenceInUtc(DateTime utcBaseTime, DateTime? utcMaxLookahead = null)
     {
-        // A local time is not a UTC time. Unspecified is trusted to be UTC.
-        if (utcBaseTime.Kind == DateTimeKind.Local)
-        {
-            throw new ArgumentException("The base time must be in UTC, but its Kind is Local.", nameof(utcBaseTime));
-        }
-
-        if (utcMaxLookahead?.Kind == DateTimeKind.Local)
-        {
-            throw new ArgumentException("The max lookahead must be in UTC, but its Kind is Local.", nameof(utcMaxLookahead));
-        }
+        ValidateUtcInputs(utcBaseTime, utcMaxLookahead);
 
         var methodTz = TimeZoneInfo.Utc;
         var computeTz = GetComputeTz(methodTz);
@@ -133,19 +124,7 @@ public class NaturalCronExpr
     /// or of the max lookahead is Utc or Local and does not match the timezone</exception>
     public DateTime? TryGetNextOccurrenceInTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz = null)
     {
-        // Case-insensitive validation
-        if (!TZConvert.KnownIanaTimeZoneNames
-                .Contains(ianaTzId, StringComparer.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException($"Invalid IANA time zone ID: {ianaTzId}");
-        }
-
-        var tz = TZConvert.GetTimeZoneInfo(ianaTzId);
-        EnsureKindMatchesTz(baseTimeInTz, tz, ianaTzId, nameof(baseTimeInTz));
-        if (maxLookaheadInTz.HasValue)
-        {
-            EnsureKindMatchesTz(maxLookaheadInTz.Value, tz, ianaTzId, nameof(maxLookaheadInTz));
-        }
+        var tz = ResolveAndValidateTz(baseTimeInTz, ianaTzId, maxLookaheadInTz);
 
         // A UTC or a local base time is in the same zone as tz (checked above).
         var methodTz = baseTimeInTz.Kind switch
@@ -174,8 +153,11 @@ public class NaturalCronExpr
     /// <param name="count">The number of occurrences to retrieve</param>
     /// <param name="utcMaxLookahead">Maximum lookahead time in UTC. If null, defaults to DateTime.MaxValue</param>
     /// <returns>A list of occurrences in UTC (may contain fewer than the requested count)</returns>
+    /// <exception cref="ArgumentException">Thrown when the base time or the max lookahead is DateTimeKind.Local</exception>
     public IList<DateTime> TryGetNextOccurrencesInUtc(DateTime utcBaseTime, int count, DateTime? utcMaxLookahead = null)
     {
+        ValidateUtcInputs(utcBaseTime, utcMaxLookahead);
+
         var result = new List<DateTime>();
         for (var i = 0; i < count; i++)
         {
@@ -227,8 +209,12 @@ public class NaturalCronExpr
     /// <param name="ianaTzId">IANA timezone ID (case-insensitive, e.g., "America/New_York" or "europe/lisbon")</param>
     /// <param name="maxLookaheadInTz">Maximum lookahead time in the specified timezone. If null, defaults to DateTime.MaxValue</param>
     /// <returns>A list of occurrences in the specified timezone (may contain fewer than the requested count)</returns>
+    /// <exception cref="ArgumentException">Thrown when the timezone ID is not valid, or when the Kind of the base time
+    /// or of the max lookahead is Utc or Local and does not match the timezone</exception>
     public IList<DateTime> TryGetNextOccurrencesInTz(DateTime baseTimeInTz, int count, string ianaTzId, DateTime? maxLookaheadInTz = null)
     {
+        ResolveAndValidateTz(baseTimeInTz, ianaTzId, maxLookaheadInTz);
+
         var result = new List<DateTime>();
         for (var i = 0; i < count; i++)
         {
@@ -710,6 +696,39 @@ public class NaturalCronExpr
         }
 
         return errors;
+    }
+
+    private static void ValidateUtcInputs(DateTime utcBaseTime, DateTime? utcMaxLookahead)
+    {
+        // A local time is not a UTC time. Unspecified is trusted to be UTC.
+        if (utcBaseTime.Kind == DateTimeKind.Local)
+        {
+            throw new ArgumentException("The base time must be in UTC, but its Kind is Local.", nameof(utcBaseTime));
+        }
+
+        if (utcMaxLookahead?.Kind == DateTimeKind.Local)
+        {
+            throw new ArgumentException("The max lookahead must be in UTC, but its Kind is Local.", nameof(utcMaxLookahead));
+        }
+    }
+
+    private static TimeZoneInfo ResolveAndValidateTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz)
+    {
+        // Case-insensitive validation
+        if (!TZConvert.KnownIanaTimeZoneNames
+                .Contains(ianaTzId, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException($"Invalid IANA time zone ID: {ianaTzId}");
+        }
+
+        var tz = TZConvert.GetTimeZoneInfo(ianaTzId);
+        EnsureKindMatchesTz(baseTimeInTz, tz, ianaTzId, nameof(baseTimeInTz));
+        if (maxLookaheadInTz.HasValue)
+        {
+            EnsureKindMatchesTz(maxLookaheadInTz.Value, tz, ianaTzId, nameof(maxLookaheadInTz));
+        }
+
+        return tz;
     }
 
     // A UTC time must be in a UTC zone and a local time in the zone of the machine. Aliases count as the same zone.
