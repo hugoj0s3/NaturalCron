@@ -9,7 +9,7 @@
 
     <PropertyGroup>
         <PackageId>NaturalCron.CronConverter</PackageId>
-        <Version>1.0.2</Version>
+        <Version>1.0.3</Version>
         <Authors>Hugo Silva</Authors>
         <Company>Hugo Silva</Company>
         <Description>Converts NaturalCron natural language expressions to classic cron strings. Supports Unix cron, Cronos, Quartz.NET, and NCrontab via built-in presets.</Description>
@@ -28,8 +28,11 @@
         <None Include="NaturalCron.CronConverter.NuGet.README.md" Pack="true" PackagePath="" />
     </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="NaturalCron" Version="1.1.0" />
+    <ItemGroup Condition="'$(UseProjectRefs)' == 'true'">
+        <ProjectReference Include="..\NaturalCron\NaturalCron.csproj" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(UseProjectRefs)' != 'true'">
+        <PackageReference Include="NaturalCron" Version="$(NaturalCronPackageVersion)" />
     </ItemGroup>
 
 </Project>

@@ -2166,6 +2166,220 @@
     "expectedDateTimeStrs": ["2025-04-14 08:00:37", "2025-04-21 08:00:37", "2025-04-28 08:00:37"]
   },
   {
+    "description": "42.1 DST New York, clocks go forward (2025-03-09 02:00 EST -> 03:00 EDT): 02:30 does not exist and runs at 03:00 EDT (07:00 UTC)",
+    "expression": "@every day @at 02:30 @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-08 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-08 07:30:00", "2025-03-09 07:00:00", "2025-03-10 06:30:00", "2025-03-11 06:30:00"]
+  },
+  {
+    "description": "42.2 DST New York, clocks go forward: 02:00, the first moment of the gap, runs at 03:00 EDT (07:00 UTC)",
+    "expression": "@every day @at 02:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-08 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 07:00:00", "2025-03-10 06:00:00", "2025-03-11 06:00:00"]
+  },
+  {
+    "description": "42.3 DST New York, clocks go forward: 03:00, right after the gap, is not affected (03:00 EDT, 07:00 UTC)",
+    "expression": "@every day @at 03:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-08 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 07:00:00", "2025-03-10 07:00:00", "2025-03-11 07:00:00"]
+  },
+  {
+    "description": "42.4 DST New York, clocks go forward: every 30 minutes keeps the real interval, 01:30 EST is followed by 03:00 EDT without duplicates",
+    "expression": "@every 30 minutes @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-09 06:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 06:30:00", "2025-03-09 07:00:00", "2025-03-09 07:30:00", "2025-03-09 08:00:00"]
+  },
+  {
+    "description": "42.5 DST New York, clocks go forward: every hour from 00:30 EST skips 02:30 and runs at 03:30 EDT, one real hour after 01:30 EST",
+    "expression": "@every hour @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-09 05:30:00",
+    "expectedDateTimeStrs": ["2025-03-09 06:30:00", "2025-03-09 07:30:00", "2025-03-09 08:30:00", "2025-03-09 09:30:00"]
+  },
+  {
+    "description": "42.6 DST New York, clocks go forward on a weekly schedule: Sunday 02:30 runs at 03:00 EDT on 2025-03-09",
+    "expression": "@every week @on sunday @at 02:30 @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-01 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-02 07:30:00", "2025-03-09 07:00:00", "2025-03-16 06:30:00"]
+  },
+  {
+    "description": "42.7 DST New York, clocks go forward on a monthly schedule: the 9th at 02:15 runs at 03:00 EDT in March 2025",
+    "expression": "@every 9th @at 02:15 @tz America/New_York",
+    "baseTimeUtcStr": "2025-02-01 00:00:00",
+    "expectedDateTimeStrs": ["2025-02-09 07:15:00", "2025-03-09 07:00:00", "2025-04-09 06:15:00"]
+  },
+  {
+    "description": "42.8 DST Lisbon, clocks go forward (2025-03-30 01:00 WET -> 02:00 WEST): 01:30 does not exist and runs at 02:00 WEST (01:00 UTC)",
+    "expression": "@every day @at 01:30 @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-03-29 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-29 01:30:00", "2025-03-30 01:00:00", "2025-03-31 00:30:00"]
+  },
+  {
+    "description": "42.9 DST Sydney, clocks go forward (2025-10-05 02:00 AEST -> 03:00 AEDT): 02:30 does not exist and runs at 03:00 AEDT (16:00 UTC the day before)",
+    "expression": "@every day @at 02:30 @tz Australia/Sydney",
+    "baseTimeUtcStr": "2025-10-03 12:00:00",
+    "expectedDateTimeStrs": ["2025-10-03 16:30:00", "2025-10-04 16:00:00", "2025-10-05 15:30:00"]
+  },
+  {
+    "description": "42.10 DST Lord Howe, 30-minute change (2025-10-05 02:00 +10:30 -> 02:30 +11:00): 02:15 does not exist and runs at 02:30 (15:30 UTC the day before)",
+    "expression": "@every day @at 02:15 @tz Australia/Lord_Howe",
+    "baseTimeUtcStr": "2025-10-03 12:00:00",
+    "expectedDateTimeStrs": ["2025-10-03 15:45:00", "2025-10-04 15:30:00", "2025-10-05 15:15:00"]
+  },
+  {
+    "description": "42.11 DST New York, clocks go forward with multiple times in the gap: [02:15, 02:45] collapses into a single 03:00 EDT run on 2025-03-09",
+    "expression": "@every day @at [02:15, 02:45] @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-08 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 07:00:00", "2025-03-10 06:15:00", "2025-03-10 06:45:00"]
+  },
+  {
+    "description": "42.12 DST New York, clocks go forward with multiple times spanning the gap: [02:15, 02:45, 03:30] runs at 03:00 EDT and 03:30 EDT on 2025-03-09",
+    "expression": "@every day @at [02:15, 02:45, 03:30] @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-08 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 07:00:00", "2025-03-09 07:30:00", "2025-03-10 06:15:00", "2025-03-10 06:45:00", "2025-03-10 07:30:00"]
+  },
+  {
+    "description": "42.13 DST New York, clocks go forward with sub-day interval + between rule: skips the gap and resumes at 03:00 EDT",
+    "expression": "@every 30 minutes @between 01:00 and 04:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-09 06:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 06:30:00", "2025-03-09 07:00:00", "2025-03-09 07:30:00", "2025-03-09 08:00:00"]
+  },
+  {
+    "description": "42.14 DST New York, clocks go forward with every hour + day rule: skips 02:30 and keeps :30 cadence at 03:30 EDT",
+    "expression": "@every hour @on sunday @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-09 05:30:00",
+    "expectedDateTimeStrs": ["2025-03-09 06:30:00", "2025-03-09 07:30:00", "2025-03-09 08:30:00"]
+  },
+  {
+    "description": "42.15 DST New York, clocks go forward with anchored sub-day interval: every 2 hours anchoredAt 0 skips invalid 02:00 and runs at 04:00 EDT",
+    "expression": "@every 2 hours anchoredAt 0 @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-09 04:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 05:00:00", "2025-03-09 08:00:00", "2025-03-09 10:00:00"]
+  },
+  {
+    "description": "42.16 DST New York, clocks go forward with [02:15, 03:00]: 02:15 moves to 03:00 EDT and does not double-fire with explicit 03:00",
+    "expression": "@every day @at [02:15, 03:00] @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-08 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 07:00:00", "2025-03-10 06:15:00", "2025-03-10 07:00:00"]
+  },
+  {
+    "description": "42.17 DST Havana, midnight clocks go forward (2025-03-09 00:00 CST -> 01:00 CDT): 00:00 runs at 01:00 CDT (05:00 UTC)",
+    "expression": "@every day @at 00:00 @tz America/Havana",
+    "baseTimeUtcStr": "2025-03-07 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-08 05:00:00", "2025-03-09 05:00:00", "2025-03-10 04:00:00"]
+  },
+  {
+    "description": "42.18 DST Dublin, negative-DST zone clocks go forward (2025-03-30 01:00 GMT -> 02:00 IST): 01:30 runs at 02:00 IST (01:00 UTC)",
+    "expression": "@every day @at 01:30 @tz Europe/Dublin",
+    "baseTimeUtcStr": "2025-03-29 00:00:00",
+    "expectedDateTimeStrs": ["2025-03-29 01:30:00", "2025-03-30 01:00:00", "2025-03-31 00:30:00"]
+  },
+  {
+    "description": "42.19 DST New York, clocks go forward on a one-shot expression (no every rule): 02:30 runs at 03:00 EDT (07:00 UTC)",
+    "expression": "@on 9th mar 2025 02:30 @tz America/New_York",
+    "baseTimeUtcStr": "2025-03-08 12:00:00",
+    "expectedDateTimeStrs": ["2025-03-09 07:00:00"]
+  },
+  {
+    "description": "43.1 DST New York, clocks go back (2025-11-02 02:00 EDT -> 01:00 EST): 01:30 happens twice and runs once, in the first pass (01:30 EDT, 05:30 UTC)",
+    "expression": "@every day @at 01:30 @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-01 12:00:00",
+    "expectedDateTimeStrs": ["2025-11-02 05:30:00", "2025-11-03 06:30:00", "2025-11-04 06:30:00"]
+  },
+  {
+    "description": "43.2 DST New York, clocks go back: from the second pass (01:15 EST), 01:30 already ran in the first pass and does not run again",
+    "expression": "@every day @at 01:30 @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-02 06:15:00",
+    "expectedDateTimeStrs": ["2025-11-03 06:30:00", "2025-11-04 06:30:00"],
+    "_comment": "In America/New_York on 2025-11-02, wall-clock 01:15 occurs twice (05:15 UTC EDT and 06:15 UTC EST). Because DateTimeKind.Unspecified carries no offset, InTz cannot tell which 01:15 was meant and defaults ambiguous inputs to the 1st pass (05:15 UTC) so a run is never silently skipped, producing 2025-11-02 01:30 EDT (05:30 UTC) first.",
+    "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-11-02 05:30:00", "2025-11-03 06:30:00"]
+  },
+  {
+    "description": "43.3 DST New York, clocks go back: every 30 minutes runs in both passes of the repeated hour (01:00/01:30 EDT and 01:00/01:30 EST)",
+    "expression": "@every 30 minutes @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-02 03:00:00",
+    "expectedDateTimeStrs": ["2025-11-02 03:30:00", "2025-11-02 04:00:00", "2025-11-02 04:30:00", "2025-11-02 05:00:00", "2025-11-02 05:30:00", "2025-11-02 06:00:00", "2025-11-02 06:30:00", "2025-11-02 07:00:00"],
+    "_comment": "InTz with DateTimeKind.Unspecified must return strictly increasing wall-clock times so chained calls never loop on 01:00/01:30, so in America/New_York it advances past the repeated hour to 02:00, 02:30, 03:00 EST.",
+    "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-11-02 03:30:00", "2025-11-02 04:00:00", "2025-11-02 04:30:00", "2025-11-02 05:00:00", "2025-11-02 05:30:00", "2025-11-02 07:00:00", "2025-11-02 07:30:00", "2025-11-02 08:00:00"]
+  },
+  {
+    "description": "43.4 DST New York, clocks go back: every hour from 00:30 EDT runs in both passes (01:30 EDT and 01:30 EST)",
+    "expression": "@every hour @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-02 04:30:00",
+    "expectedDateTimeStrs": ["2025-11-02 05:30:00", "2025-11-02 06:30:00", "2025-11-02 07:30:00", "2025-11-02 08:30:00"],
+    "_comment": "InTz with DateTimeKind.Unspecified must return strictly increasing wall-clock times so chained calls never repeat 01:30 forever, advancing from 01:30 EDT to 02:30, 03:30, 04:30 EST.",
+    "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-11-02 05:30:00", "2025-11-02 07:30:00", "2025-11-02 08:30:00", "2025-11-02 09:30:00"]
+  },
+  {
+    "description": "43.5 DST New York, clocks go back: 02:00 happens once (02:00 EST, 07:00 UTC)",
+    "expression": "@every day @at 02:00 @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-01 12:00:00",
+    "expectedDateTimeStrs": ["2025-11-02 07:00:00", "2025-11-03 07:00:00"]
+  },
+  {
+    "description": "43.6 DST New York, clocks go back with multiple times in the repeated hour: [01:15, 01:45] each run once in the first pass",
+    "expression": "@every day @at [01:15, 01:45] @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-01 12:00:00",
+    "expectedDateTimeStrs": ["2025-11-02 05:15:00", "2025-11-02 05:45:00", "2025-11-03 06:15:00", "2025-11-03 06:45:00"]
+  },
+  {
+    "description": "43.7 DST Lisbon, clocks go back (2025-10-26 02:00 WEST -> 01:00 WET): 01:30 runs once, in the first pass (01:30 WEST, 00:30 UTC)",
+    "expression": "@every day @at 01:30 @tz Europe/Lisbon",
+    "baseTimeUtcStr": "2025-10-25 12:00:00",
+    "expectedDateTimeStrs": ["2025-10-26 00:30:00", "2025-10-27 01:30:00", "2025-10-28 01:30:00"]
+  },
+  {
+    "description": "43.8 DST Sydney, clocks go back (2025-04-06 03:00 AEDT -> 02:00 AEST): 02:30 runs once, in the first pass (02:30 AEDT, 15:30 UTC the day before)",
+    "expression": "@every day @at 02:30 @tz Australia/Sydney",
+    "baseTimeUtcStr": "2025-04-04 12:00:00",
+    "expectedDateTimeStrs": ["2025-04-04 15:30:00", "2025-04-05 15:30:00", "2025-04-06 16:30:00"]
+  },
+  {
+    "description": "43.9 DST Lord Howe, 30-minute change back (2025-04-06 02:00 +11:00 -> 01:30 +10:30): 01:45 runs once, in the first pass (01:45 +11:00, 14:45 UTC the day before)",
+    "expression": "@every day @at 01:45 @tz Australia/Lord_Howe",
+    "baseTimeUtcStr": "2025-04-04 12:00:00",
+    "expectedDateTimeStrs": ["2025-04-04 14:45:00", "2025-04-05 14:45:00", "2025-04-06 15:15:00"]
+  },
+  {
+    "description": "43.10 DST Lord Howe, 30-minute change back: every 15 minutes runs in both passes of the repeated 30 minutes",
+    "expression": "@every 15 minutes @tz Australia/Lord_Howe",
+    "baseTimeUtcStr": "2025-04-05 14:15:00",
+    "expectedDateTimeStrs": ["2025-04-05 14:30:00", "2025-04-05 14:45:00", "2025-04-05 15:00:00", "2025-04-05 15:15:00", "2025-04-05 15:30:00"],
+    "_comment": "InTz with DateTimeKind.Unspecified must return strictly increasing wall-clock times so chained calls never loop on 01:30/01:45, advancing past the repeated 30 minutes to 02:00, 02:15, 02:30.",
+    "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-04-05 14:30:00", "2025-04-05 14:45:00", "2025-04-05 15:30:00", "2025-04-05 15:45:00", "2025-04-05 16:00:00"]
+  },
+  {
+    "description": "43.11 DST Dublin, negative-DST zone clocks go back (2025-10-26 02:00 IST -> 01:00 GMT): 01:30 runs once in the first pass (00:30 UTC)",
+    "expression": "@every day @at 01:30 @tz Europe/Dublin",
+    "baseTimeUtcStr": "2025-10-25 12:00:00",
+    "expectedDateTimeStrs": ["2025-10-26 00:30:00", "2025-10-27 01:30:00", "2025-10-28 01:30:00"]
+  },
+  {
+    "description": "43.12 DST New York, clocks go back with except rule in the repeated hour: 01:15 is excluded and 01:30 runs once in the first pass",
+    "expression": "@every day @at [01:15, 01:30] @except 01:15 @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-01 12:00:00",
+    "expectedDateTimeStrs": ["2025-11-02 05:30:00", "2025-11-03 06:30:00"]
+  },
+  {
+    "description": "43.13 DST New York, clocks go back on a one-shot expression (no every rule): 01:30 runs in the first pass (05:30 UTC)",
+    "expression": "@on 2nd nov 2025 01:30 @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-01 12:00:00",
+    "expectedDateTimeStrs": ["2025-11-02 05:30:00"]
+  },
+  {
+    "description": "43.14 DST New York, clocks go back: every 30 minutes starting in the second pass (01:15 EST)",
+    "expression": "@every 30 minutes @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-02 06:15:00",
+    "expectedDateTimeStrs": ["2025-11-02 06:45:00", "2025-11-02 07:15:00", "2025-11-02 07:45:00"],
+    "_comment": "Because DateTimeKind.Unspecified carries no offset, InTz with America/New_York defaults ambiguous 01:15 to the 1st pass (05:15 UTC EDT -> 01:45 EDT), then strictly advances past the repeated hour to 02:15 and 02:45 EST.",
+    "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-11-02 05:45:00", "2025-11-02 07:15:00", "2025-11-02 07:45:00"]
+  },
+  {
+    "description": "43.15 DST New York, clocks go back: sub-day interval with extra rule (every 30 minutes on sunday) runs in the first pass only and resumes at 02:00 EST",
+    "expression": "@every 30 minutes @on sunday @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-02 04:30:00",
+    "expectedDateTimeStrs": ["2025-11-02 05:00:00", "2025-11-02 05:30:00", "2025-11-02 07:00:00", "2025-11-02 07:30:00"]
+  },
+  {
     "description": "99.1 AI generated: Every 2 hours starting at noon",
     "expression": "@every 2 hours",
     "baseTimeUtcStr": "2023-05-10 12:00:00",

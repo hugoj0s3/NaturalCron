@@ -18,6 +18,7 @@ var compiledExpr = NaturalCronExpr.Parse("daily at 14:30");
 - [Usage Examples](#usage-examples)
 - [Rule Filter Methods](#rule-filter-methods)
 - [Custom Keywords](#custom-keywords)
+- [Troubleshooting](#troubleshooting)
 
 
 ## Parse Methods
@@ -137,6 +138,8 @@ Tries to get the next occurrence in UTC. Returns null if no occurrence is found 
 
 **Returns:** The next occurrence in UTC, or null if no occurrence is found
 
+**Throws:** `ArgumentException` when `utcBaseTime` or `utcMaxLookahead` has `DateTimeKind.Local`
+
 ### GetNextOccurrenceInUtc()
 ```csharp
 public DateTime GetNextOccurrenceInUtc(DateTime utcBaseTime, DateTime? utcMaxLookahead = null)
@@ -149,7 +152,9 @@ Gets the next occurrence in UTC. Throws an exception if no occurrence is found w
 
 **Returns:** The next occurrence in UTC
 
-**Throws:** `InvalidOperationException` when no next occurrence is found
+**Throws:**
+- `ArgumentException` when `utcBaseTime` or `utcMaxLookahead` has `DateTimeKind.Local`
+- `InvalidOperationException` when no next occurrence is found
 
 ### TryGetNextOccurrencesInUtc()
 ```csharp
@@ -164,6 +169,8 @@ Tries to get the next occurrences in UTC. Returns as many occurrences as found, 
 
 **Returns:** A list of occurrences in UTC (may contain fewer than the requested count)
 
+**Throws:** `ArgumentException` when `utcBaseTime` or `utcMaxLookahead` has `DateTimeKind.Local`
+
 ### GetNextOccurrencesInUtc()
 ```csharp
 public IList<DateTime> GetNextOccurrencesInUtc(DateTime utcBaseTime, int count, DateTime? utcMaxLookahead = null)
@@ -177,7 +184,9 @@ Gets the next occurrences in UTC. Throws an exception if fewer occurrences than 
 
 **Returns:** A list of occurrences in UTC
 
-**Throws:** `InvalidOperationException` when fewer than the requested number of occurrences are found
+**Throws:**
+- `ArgumentException` when `utcBaseTime` or `utcMaxLookahead` has `DateTimeKind.Local`
+- `InvalidOperationException` when fewer than the requested number of occurrences are found
 
 
 ## IANA Timezone Occurrence Methods
@@ -196,7 +205,7 @@ Tries to get the next occurrence in a specified IANA timezone. Returns null if n
 
 **Returns:** The next occurrence in the specified timezone, or null if no occurrence is found
 
-**Throws:** `ArgumentException` when the IANA timezone ID is invalid or not recognized
+**Throws:** `ArgumentException` when the IANA timezone ID is invalid, or when `baseTimeInTz` / `maxLookaheadInTz` has `DateTimeKind.Utc` or `DateTimeKind.Local` and does not match the specified timezone
 
 ### GetNextOccurrenceInTz()
 ```csharp
@@ -212,7 +221,7 @@ Gets the next occurrence in a specified IANA timezone. Throws an exception if no
 **Returns:** The next occurrence in the specified timezone
 
 **Throws:** 
-- `ArgumentException` when the IANA timezone ID is invalid or not recognized
+- `ArgumentException` when the IANA timezone ID is invalid, or when `baseTimeInTz` / `maxLookaheadInTz` has a `DateTimeKind` (`Utc`/`Local`) that does not match the specified timezone
 - `InvalidOperationException` when no next occurrence is found
 
 ### TryGetNextOccurrencesInTz()
@@ -229,7 +238,7 @@ Tries to get the next occurrences in a specified IANA timezone. Returns as many 
 
 **Returns:** A list of occurrences in the specified timezone (may contain fewer than the requested count)
 
-**Throws:** `ArgumentException` when the IANA timezone ID is invalid or not recognized
+**Throws:** `ArgumentException` when the IANA timezone ID is invalid, or when `baseTimeInTz` / `maxLookaheadInTz` has `DateTimeKind.Utc` or `DateTimeKind.Local` and does not match the specified timezone
 
 ### GetNextOccurrencesInTz()
 ```csharp
@@ -246,7 +255,7 @@ Gets the next occurrences in a specified IANA timezone. Throws an exception if f
 **Returns:** A list of occurrences in the specified timezone
 
 **Throws:** 
-- `ArgumentException` when the IANA timezone ID is invalid or not recognized
+- `ArgumentException` when the IANA timezone ID is invalid, or when `baseTimeInTz` / `maxLookaheadInTz` has a `DateTimeKind` (`Utc`/`Local`) that does not match the specified timezone
 - `InvalidOperationException` when fewer than the requested number of occurrences are found
 
 
@@ -281,6 +290,7 @@ For expression `"daily at 09:00 tz Asia/Tokyo"`:
 
 The `tz` keyword affects the **calculation** timezone, not the **return** timezone.
 
+For what happens on the nights the clocks change, see [Troubleshooting: Daylight Saving Time (DST)](#daylight-saving-time-dst).
 
 ## Usage Examples
 
@@ -343,11 +353,13 @@ var nextInTokyo = expr.GetNextOccurrenceInTz(tokyoTime, "Asia/Tokyo");
 var londonTime = new DateTime(2024, 1, 1, 10, 0, 0);
 var occurrencesInLondon = expr.GetNextOccurrencesInTz(londonTime, 5, "Europe/London");
 
-// Case-insensitive timezone ID
-var nextInNY = expr.GetNextOccurrenceInTz(DateTime.Now, "america/new_york");
+// Case-insensitive timezone ID (use DateTimeKind.Unspecified for a wall-clock time in another zone)
+var nyTime = new DateTime(2024, 1, 1, 10, 0, 0);
+var nextInNY = expr.GetNextOccurrenceInTz(nyTime, "america/new_york");
 
 // Safe usage with Try methods
-var result = expr.TryGetNextOccurrenceInTz(DateTime.Now, "America/Los_Angeles");
+var laTime = new DateTime(2024, 1, 1, 10, 0, 0);
+var result = expr.TryGetNextOccurrenceInTz(laTime, "America/Los_Angeles");
 if (result.HasValue)
 {
     Console.WriteLine($"Next occurrence: {result.Value}");
@@ -488,7 +500,7 @@ and `except`. It cannot be used as a boundary of `between`, `upto` or `from`.
   | `GetNextOccurrenceInTz(dt, id)` | `id` | X (the expression's tz always wins) |
 
 - A keyword instance is created **once per parsed expression** (at parse time) and reused for all its matches.
-  A factory must work wherever expressions are parsed (including Quartz triggers).
+  A factory must work wherever expressions are parsed.
 
 > ⚠️ **Performance:** `Match` is called on every step of the occurrence search, potentially many times per
 > `GetNextOccurrence` call. Avoid a database or HTTP round trip on every call: keep the data in memory and let `Match`
@@ -516,5 +528,31 @@ exposing `Keywords`. A list mixing keywords and built-in values (`on [holiday, 1
 (`Spec == NaturalCronRuleSpec.AtInOn`), whose `Rules` holds the keyword rule and the built-in rule.
 Exclusions (`except`) appear as `NaturalCronExceptRule` (`Spec == NaturalCronRuleSpec.Except`),
 whose `Rules` holds the excluded rules, e.g. a `NaturalCronCustomKeywordRule` or `NaturalCronAtInOnRule`.
+
+## Troubleshooting
+
+### Daylight Saving Time (DST)
+
+When evaluating a schedule in a timezone that observes daylight saving time:
+
+- **Clocks go forward (spring-forward gap, e.g. 02:00 → 03:00 in `America/New_York`):**
+  - Fixed and daily+ schedules landing in the missing hour run **once** at the first valid moment after the gap (e.g. `every day at 02:30 tz America/New_York` runs at `03:00 EDT`; in 30-minute zones like `Australia/Lord_Howe`, `02:15` runs at `02:30`). Multiple fixed times inside the same gap collapse into a single run at that first valid moment.
+  - Sub-day interval schedules (`every 30 minutes`, `every hour`) advance past the gap while preserving their real cadence.
+- **Clocks go back (fall-back repeated hour, e.g. 02:00 EDT → 01:00 EST in `America/New_York`):**
+  - Fixed and daily+ schedules in the repeated hour run **once**, in the first pass (daylight time, e.g. `01:30 EDT` / `05:30 UTC`), and do not run again in the second pass.
+  - Pure sub-day interval schedules (`every 30 minutes`, `every hour`, `every 15 minutes`, with or without `tz`) keep their real cadence across **both** passes without skipping occurrences.
+  - Sub-day intervals combined with additional rules (`every 30 minutes on sunday`, `every 30 minutes between 00:00 and 03:00`, `anchoredAt`, `except`) are evaluated on wall-clock time and run only in the **first pass** of the repeated hour (leaving a gap across the repeated hour before resuming at the next non-ambiguous wall-clock time). This only affects the repeated hour on the night the clocks go back; every other hour and day keeps its normal cadence.
+
+    For example, on 2025-11-02 in `America/New_York` (the Sunday the clocks go back), from `00:30 EDT` with `*InUtc`:
+
+    | New York | UTC | `every 30 minutes tz America/New_York` | `every 30 minutes on sunday tz America/New_York` |
+    |---|---|---|---|
+    | 01:00 EDT (1st pass) | 05:00 | ✅ | ✅ |
+    | 01:30 EDT (1st pass) | 05:30 | ✅ | ✅ |
+    | 01:00 EST (2nd pass) | 06:00 | ✅ | ❌ skipped |
+    | 01:30 EST (2nd pass) | 06:30 | ✅ | ❌ skipped |
+    | 02:00 EST | 07:00 | ✅ | ✅ |
+
+  - When calling `*InTz` with `DateTimeKind.Unspecified` across a repeated fall-back hour in that zone, ambiguous inputs default to the **first pass** (earlier instant) and returned wall-clock times always strictly advance (never repeating the same wall-clock hour in a loop). Use `*InUtc` (or `Local` with `DateTime.Now`) when you need both passes of the repeated hour as distinct instants.
 
 ✅ [Back to Main README](../README.md)

@@ -12,9 +12,12 @@ public class NaturalCronNextOccurrenceAllMethodsTests
         string description,
         string expression,
         string baseTimeUtcStr,
-        string[] expectedDateTimeStrs)
+        string[] expectedDateTimeStrs,
+        string[]? fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs)
     {
         var expectedUtc = expectedDateTimeStrs.Where(x => !string.IsNullOrEmpty(x)).Select(x => DateTime.Parse(x)).ToList();
+        var fallbackOnAmbiguousBaseTimeExpectedUtc = fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs?
+            .Where(x => !string.IsNullOrEmpty(x)).Select(x => DateTime.Parse(x)).ToList();
 
         AllOccurrenceMethodsAssert.ShouldReturn(
             expression,
@@ -22,11 +25,12 @@ public class NaturalCronNextOccurrenceAllMethodsTests
             expectedUtc,
             dependsOnTheZoneOfTheMethod: false,
             hasCustomKeywords: false,
-            description);
+            description,
+            fallbackOnAmbiguousBaseTimeExpectedUtc);
     }
 
-    public static IEnumerable<object[]> LoadNextOccurrenceTestCases()
+    public static IEnumerable<object?[]> LoadNextOccurrenceTestCases()
     {
-        return TestDataHelper.LoadNextOccurrenceTestCases();
+        return TestDataHelper.LoadNextOccurrenceTestCasesWithAmbiguousFallback();
     }
 }

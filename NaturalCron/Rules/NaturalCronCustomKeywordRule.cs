@@ -1,4 +1,5 @@
 using NaturalCron.CustomRules;
+using NaturalCron.Utils;
 
 namespace NaturalCron.Rules;
 
@@ -42,7 +43,7 @@ public class NaturalCronCustomKeywordRule : NaturalCronMatchableRule
     {
         // On the night the clocks go forward some wall-clock times do not exist in the zone.
         // They cannot be an occurrence, and a keyword that converts the time to another zone would throw.
-        if (EffectiveTimeZone.SupportsDaylightSavingTime && EffectiveTimeZone.IsInvalidTime(dateTime))
+        if (EffectiveTimeZone.SupportsDaylightSavingTime && TimeZoneUtil.IsInvalidTime(EffectiveTimeZone, dateTime))
         {
             return false;
         }

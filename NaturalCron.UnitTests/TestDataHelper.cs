@@ -19,6 +19,35 @@ public static class TestDataHelper
         Func<NextOccurrenceTestCase, bool>? filterExpression = null,
         string fileName = "GetNextOcurrencesTestCases.json")
     {
+        var cases = LoadRawNextOccurrenceTestCases(filterExpression, fileName);
+
+        // Test both with and without @ symbols
+        var testCasesWithoutAmpersat = cases
+            .Select(x => new object[] { x.Description.Replace("@", " ") + " Without ampersat", x.Expression.Replace("@", " "), x.BaseTimeUtcStr, x.ExpectedDateTimeStrs });
+        var testCasesWithAmpersat = cases
+            .Select(x => new object[] { x.Description + " With ampersat", x.Expression, x.BaseTimeUtcStr, x.ExpectedDateTimeStrs });
+
+        return testCasesWithoutAmpersat.Concat(testCasesWithAmpersat);
+    }
+
+    public static IEnumerable<object?[]> LoadNextOccurrenceTestCasesWithAmbiguousFallback(
+        Func<NextOccurrenceTestCase, bool>? filterExpression = null,
+        string fileName = "GetNextOcurrencesTestCases.json")
+    {
+        var cases = LoadRawNextOccurrenceTestCases(filterExpression, fileName);
+
+        var testCasesWithoutAmpersat = cases
+            .Select(x => new object?[] { x.Description.Replace("@", " ") + " Without ampersat", x.Expression.Replace("@", " "), x.BaseTimeUtcStr, x.ExpectedDateTimeStrs, x.FallbackOnAmbiguousBaseTimeExpectedDateTimeStrs });
+        var testCasesWithAmpersat = cases
+            .Select(x => new object?[] { x.Description + " With ampersat", x.Expression, x.BaseTimeUtcStr, x.ExpectedDateTimeStrs, x.FallbackOnAmbiguousBaseTimeExpectedDateTimeStrs });
+
+        return testCasesWithoutAmpersat.Concat(testCasesWithAmpersat);
+    }
+
+    private static List<NextOccurrenceTestCase> LoadRawNextOccurrenceTestCases(
+        Func<NextOccurrenceTestCase, bool>? filterExpression,
+        string fileName)
+    {
         var assembly = Assembly.GetExecutingAssembly();
         var resourceName = "NaturalCron.UnitTests." + fileName;
         using var stream = assembly.GetManifestResourceStream(resourceName);
@@ -26,14 +55,14 @@ public static class TestDataHelper
         {
             throw new Exception($"Resource {resourceName} not found");
         }
-        
+
         using var reader = new StreamReader(stream);
         var json = reader.ReadToEnd();
         var cases = JsonSerializer.Deserialize<List<NextOccurrenceTestCase>>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
         });
-        
+
         if (cases == null)
         {
             throw new Exception($"Failed to deserialize {resourceName}");
@@ -44,14 +73,8 @@ public static class TestDataHelper
         {
             cases = cases.Where(filterExpression).ToList();
         }
-        
-        // Test both with and without @ symbols
-        var testCasesWithoutAmpersat = cases
-            .Select(x => new object[] { x.Description.Replace("@", " ") + " Without ampersat", x.Expression.Replace("@", " "), x.BaseTimeUtcStr, x.ExpectedDateTimeStrs });
-        var testCasesWithAmpersat = cases
-            .Select(x => new object[] { x.Description + " With ampersat", x.Expression, x.BaseTimeUtcStr, x.ExpectedDateTimeStrs });
-        
-        return testCasesWithoutAmpersat.Concat(testCasesWithAmpersat);
+
+        return cases;
     }
 }
 
@@ -61,4 +84,10 @@ public class NextOccurrenceTestCase
     public string Expression { get; set; } = string.Empty;
     public string BaseTimeUtcStr { get; set; } = string.Empty;
     public string[] ExpectedDateTimeStrs { get; set; } = Array.Empty<string>();
+
+    /// <summary>
+    /// Optional expected UTC results when the base time is passed as an ambiguous Unspecified DateTime
+    /// in a zone experiencing a fall-back transition (where Unspecified defaults to the 1st pass).
+    /// </summary>
+    public string[]? FallbackOnAmbiguousBaseTimeExpectedDateTimeStrs { get; set; }
 }
