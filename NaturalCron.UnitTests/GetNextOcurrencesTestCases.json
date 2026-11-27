@@ -2297,13 +2297,17 @@
     "description": "43.3 DST New York, clocks go back: every 30 minutes runs in both passes of the repeated hour (01:00/01:30 EDT and 01:00/01:30 EST)",
     "expression": "@every 30 minutes @tz America/New_York",
     "baseTimeUtcStr": "2025-11-02 03:00:00",
-    "expectedDateTimeStrs": ["2025-11-02 03:30:00", "2025-11-02 04:00:00", "2025-11-02 04:30:00", "2025-11-02 05:00:00", "2025-11-02 05:30:00", "2025-11-02 06:00:00", "2025-11-02 06:30:00", "2025-11-02 07:00:00"]
+    "expectedDateTimeStrs": ["2025-11-02 03:30:00", "2025-11-02 04:00:00", "2025-11-02 04:30:00", "2025-11-02 05:00:00", "2025-11-02 05:30:00", "2025-11-02 06:00:00", "2025-11-02 06:30:00", "2025-11-02 07:00:00"],
+    "_comment": "InTz with DateTimeKind.Unspecified must return strictly increasing wall-clock times so chained calls never loop on 01:00/01:30, so in America/New_York it advances past the repeated hour to 02:00, 02:30, 03:00 EST.",
+    "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-11-02 03:30:00", "2025-11-02 04:00:00", "2025-11-02 04:30:00", "2025-11-02 05:00:00", "2025-11-02 05:30:00", "2025-11-02 07:00:00", "2025-11-02 07:30:00", "2025-11-02 08:00:00"]
   },
   {
     "description": "43.4 DST New York, clocks go back: every hour from 00:30 EDT runs in both passes (01:30 EDT and 01:30 EST)",
     "expression": "@every hour @tz America/New_York",
     "baseTimeUtcStr": "2025-11-02 04:30:00",
-    "expectedDateTimeStrs": ["2025-11-02 05:30:00", "2025-11-02 06:30:00", "2025-11-02 07:30:00", "2025-11-02 08:30:00"]
+    "expectedDateTimeStrs": ["2025-11-02 05:30:00", "2025-11-02 06:30:00", "2025-11-02 07:30:00", "2025-11-02 08:30:00"],
+    "_comment": "InTz with DateTimeKind.Unspecified must return strictly increasing wall-clock times so chained calls never repeat 01:30 forever, advancing from 01:30 EDT to 02:30, 03:30, 04:30 EST.",
+    "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-11-02 05:30:00", "2025-11-02 07:30:00", "2025-11-02 08:30:00", "2025-11-02 09:30:00"]
   },
   {
     "description": "43.5 DST New York, clocks go back: 02:00 happens once (02:00 EST, 07:00 UTC)",
@@ -2339,7 +2343,9 @@
     "description": "43.10 DST Lord Howe, 30-minute change back: every 15 minutes runs in both passes of the repeated 30 minutes",
     "expression": "@every 15 minutes @tz Australia/Lord_Howe",
     "baseTimeUtcStr": "2025-04-05 14:15:00",
-    "expectedDateTimeStrs": ["2025-04-05 14:30:00", "2025-04-05 14:45:00", "2025-04-05 15:00:00", "2025-04-05 15:15:00", "2025-04-05 15:30:00"]
+    "expectedDateTimeStrs": ["2025-04-05 14:30:00", "2025-04-05 14:45:00", "2025-04-05 15:00:00", "2025-04-05 15:15:00", "2025-04-05 15:30:00"],
+    "_comment": "InTz with DateTimeKind.Unspecified must return strictly increasing wall-clock times so chained calls never loop on 01:30/01:45, advancing past the repeated 30 minutes to 02:00, 02:15, 02:30.",
+    "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-04-05 14:30:00", "2025-04-05 14:45:00", "2025-04-05 15:30:00", "2025-04-05 15:45:00", "2025-04-05 16:00:00"]
   },
   {
     "description": "43.11 DST Dublin, negative-DST zone clocks go back (2025-10-26 02:00 IST -> 01:00 GMT): 01:30 runs once in the first pass (00:30 UTC)",
@@ -2358,6 +2364,14 @@
     "expression": "@on 2nd nov 2025 01:30 @tz America/New_York",
     "baseTimeUtcStr": "2025-11-01 12:00:00",
     "expectedDateTimeStrs": ["2025-11-02 05:30:00"]
+  },
+  {
+    "description": "43.14 DST New York, clocks go back: every 30 minutes starting in the second pass (01:15 EST)",
+    "expression": "@every 30 minutes @tz America/New_York",
+    "baseTimeUtcStr": "2025-11-02 06:15:00",
+    "expectedDateTimeStrs": ["2025-11-02 06:45:00", "2025-11-02 07:15:00", "2025-11-02 07:45:00"],
+    "_comment": "Because DateTimeKind.Unspecified carries no offset, InTz with America/New_York defaults ambiguous 01:15 to the 1st pass (05:15 UTC EDT -> 01:45 EDT), then strictly advances past the repeated hour to 02:15 and 02:45 EST.",
+    "fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs": ["2025-11-02 05:45:00", "2025-11-02 07:15:00", "2025-11-02 07:45:00"]
   },
   {
     "description": "99.1 AI generated: Every 2 hours starting at noon",

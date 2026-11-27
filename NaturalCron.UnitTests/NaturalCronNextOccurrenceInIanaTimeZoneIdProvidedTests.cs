@@ -38,7 +38,6 @@ public class NaturalCronNextOccurrenceInIanaTimeZoneIdProvidedTests
         string expression,
         string baseTimeUtcStr,
         string[] expectedDateTimeStrs,
-        string[]? fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs,
         string ianaTzId)
     {
         var (naturalCronExpr, errors) = NaturalCronExpr.TryParse(expression);
@@ -53,15 +52,13 @@ public class NaturalCronNextOccurrenceInIanaTimeZoneIdProvidedTests
 
         var expectedCount = expectedDateTimeStrs.Where(x => !string.IsNullOrEmpty(x)).Count();
 
-        var utcResults = naturalCronExpr.TryGetNextOccurrencesInUtc(baseTimeUtc, expectedCount);
         var tzResults = naturalCronExpr.TryGetNextOccurrencesInTz(baseTimeInTz, expectedCount, ianaTzId);
 
-        // When baseTimeInTz is an ambiguous Unspecified fall-back time, InTz defaults to the 1st pass (earlier instant).
-        var expectedUtcForComparison = tz.IsAmbiguousTime(baseTimeInTz) && fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs != null
-            ? fallbackOnAmbiguousBaseTimeExpectedDateTimeStrs.Where(x => !string.IsNullOrEmpty(x))
-                .Select(x => DateTime.SpecifyKind(DateTime.Parse(x), DateTimeKind.Utc)).ToList()
-            : utcResults;
-        var expectedInTz = expectedUtcForComparison.Select(utc => TimeZoneInfo.ConvertTimeFromUtc(utc, tz)).ToList();
+        // Reference: derive the expected wall-clock sequence directly from TryGetNextOccurrenceInUtc.
+        // For non-DST zones (and outside a fall-back hour), this equals TryGetNextOccurrencesInUtc converted to tz.
+        // Across tz's own fall-back hour, Unspecified InTz defaults ambiguous inputs to the 1st pass and strictly
+        // advances wall-clock time so chained calls never loop.
+        var expectedInTz = ComputeExpectedWallClockSequenceFromUtc(naturalCronExpr, baseTimeUtc, baseTimeInTz, expectedCount, tz);
 
         tzResults.Should().Equal(expectedInTz, $"{description} (target tz: {ianaTzId})");
 
@@ -203,14 +200,61 @@ public class NaturalCronNextOccurrenceInIanaTimeZoneIdProvidedTests
         return TestDataHelper.LoadNextOccurrenceTestCases(x => x.Expression.Contains("@tz") || x.Expression.Contains("@timezone"));
     }
 
-    public static IEnumerable<object?[]> LoadNextOccurrenceTestCasesWithTimeZoneAndTargetZones()
+    public static IEnumerable<object[]> LoadNextOccurrenceTestCasesWithTimeZoneAndTargetZones()
     {
-        foreach (var testCase in TestDataHelper.LoadNextOccurrenceTestCasesWithAmbiguousFallback(x => x.Expression.Contains("@tz") || x.Expression.Contains("@timezone")))
+        foreach (var testCase in LoadNextOccurrenceTestCasesWithTimeZone())
         {
             foreach (var ianaTzId in TargetIanaTimeZones)
             {
-                yield return new[] { testCase[0], testCase[1], testCase[2], testCase[3], testCase[4], ianaTzId };
+                yield return new[] { testCase[0], testCase[1], testCase[2], testCase[3], ianaTzId };
             }
         }
+    }
+
+    private static List<DateTime> ComputeExpectedWallClockSequenceFromUtc(
+        NaturalCronExpr expr, DateTime baseTimeUtc, DateTime baseTimeInTz, int count, TimeZoneInfo tz)
+    {
+        if (ReferenceEquals(tz, TimeZoneInfo.Utc))
+        {
+            return expr.TryGetNextOccurrencesInUtc(baseTimeUtc, count).ToList();
+        }
+
+        var cursorUtc = ToFirstPassUtc(baseTimeInTz, tz);
+        var lastWall = baseTimeInTz;
+        var expected = new List<DateTime>(count);
+
+        while (expected.Count < count)
+        {
+            var nextUtc = expr.TryGetNextOccurrenceInUtc(cursorUtc);
+            if (nextUtc == null)
+            {
+                break;
+            }
+
+            cursorUtc = nextUtc.Value;
+            var nextWall = DateTime.SpecifyKind(TimeZoneInfo.ConvertTimeFromUtc(cursorUtc, tz), DateTimeKind.Unspecified);
+            if (nextWall <= lastWall)
+            {
+                continue;
+            }
+
+            expected.Add(nextWall);
+            lastWall = nextWall;
+        }
+
+        return expected;
+    }
+
+    private static DateTime ToFirstPassUtc(DateTime wallClock, TimeZoneInfo tz)
+    {
+        var unspecified = DateTime.SpecifyKind(wallClock, DateTimeKind.Unspecified);
+        if (tz.IsAmbiguousTime(unspecified))
+        {
+            var offsets = tz.GetAmbiguousTimeOffsets(unspecified);
+            var firstPassOffset = offsets[0] >= offsets[1] ? offsets[0] : offsets[1];
+            return new DateTimeOffset(unspecified, firstPassOffset).UtcDateTime;
+        }
+
+        return TimeZoneInfo.ConvertTimeToUtc(unspecified, tz);
     }
 }

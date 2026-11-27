@@ -295,7 +295,7 @@ When evaluating a schedule in a timezone that observes daylight saving time:
 - **Clocks go back (fall-back repeated hour, e.g. 02:00 EDT → 01:00 EST in `America/New_York`):**
   - Fixed and daily+ schedules in the repeated hour run **once**, in the first pass (daylight time, e.g. `01:30 EDT` / `05:30 UTC`), and do not run again in the second pass.
   - Pure sub-day interval schedules (`every 30 minutes`, `every hour`, `every 15 minutes`) keep their real cadence across **both** passes without skipping occurrences.
-  - When passing an ambiguous wall-clock `baseTime` with `DateTimeKind.Unspecified` to `*InTz` methods (e.g. `2025-11-02 01:15` in `America/New_York`, which occurs twice), NaturalCron defaults it to the **first pass** (earlier instant) so a scheduled run is never silently skipped. Use the `*InUtc` methods when you need to distinguish the first pass (`05:15 UTC`) from the second pass (`06:15 UTC`) unambiguously.
+  - When calling `*InTz` with `DateTimeKind.Unspecified` across a repeated fall-back hour in that zone, ambiguous inputs default to the **first pass** (earlier instant) and returned wall-clock times always strictly advance (never repeating the same wall-clock hour in a loop). Use `*InUtc` (or `Local` with `DateTime.Now`) when you need both passes of the repeated hour as distinct instants.
 
 
 ## Usage Examples

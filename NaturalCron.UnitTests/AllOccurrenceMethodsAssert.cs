@@ -70,7 +70,7 @@ internal static class AllOccurrenceMethodsAssert
         {
             var zone = TZConvert.GetTimeZoneInfo(zoneId);
             var baseInZone = ToZone(baseTimeUtc, zone);
-            var expectedForZone = zone.IsAmbiguousTime(baseInZone) && fallbackOnAmbiguousBaseTimeExpectedUtc != null
+            var expectedForZone = NeedsAmbiguousWallClockFallback(baseInZone, expectedUtc, zone) && fallbackOnAmbiguousBaseTimeExpectedUtc != null
                 ? fallbackOnAmbiguousBaseTimeExpectedUtc
                 : expectedUtc;
             var occurrences = naturalCronExpr.TryGetNextOccurrencesInTz(baseInZone, count, zoneId);
@@ -81,7 +81,7 @@ internal static class AllOccurrenceMethodsAssert
         var withoutTimeZoneRule = NaturalCronExpr.Parse(expression.Remove(timeZoneRule.Index, timeZoneRule.Length));
         withoutTimeZoneRule.TimeZoneRule().Should().BeNull();
         var baseInRuleZone = ToZone(baseTimeUtc, ruleZone);
-        var expectedForRuleZone = ruleZone.IsAmbiguousTime(baseInRuleZone) && fallbackOnAmbiguousBaseTimeExpectedUtc != null
+        var expectedForRuleZone = NeedsAmbiguousWallClockFallback(baseInRuleZone, expectedUtc, ruleZone) && fallbackOnAmbiguousBaseTimeExpectedUtc != null
             ? fallbackOnAmbiguousBaseTimeExpectedUtc
             : expectedUtc;
         var occurrencesInRuleZone = withoutTimeZoneRule.TryGetNextOccurrencesInTz(baseInRuleZone, count, ruleZoneId);
@@ -122,4 +122,27 @@ internal static class AllOccurrenceMethodsAssert
 
     private static DateTime ToZone(DateTime utc, TimeZoneInfo zone) =>
         DateTime.SpecifyKind(TimeZoneInfo.ConvertTimeFromUtc(utc, zone), DateTimeKind.Unspecified);
+
+    private static bool NeedsAmbiguousWallClockFallback(DateTime baseInZone, IReadOnlyList<DateTime> expectedUtc, TimeZoneInfo zone)
+    {
+        if (zone.IsAmbiguousTime(baseInZone))
+        {
+            return true;
+        }
+
+        // Also true when expectedUtc crosses a repeated fall-back hour in zone so the wall-clock goes backwards/repeats.
+        var previous = baseInZone;
+        foreach (var utc in expectedUtc)
+        {
+            var wall = ToZone(utc, zone);
+            if (wall <= previous)
+            {
+                return true;
+            }
+
+            previous = wall;
+        }
+
+        return false;
+    }
 }

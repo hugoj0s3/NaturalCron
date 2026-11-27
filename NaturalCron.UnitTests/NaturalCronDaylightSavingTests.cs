@@ -46,6 +46,33 @@ public class NaturalCronDaylightSavingTests
         next.Should().Be(Utc(2025, 11, 2, 5, 30));
     }
 
+    [Fact]
+    public void FallBack_SingularInTzChainedLikeAScheduler_MovesForwardPastTheRepeatedHour()
+    {
+        // The InTz methods take and return wall-clock times, so a time in the repeated hour can only be read as the
+        // first pass. Chaining the singular method must still move forward: returning the second-pass 01:00 (EST)
+        // would be read back as 01:00 EDT, and the chain would alternate 01:00 / 01:30 forever.
+        var expr = NaturalCronExpr.Parse("every 30 minutes tz America/New_York");
+        var start = new DateTime(2025, 11, 2, 0, 30, 0, DateTimeKind.Unspecified); // 00:30 EDT
+        var baseTimeInTz = start;
+
+        var chained = new List<DateTime>();
+        for (var i = 0; i < 4; i++)
+        {
+            baseTimeInTz = expr.TryGetNextOccurrenceInTz(baseTimeInTz, "America/New_York")!.Value;
+            chained.Add(baseTimeInTz);
+        }
+
+        var plural = expr.TryGetNextOccurrencesInTz(start, 4, "America/New_York");
+        plural.Should().Equal(
+            new DateTime(2025, 11, 2, 1, 0, 0),
+            new DateTime(2025, 11, 2, 1, 30, 0),
+            new DateTime(2025, 11, 2, 2, 0, 0),
+            new DateTime(2025, 11, 2, 2, 30, 0));
+
+        chained.Should().Equal(plural);
+    }
+
     private static DateTime Utc(int year, int month, int day, int hour, int minute, int second = 0) =>
         new(year, month, day, hour, minute, second, DateTimeKind.Utc);
 }

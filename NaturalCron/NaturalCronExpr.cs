@@ -72,7 +72,16 @@ public class NaturalCronExpr
     /// <exception cref="ArgumentException">Thrown when the base time or the max lookahead is DateTimeKind.Local</exception>
     public DateTime? TryGetNextOccurrenceInUtc(DateTime utcBaseTime, DateTime? utcMaxLookahead = null)
     {
-        ValidateUtcInputs(utcBaseTime, utcMaxLookahead);
+        // A local time is not a UTC time. Unspecified is trusted to be UTC.
+        if (utcBaseTime.Kind == DateTimeKind.Local)
+        {
+            throw new ArgumentException("The base time must be in UTC, but its Kind is Local.", nameof(utcBaseTime));
+        }
+
+        if (utcMaxLookahead?.Kind == DateTimeKind.Local)
+        {
+            throw new ArgumentException("The max lookahead must be in UTC, but its Kind is Local.", nameof(utcMaxLookahead));
+        }
 
         var methodTz = TimeZoneInfo.Utc;
         var computeTz = GetComputeTz(methodTz);
@@ -124,7 +133,27 @@ public class NaturalCronExpr
     /// or of the max lookahead is Utc or Local and does not match the timezone</exception>
     public DateTime? TryGetNextOccurrenceInTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz = null)
     {
-        var methodTz = ResolveMethodTz(baseTimeInTz, ianaTzId, maxLookaheadInTz);
+        // Case-insensitive validation
+        if (!TZConvert.KnownIanaTimeZoneNames
+                .Contains(ianaTzId, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new ArgumentException($"Invalid IANA time zone ID: {ianaTzId}");
+        }
+
+        var tz = TZConvert.GetTimeZoneInfo(ianaTzId);
+        EnsureKindMatchesTz(baseTimeInTz, tz, ianaTzId, nameof(baseTimeInTz));
+        if (maxLookaheadInTz.HasValue)
+        {
+            EnsureKindMatchesTz(maxLookaheadInTz.Value, tz, ianaTzId, nameof(maxLookaheadInTz));
+        }
+
+        // A UTC or a local base time is in the same zone as tz (checked above).
+        var methodTz = baseTimeInTz.Kind switch
+        {
+            DateTimeKind.Utc => TimeZoneInfo.Utc,
+            DateTimeKind.Local => TimeZoneInfo.Local,
+            _ => tz
+        };
         var computeTz = GetComputeTz(methodTz);
 
         // Interpret the input in the specified timezone, not Local, and return in the same timezone and kind.
@@ -147,19 +176,20 @@ public class NaturalCronExpr
     /// <returns>A list of occurrences in UTC (may contain fewer than the requested count)</returns>
     public IList<DateTime> TryGetNextOccurrencesInUtc(DateTime utcBaseTime, int count, DateTime? utcMaxLookahead = null)
     {
-        ValidateUtcInputs(utcBaseTime, utcMaxLookahead);
+        var result = new List<DateTime>();
+        for (var i = 0; i < count; i++)
+        {
+            var nextOccurrence = TryGetNextOccurrenceInUtc(utcBaseTime, utcMaxLookahead);
+            if (nextOccurrence == null)
+            {
+                break;
+            }
 
-        var methodTz = TimeZoneInfo.Utc;
-        var computeTz = GetComputeTz(methodTz);
+            result.Add(nextOccurrence.Value);
+            utcBaseTime = nextOccurrence.Value;
+        }
 
-        return InternalTryGetNextOccurrences(
-            utcBaseTime,
-            count,
-            utcMaxLookahead,
-            methodTz,
-            computeTz,
-            TimeZoneInfo.Utc,
-            DateTimeKind.Utc);
+        return result;
     }
 
     /// <summary>
@@ -172,17 +202,20 @@ public class NaturalCronExpr
     /// <returns>A list of occurrences in the current thread's timezone (may contain fewer than the requested count)</returns>
     public IList<DateTime> TryGetNextOccurrences(DateTime baseTime, int count, DateTime? maxLookahead = null)
     {
-        var methodTz = baseTime.Kind == DateTimeKind.Utc ? TimeZoneInfo.Utc : TimeZoneInfo.Local;
-        var computeTz = GetComputeTz(methodTz);
+        var result = new List<DateTime>();
+        for (var i = 0; i < count; i++)
+        {
+            var nextOccurrence = TryGetNextOccurrence(baseTime, maxLookahead);
+            if (nextOccurrence == null)
+            {
+                break;
+            }
 
-        return InternalTryGetNextOccurrences(
-            baseTime,
-            count,
-            maxLookahead,
-            methodTz,
-            computeTz,
-            methodTz,
-            baseTime.Kind);
+            result.Add(nextOccurrence.Value);
+            baseTime = nextOccurrence.Value;
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -196,17 +229,20 @@ public class NaturalCronExpr
     /// <returns>A list of occurrences in the specified timezone (may contain fewer than the requested count)</returns>
     public IList<DateTime> TryGetNextOccurrencesInTz(DateTime baseTimeInTz, int count, string ianaTzId, DateTime? maxLookaheadInTz = null)
     {
-        var methodTz = ResolveMethodTz(baseTimeInTz, ianaTzId, maxLookaheadInTz);
-        var computeTz = GetComputeTz(methodTz);
+        var result = new List<DateTime>();
+        for (var i = 0; i < count; i++)
+        {
+            var nextOccurrence = TryGetNextOccurrenceInTz(baseTimeInTz, ianaTzId, maxLookaheadInTz);
+            if (nextOccurrence == null)
+            {
+                break;
+            }
 
-        return InternalTryGetNextOccurrences(
-            baseTimeInTz,
-            count,
-            maxLookaheadInTz,
-            methodTz,
-            computeTz,
-            methodTz,
-            baseTimeInTz.Kind);
+            result.Add(nextOccurrence.Value);
+            baseTimeInTz = nextOccurrence.Value;
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -694,62 +730,29 @@ public class NaturalCronExpr
         }
     }
 
-    private static void ValidateUtcInputs(DateTime utcBaseTime, DateTime? utcMaxLookahead)
-    {
-        // A local time is not a UTC time. Unspecified is trusted to be UTC.
-        if (utcBaseTime.Kind == DateTimeKind.Local)
-        {
-            throw new ArgumentException("The base time must be in UTC, but its Kind is Local.", nameof(utcBaseTime));
-        }
-
-        if (utcMaxLookahead?.Kind == DateTimeKind.Local)
-        {
-            throw new ArgumentException("The max lookahead must be in UTC, but its Kind is Local.", nameof(utcMaxLookahead));
-        }
-    }
-
-    private static TimeZoneInfo ResolveMethodTz(DateTime baseTimeInTz, string ianaTzId, DateTime? maxLookaheadInTz)
-    {
-        // Case-insensitive validation
-        if (!TZConvert.KnownIanaTimeZoneNames
-                .Contains(ianaTzId, StringComparer.OrdinalIgnoreCase))
-        {
-            throw new ArgumentException($"Invalid IANA time zone ID: {ianaTzId}");
-        }
-
-        var tz = TZConvert.GetTimeZoneInfo(ianaTzId);
-        EnsureKindMatchesTz(baseTimeInTz, tz, ianaTzId, nameof(baseTimeInTz));
-        if (maxLookaheadInTz.HasValue)
-        {
-            EnsureKindMatchesTz(maxLookaheadInTz.Value, tz, ianaTzId, nameof(maxLookaheadInTz));
-        }
-
-        // A UTC or a local base time is in the same zone as tz (checked above).
-        return baseTimeInTz.Kind switch
-        {
-            DateTimeKind.Utc => TimeZoneInfo.Utc,
-            DateTimeKind.Local => TimeZoneInfo.Local,
-            _ => tz
-        };
-    }
-
-    // A pure unanchored sub-day interval (e.g. "every 30 minutes", "every hour") is just elapsed time,
-    // so evaluating it in UTC keeps the exact real cadence across both spring-forward and fall-back transitions.
-    private bool IsPureSubDayInterval()
+    // The every rule is an hour or less, e.g. "every 30 minutes on sunday".
+    private bool HasSubDayEveryRule()
     {
         var everyRule = Rules.OfType<NaturalCronEveryXRule>().FirstOrDefault();
-        return everyRule != null
-               && everyRule.TimeUnit <= NaturalCronTimeUnit.Hour
-               && string.IsNullOrEmpty(everyRule.AnchoredValue)
+        return everyRule != null && everyRule.TimeUnit <= NaturalCronTimeUnit.Hour;
+    }
+
+    // Only a sub-day every rule (and maybe a tz rule), e.g. "every 30 minutes":
+    // it's just elapsed time, so it is computed in UTC.
+    private bool IsOnlySubDayInterval()
+    {
+        var everyRule = Rules.OfType<NaturalCronEveryXRule>().FirstOrDefault();
+        return HasSubDayEveryRule()
+               && string.IsNullOrEmpty(everyRule?.AnchoredValue)
                && Rules.All(r => r is NaturalCronEveryXRule or NaturalCronIanaTimeZoneRule);
     }
 
-    // A tz rule always wins over the zone of the method (except pure sub-day intervals, which are timezone-independent).
+    // A tz rule always wins over the zone of the method (except sub-day intervals with no other rules, which are timezone-independent).
     private TimeZoneInfo GetComputeTz(TimeZoneInfo methodTz) =>
-        IsPureSubDayInterval() ? TimeZoneInfo.Utc : (TimeZoneRule()?.TimeZoneInfo ?? methodTz);
+        IsOnlySubDayInterval() ? TimeZoneInfo.Utc : (TimeZoneRule()?.TimeZoneInfo ?? methodTz);
 
     /// <summary>
-    /// The single flow of all the next occurrence methods (single).
+    /// The single flow of all the next occurrence methods.
     /// </summary>
     private DateTime? InternalTryGetNextOccurrence(DateTime baseTime, DateTime? maxLookahead, TimeZoneInfo inputTz,
         TimeZoneInfo computeTz, TimeZoneInfo resultTz, DateTimeKind resultKind)
@@ -768,46 +771,33 @@ public class NaturalCronExpr
         }
 
         // 3. Result to the zone and the kind the caller wants
-        return ToResultDateTime(resultInComputeTz.Value, resultTz, resultKind);
-    }
+        var resultDateTime = ToResultDateTime(resultInComputeTz.Value, resultTz, resultKind);
 
-    /// <summary>
-    /// The single flow of all the next occurrence methods (multiple).
-    /// Advances using DateTimeOffset so repeated fall-back hours never lose their pass between iterations.
-    /// </summary>
-    private IList<DateTime> InternalTryGetNextOccurrences(DateTime baseTime, int count, DateTime? maxLookahead,
-        TimeZoneInfo inputTz, TimeZoneInfo computeTz, TimeZoneInfo resultTz, DateTimeKind resultKind)
-    {
-        var result = new List<DateTime>();
-        if (count <= 0)
+        if (resultKind != DateTimeKind.Unspecified)
         {
-            return result;
+            return resultDateTime;
         }
 
-        var cursorInComputeTz = ToOffsetInZone(baseTime, inputTz, computeTz);
-        var maxLookaheadInComputeTz = maxLookahead.HasValue
-            ? ToOffsetInZone(maxLookahead.Value, inputTz, computeTz)
-            : (DateTimeOffset?)null;
-
-        for (var i = 0; i < count; i++)
+        if (!ReferenceEquals(inputTz, resultTz))
         {
-            var nextInComputeTz = InternalTryGetNextOccurrenceInTz(cursorInComputeTz, maxLookaheadInComputeTz, computeTz);
-            if (nextInComputeTz == null)
+            return resultDateTime;
+        }
+
+        // When returning an Unspecified wall-clock time in the same zone as the input (e.g. TryGetNextOccurrenceInTz),
+        // the returned DateTime must strictly advance past baseTime; otherwise a repeated fall-back hour wraps the
+        // wall-clock backwards (e.g. 01:30 -> 01:00) and chained singular/plural calls would loop forever.
+        while (resultDateTime <= baseTime)
+        {
+            resultInComputeTz = InternalTryGetNextOccurrenceInTz(resultInComputeTz.Value, maxLookaheadInComputeTz, computeTz);
+            if (resultInComputeTz == null)
             {
-                break;
+                return null;
             }
 
-            result.Add(ToResultDateTime(nextInComputeTz.Value, resultTz, resultKind));
-            cursorInComputeTz = nextInComputeTz.Value;
+            resultDateTime = ToResultDateTime(resultInComputeTz.Value, resultTz, resultKind);
         }
 
-        return result;
-    }
-
-    private bool IsSubDayEveryRule()
-    {
-        var everyRule = Rules.OfType<NaturalCronEveryXRule>().FirstOrDefault();
-        return everyRule != null && everyRule.TimeUnit <= NaturalCronTimeUnit.Hour;
+        return resultDateTime;
     }
 
     // Finds the first valid second after a spring-forward gap (e.g. 02:30 -> 03:00 in New York, 02:15 -> 02:30 in Lord Howe).
@@ -983,7 +973,7 @@ public class NaturalCronExpr
             // fixed / daily+ schedules move forward to the first valid moment after the gap (e.g. 02:30 -> 03:00).
             if (timeZone.IsInvalidTime(wall))
             {
-                if (IsSubDayEveryRule())
+                if (HasSubDayEveryRule())
                 {
                     wallCursor = wall;
                     continue;
